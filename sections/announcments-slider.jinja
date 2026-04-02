@@ -1,0 +1,25 @@
+<div class="tp-bar bar-product-single" id="{{ sectionId }}" section-id="{{ sectionId }}" 
+    style="background: {{ settings.background_color }}; {% if settings.hide_element %}display: none;{% endif %}">
+  <div class="tp-mask" style="direction: ltr;">
+    <div class="tp-marquee">
+      {% for item in (settings.features_bar_list or []) %}
+        <a href="{% if item.url %}{{ item.url }}{% else %}javascript:;{% endif %}" style="color: {{ item.text_color }};">
+          {% if item.image %}
+            <img loading="lazy" width="26" height="26" class="lazy-img" src="{{ image_url(item.image) }}" alt="">
+          {% endif %}
+          {{ item.title }}
+        </a>
+      {% endfor %}
+    </div>
+    <div class="tp-marquee">
+      {% for item in (settings.features_bar_list or []) %}
+        <a href="{% if item.url %}{{ item.url }}{% else %}javascript:;{% endif %}" style="color: {{ item.text_color }};">
+          {% if item.image %}
+            <img loading="lazy" width="26" height="26" class="lazy-img" src="{{ image_url(item.image) }}" alt="">
+          {% endif %}
+          {{ item.title }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,184 @@
+{% if settings.announcement_bar_display %}
+    {% if not (settings.announcement_bar_page_display) or (template == 'home' and settings.announcement_bar_page_display == 'home') or settings.announcement_bar_page_display == 'all' %}
+    <div class="announcement-bar-main" style="z-index: 4; overflow: hidden; position: relative; width: 100%; {% if settings.announcement_bar_background_color %} background: {{ settings.announcement_bar_background_color }} {% endif %};">
+       <div class="container">
+         <div class="announcement-bar-wrapper">
+
+            <div class="count_down_timer" id="announcement-timer" 
+                style="{% if not settings.announcement_bar_timer_display %}display: none;{% endif %}" 
+                data-end-date="{{ settings.announcement_bar_timer_date }}">
+                <div class="timer-item">
+                    <span class="timer-value" id="days">00</span> 
+                    <span class="timer-label">{{ _('Days') }}</span>
+                </div>
+                <div class="timer-separator">:</div>
+                <div class="timer-item">
+                    <span class="timer-value" id="hours">00</span> 
+                    <span class="timer-label">{{ _('Hours') }}</span>
+                </div>
+                <div class="timer-separator">:</div>
+                <div class="timer-item">
+                    <span class="timer-value" id="minutes">00</span> 
+                    <span class="timer-label">{{ _('minute') }}</span>
+                </div>
+                <div class="timer-separator">:</div>
+                <div class="timer-item">
+                    <span class="timer-value" id="seconds">00</span> 
+                    <span class="timer-label">{{ _('Seconds') }}</span>
+                </div>
+            </div>
+
+            <div class="announcement">
+                <div class="swiper announcement-swiper" 
+                    data-autoplay="{{ settings.announcement_bar_slider_autoplay | default(true) }}" 
+                    data-loop="{{ settings.announcement_bar_slider_loop | default(true) }}" 
+                    data-delay="{{ settings.announcement_bar_slider_delay | default(3000) }}">
+                    <div class="swiper-wrapper">
+                        {% for item in settings.announcement_bar_messages %}
+                            <div class="swiper-slide">
+                                <a href="{{ item.url }}">{{ item.text }}</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="swiper-button-prev">
+                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.19471 1.35372C7.03334 1.4756 6.5516 1.83951 6.27389 2.05624C5.71767 2.49031 4.97858 3.08342 4.24169 3.72323C3.50107 4.36627 2.77978 5.04178 2.24954 5.64189C1.98366 5.94281 1.78162 6.20714 1.65013 6.42527C1.52645 6.63042 1.50073 6.75161 1.50073 6.75161C1.50073 6.75161 1.52645 6.86923 1.65012 7.07437C1.78162 7.2925 1.98365 7.55684 2.24953 7.85775C2.77978 8.45786 3.50108 9.13337 4.2417 9.77641C4.9786 10.4162 5.7177 11.0093 6.27392 11.4434C6.55163 11.6601 7.0327 12.0235 7.19407 12.1454C7.52759 12.3911 7.59953 12.8611 7.3539 13.1946C7.10826 13.5281 6.63877 13.5994 6.30524 13.3537L6.3027 13.3518C6.13345 13.224 5.63443 12.8471 5.35108 12.6259C4.7823 12.1821 4.02139 11.5716 3.25829 10.9091C2.49891 10.2497 1.72021 9.52408 1.12546 8.85096C0.828839 8.51526 0.562122 8.17497 0.365496 7.8488C0.18128 7.54322 -3.45702e-06 7.15633 0 6.74982C3.45712e-06 6.34331 0.181287 5.95642 0.365502 5.65084C0.562128 5.32468 0.828844 4.98439 1.12546 4.64869C1.72021 3.97557 2.4989 3.2499 3.25827 2.59058C4.02137 1.92803 4.78226 1.3176 5.35104 0.873719C5.63459 0.652433 6.13363 0.275507 6.30253 0.147929L6.30472 0.14628C6.63824 -0.0993549 7.10821 -0.0284594 7.35385 0.305062C7.59947 0.638573 7.52821 1.10808 7.19471 1.35372Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+
+                    <div class="swiper-button-next">
+                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.305285 1.35372C0.46666 1.4756 0.948403 1.83951 1.22611 2.05624C1.78233 2.49031 2.52142 3.08342 3.25831 3.72323C3.99893 4.36627 4.72022 5.04178 5.25046 5.64189C5.51634 5.94281 5.71838 6.20714 5.84987 6.42527C5.97355 6.63042 5.99927 6.75161 5.99927 6.75161C5.99927 6.75161 5.97355 6.86923 5.84988 7.07437C5.71838 7.2925 5.51635 7.55684 5.25047 7.85775C4.72022 8.45786 3.99892 9.13337 3.2583 9.77641C2.5214 10.4162 1.7823 11.0093 1.22608 11.4434C0.948367 11.6601 0.467304 12.0235 0.305929 12.1454C-0.0275941 12.3911 -0.0995302 12.8611 0.146102 13.1946C0.391735 13.5281 0.861233 13.5994 1.19476 13.3537L1.1973 13.3518C1.36655 13.224 1.86557 12.8471 2.14892 12.6259C2.7177 12.1821 3.47861 11.5716 4.24171 10.9091C5.00109 10.2497 5.77979 9.52408 6.37454 8.85096C6.67116 8.51526 6.93788 8.17497 7.1345 7.8488C7.31872 7.54322 7.5 7.15633 7.5 6.74982C7.5 6.34331 7.31871 5.95642 7.1345 5.65084C6.93787 5.32468 6.67116 4.98439 6.37454 4.64869C5.77979 3.97557 5.0011 3.2499 4.24173 2.59058C3.47863 1.92803 2.71774 1.3176 2.14896 0.873719C1.86541 0.652433 1.36637 0.275507 1.19747 0.147929L1.19528 0.14628C0.861762 -0.0993549 0.391787 -0.0284594 0.146152 0.305062C-0.099474 0.638573 -0.0282083 1.10808 0.305285 1.35372Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lang">
+                {% set multiple_languages = store.languages | length > 1 %}
+                
+                {% if multiple_languages %}
+                <div class="lang_country_btn" onclick="zidOpenRegionSettingDialog()">
+                    {% if session.lang == 'en' %}
+                        {% set change_to_lang = 'ar' %}
+                        {% set change_to_lang_name = 'العربية' %}
+                    {% else %}
+                        {% set change_to_lang = 'en' %}
+                        {% set change_to_lang_name = 'English' %}
+                    {% endif %}
+
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.85449 19.709C15.2885 19.709 19.709 15.2885 19.709 9.85449C19.709 4.42049 15.2885 0 9.85449 0C4.42049 1.2121e-07 4.60586e-07 4.42049 0 9.85449C0 15.2885 4.42049 19.709 9.85449 19.709ZM2.10645 6.41699C3.22249 3.9116 5.51727 2.04509 8.2832 1.52441C7.51277 2.59622 6.51919 4.2759 5.95215 6.41699H2.10645ZM13.7578 6.41699C13.1906 4.27572 12.1962 2.59622 11.4258 1.52441C14.1917 2.04509 16.4865 3.9116 17.6025 6.41699H13.7578ZM7.38867 6.41699C8.05314 4.19666 9.20296 2.54648 9.85449 1.73535C10.506 2.54709 11.6558 4.19695 12.3203 6.41699H7.38867ZM14.0479 11.917C14.1508 11.2625 14.2099 10.5739 14.21 9.85449C14.21 9.13522 14.1508 8.44646 14.0479 7.79199H18.0791C18.2448 8.45252 18.334 9.14333 18.334 9.85449C18.334 10.5657 18.2448 11.2565 18.0791 11.917H14.0479ZM7.06055 11.917C6.94399 11.2649 6.87502 10.5758 6.875 9.85449C6.875 9.13338 6.94308 8.44401 7.05957 7.79199H12.6494C12.7659 8.44398 12.834 9.13336 12.834 9.85449C12.834 10.5757 12.765 11.2649 12.6484 11.917H7.06055ZM1.62988 11.917C1.46415 11.2565 1.375 10.5657 1.375 9.85449C1.375 9.14333 1.46415 8.45252 1.62988 7.79199H5.66211C5.5592 8.44646 5.5 9.13521 5.5 9.85449C5.50001 10.5739 5.55914 11.2625 5.66211 11.917H1.62988ZM8.28418 18.1855C5.51775 17.6652 3.22264 15.7977 2.10645 13.292H5.95215C6.51954 15.4337 7.51367 17.1139 8.28418 18.1855ZM9.85449 17.9736C9.20303 17.162 8.05318 15.5118 7.38867 13.292H12.3203C11.6558 15.5121 10.506 17.1626 9.85449 17.9736ZM11.4248 18.1855C12.1954 17.1139 13.1904 15.4341 13.7578 13.292H17.6025C16.4863 15.7977 14.1912 17.6652 11.4248 18.1855Z" fill="#8E8E93"/>
+                    </svg>
+
+                    {% if multiple_languages %}
+                        <span> {{ change_to_lang_name }} </span>
+                    {% endif %}
+
+                    <span> | </span>
+               
+                    {% if session.currency %}
+                        <span> {{ session.currency }} </span>
+                    {% endif %}
+                    
+                    <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.1218 0.254397C10.0202 0.388875 9.71695 0.790328 9.53635 1.02175C9.17462 1.48526 8.68036 2.10117 8.14719 2.71525C7.61132 3.33243 7.04839 3.93351 6.5483 4.37538C6.29754 4.59694 6.07726 4.7653 5.89548 4.87489C5.72452 4.97795 5.62354 4.99938 5.62354 4.99938C5.62354 4.99938 5.52552 4.97795 5.35457 4.87489C5.17279 4.76531 4.95251 4.59695 4.70175 4.37538C4.20166 3.93351 3.63873 3.33243 3.10287 2.71524C2.56969 2.10116 2.07544 1.48524 1.71371 1.02173C1.5331 0.790298 1.23027 0.389413 1.12869 0.254933C0.924002 -0.0230027 0.532331 -0.0829493 0.254395 0.121745C-0.0235404 0.326438 -0.0829152 0.717687 0.12178 0.995623L0.123345 0.997696C0.229846 1.1387 0.543976 1.55461 0.728271 1.79076C1.09817 2.26475 1.60686 2.89883 2.15899 3.53475C2.70842 4.16756 3.31315 4.81648 3.87408 5.31211C4.15383 5.55929 4.43741 5.78156 4.70921 5.94541C4.96386 6.09893 5.28627 6.25 5.62503 6.24999C5.96379 6.24999 6.28619 6.09892 6.54084 5.94541C6.81264 5.78155 7.09622 5.55929 7.37597 5.31211C7.9369 4.81648 8.54163 4.16757 9.09106 3.53477C9.64319 2.89885 10.1519 2.26477 10.5218 1.79079C10.7062 1.55446 11.0204 1.13851 11.1267 0.997818L11.128 0.996062C11.3327 0.718128 11.2736 0.326482 10.9957 0.121786C10.7177 -0.0829024 10.3265 -0.0235143 10.1218 0.254397Z" fill="#050505"/>
+                    </svg>
+                </div>
+                {% endif %}
+            </div>
+         </div>
+       </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const swiperContainer = document.querySelector('.announcement-swiper');
+            if (swiperContainer) {
+                const autoplayData = swiperContainer.dataset.autoplay === 'true';
+                const loopData = swiperContainer.dataset.loop === 'true';
+                const delayData = parseInt(swiperContainer.dataset.delay) || 3000;
+
+                const announcementSwiper = new Swiper('.announcement-swiper', {
+                    autoplay: autoplayData ? {
+                        delay: delayData,
+                        disableOnInteraction: false,
+                    } : false,
+                    loop: loopData,
+                    navigation: {
+                        nextEl: '.announcement-swiper .swiper-button-next',
+                        prevEl: '.announcement-swiper .swiper-button-prev',
+                    },
+                    pauseOnMouseEnter: true,
+                });
+            }
+
+            const timerEl = document.getElementById('announcement-timer');
+            if (timerEl) {
+                const targetDateStr = timerEl.dataset.endDate;
+                if (targetDateStr) {
+                    const targetDate = new Date(targetDateStr).getTime();
+                    
+                    function updateTimer() {
+                        const now = new Date().getTime();
+                        const distance = targetDate - now;
+
+                        if (distance < 0) {
+                            timerEl.style.display = 'none';
+                            return;
+                        }
+
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        const daysEl = document.getElementById('days');
+                        const hoursEl = document.getElementById('hours');
+                        const minsEl = document.getElementById('minutes');
+                        const secsEl = document.getElementById('seconds');
+
+                        if(daysEl) daysEl.innerText = days.toString().padStart(2, '0');
+                        if(hoursEl) hoursEl.innerText = hours.toString().padStart(2, '0');
+                        if(minsEl) minsEl.innerText = minutes.toString().padStart(2, '0');
+                        if(secsEl) secsEl.innerText = seconds.toString().padStart(2, '0');
+                    }
+
+                    updateTimer();
+                    setInterval(updateTimer, 1000);
+                }
+            }
+        });
+
+        {% if store.settings.products.filter_by_nearest_inventory %}
+            document.addEventListener('DOMContentLoaded', function() {
+                const storedData = localStorage.getItem('zid_kit_select_branch');
+                if (!storedData) return;
+
+                const lang = '{{ session.lang }}';
+                const deliveryToText = '{{ _("Delivery to:") }}';
+                const pickupFromText = '{{ _("Pickup from:") }}';
+                const data = JSON.parse(storedData);
+                const branchData = data.branchData;
+                const buttons = document.querySelectorAll('.currency-btn');
+                
+                if (!buttons.length) return;
+
+                let displayText = '';
+                if (branchData.type === 'pickup' && branchData.pickup) {
+                    displayText = `${pickupFromText} ${branchData.pickup.name}`;
+                } else if (branchData.type === 'delivery' && branchData.address) {
+                    const addr = branchData.address;
+                    const cityName = lang === 'ar' ? addr.city_name_ar : addr.city_name_en;
+                    displayText = `${deliveryToText} ${cityName}`;
+                }
+
+                if (displayText) {
+                    buttons.forEach(btn => btn.textContent = displayText);
+                }
+            });
+        {% endif %}
+    </script>
+    {% endif %}
+{% endif %}

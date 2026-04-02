@@ -1,0 +1,99 @@
+{
+  "section_id": "uuid",
+  "template": "sections/hero-section.jinja",
+  "icon": "fal fa-images",
+  "name": {
+    "ar": "قسم الانترو",
+    "en": "Intro Section"
+  },
+  "settings": [
+    {
+      "type": "image",
+      "id": "desktop_image",
+      "label": {
+        "ar": "صورة سطح المكتب",
+        "en": "Desktop Image"
+      }
+    },
+    {
+      "type": "image",
+      "id": "mobile_image",
+      "label": {
+        "ar": "صورة الجوال",
+        "en": "Mobile Image"
+      }
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "ar": "العنوان",
+        "en": "Title"
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": {
+        "ar": "الوصف",
+        "en": "Description"
+      }
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": {
+        "ar": "نص الزر",
+        "en": "Button Text"
+      }
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": {
+        "ar": "رابط الزر",
+        "en": "Button Link"
+      }
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": {
+        "ar": "لون خلفية الزر",
+        "en": "Button Background Color"
+      }
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": {
+        "ar": "لون نص الزر",
+        "en": "Button Text Color"
+      }
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": {
+        "ar": "لون العنوان",
+        "en": "Title Color"
+      }
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": {
+        "ar": "لون الوصف",
+        "en": "Description Color"
+      }
+    },
+    {
+      "id": "products",
+      "type": "products",
+      "label": {
+        "ar": "اختر قائمة المنتجات ",
+        "en": "Select category products"
+      }
+    }
+  ]
+}

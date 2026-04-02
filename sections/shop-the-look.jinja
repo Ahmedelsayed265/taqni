@@ -1,0 +1,108 @@
+<section class="shop-the-look-section" id="{{ sectionId }}" style="background-color: {{ settings.background_color | default('#f3f3f5') }}">
+    <style>
+        #{{ sectionId }} .section-title { color: {{ settings.title_color | default('#111') }}; }
+        #{{ sectionId }} .section-description { color: {{ settings.description_color | default('#555') }}; }
+    </style>
+
+    <div class="container overflow-hidden">
+        <div class="section-header text-center">
+            {% if settings.title %}
+                <h2 class="section-title">{{ settings.title }}</h2>
+            {% endif %}
+            {% if settings.description %}
+                <p class="section-description">{{ settings.description }}</p>
+            {% endif %}
+        </div>
+
+        <div class="looks-slider-wrapper position-relative">
+            <div id="swiper-{{ sectionId }}" class="swiper looks-swiper">
+                <div class="swiper-wrapper">
+                    {% for item in settings.looks_list %}
+                        <div class="swiper-slide list-item-slide">
+                            <div class="look-card h-100">
+                                <div class="look-image-box">
+                                    {% if item.video %}
+                                         <video class="look-bg-video" autoplay muted loop playsinline>
+                                             <source src="{{ item.video }}" type="video/mp4">
+                                         </video>
+                                    {% elif item.image %}
+                                         <img src="{{ image_url(item.image, w=800, q=90, f='auto') }}" alt="Look Background">
+                                    {% elif item.product %}
+                                         <img src="{{ image_url(item.product.main_image.image.large, w=800, q=90, f='auto') }}" alt="{{ item.product.name }}">
+                                    {% endif %}
+                                </div>
+                                
+                                {% if item.product %}
+                                    <div class="look-product-overlay">
+                                        <a href="/products/{{ item.product.slug }}" class="overlay-content">
+                                            <div class="product-thumb">
+                                                <img src="{{ image_url(item.product.main_image.image.small, w=150, q=90, f='auto') }}" alt="{{ item.product.name }}">
+                                            </div>
+                                            <div class="product-info">
+                                                <h4 class="product-name">{{ item.product.name }}</h4>
+                                                <div class="product-price">
+                                                    {% if item.product.sale_price %}
+                                                        <span class="sale">{{ item.product.formatted_sale_price }}</span>
+                                                        <span class="old">{{ item.product.formatted_price }}</span>
+                                                    {% else %}
+                                                        <span class="price">{{ item.product.formatted_price }}</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if settings.show_pagination %}
+                    <div class="swiper-pagination looks-pagination"></div>
+                {% endif %}
+            </div>
+
+            {% if settings.show_navigation %}
+                <div class="swiper-button-prev looks-nav-btn prev-{{ sectionId }}"></div>
+                <div class="swiper-button-next looks-nav-btn next-{{ sectionId }}"></div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new Swiper('#swiper-{{ sectionId }}', {
+            slidesPerView: {{ settings.slides_mobile | default(1.2) }},
+            spaceBetween: 15,
+            {% if settings.autoplay %}
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            {% endif %}
+            {% if settings.show_pagination %}
+            pagination: {
+                el: '#swiper-{{ sectionId }} .swiper-pagination',
+                clickable: true,
+            },
+            {% endif %}
+            {% if settings.show_navigation %}
+            navigation: {
+                nextEl: '.next-{{ sectionId }}',
+                prevEl: '.prev-{{ sectionId }}',
+            },
+            {% endif %}
+            breakpoints: {
+                768: {
+                    slidesPerView: {{ settings.slides_tablet | default(2) }},
+                    spaceBetween: 20
+                },
+                1024: {
+                    slidesPerView: {{ settings.slides_desktop | default(4) }},
+                    spaceBetween: 20
+                }
+            }
+        });
+    });
+</script>

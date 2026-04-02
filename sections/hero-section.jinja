@@ -1,0 +1,130 @@
+<section class="hero-section" id="{{ sectionId }}" section-id="{{ sectionId }}">
+    <picture>
+        <source media="(min-width: 768px)" srcset="{{ settings.desktop_image }}">
+        <img src="{{ settings.mobile_image }}" alt="hero-section-image">
+    </picture>
+
+    <div class="hero-content">
+        <div class="container">
+            <div class="hero-content-wrapper">
+                <div class="hero-content-text">
+                    <h1 style="color: {{ settings.title_color }}">{{ settings.title }}</h1>
+                    <p style="color: {{ settings.description_color }}">{{ settings.description }}</p>
+
+                    {% if settings.button_text and settings.button_link %}
+                    <a href="{{ settings.button_link }}" class="hero-button"
+                        style="background-color: {{ settings.button_background_color }}; color: {{ settings.button_text_color }}">
+                        {{ settings.button_text }}
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="hero-products_slider">
+                    <div class="swiper hero-products-swiper">
+                        <div class="swiper-wrapper">
+                            {% for product in safeget(settings, "products.results", []) %}
+                                <div class="swiper-slide">
+                                    <a href="/products/{{ product.slug }}" class="hero-product-card">
+                                        <div class="image-box">
+                                             <img id="product-card-img-{{ product.id }}"
+                                                    {% if product.images or product.videos %}
+                                                        src="{{ product.main_image.image.small if product.main_image else '' }}"
+                                                    {% else %}
+                                                        src="{{ image_url(('product-img.svg' | asset_url), w=235, q=100, f='auto') }}"
+                                                    {% endif %}
+                                                    alt="{{ product.name }}">
+                                        </div>
+                                        <div class="details">
+                                            <h3 class="title">{{ product.name }}</h3>
+                                            <p class="description">{{ product.short_description }}</p>
+                                             <div class="price">
+                                                {% if product.formatted_sale_price is not none %}
+                                                    <span class="current">{{ product.formatted_sale_price }}</span>
+                                                    <span class="old">{{ product.formatted_price }}</span>
+                                                {% else %}
+                                                    <span class="current">{{ product.formatted_price }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="hero-slider-controls">
+                            <div class="hero-slider-pagination">
+                                <span class="current">01</span>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill"></div>
+                                </div>
+                                <span class="total">04</span>
+                            </div>
+
+                            <div class="hero-slider-navigation">
+                                <div class="swiper-button-prev hero-nav-btn">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14 8H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M7.33325 2.66665L1.99992 7.99998L7.33325 13.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="swiper-button-next hero-nav-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M15 5L22 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const swiper = new Swiper('.hero-products-swiper', {
+            slidesPerView: 1.1,
+            spaceBetween: 20,
+            centeredSlides: false,
+            navigation: {
+                nextEl: '.hero-products_slider .swiper-button-next',
+                prevEl: '.hero-products_slider .swiper-button-prev',
+            },
+            on: {
+                init: function(s) {
+                    updateControls(s);
+                },
+                slideChange: function(s) {
+                    updateControls(s);
+                }
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 1.3,
+                    spaceBetween: 30
+                },
+                1200: {
+                    slidesPerView: 1.5,
+                    spaceBetween: 20
+                }
+            }
+        });
+
+        function updateControls(s) {
+            const current = s.realIndex + 1;
+            const total = s.slides.length;
+            const progress = (current / total) * 100;
+            
+            const container = s.el.closest('.hero-products_slider');
+            const currentEl = container.querySelector('.hero-slider-pagination .current');
+            const totalEl = container.querySelector('.hero-slider-pagination .total');
+            const progressFill = container.querySelector('.hero-slider-pagination .progress-bar-fill');
+
+            if(currentEl) currentEl.innerText = current.toString().padStart(2, '0');
+            if(totalEl) totalEl.innerText = total.toString().padStart(2, '0');
+            if(progressFill) progressFill.style.width = progress + '%';
+        }
+    });
+</script>

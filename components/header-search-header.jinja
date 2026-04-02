@@ -1,0 +1,122 @@
+<div class="search-header">
+    <div class="container">
+        <div class="search-header-bar">
+            <div class="menu">
+
+                <button onclick="openSlidingMenu()" class="menu_btn" type="button" tabindex="1",   style="all: unset; cursor: pointer;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 18.25C12.4142 18.25 12.75 18.5858 12.75 19C12.75 19.4142 12.4142 19.75 12 19.75H4C3.58579 19.75 3.25 19.4142 3.25 19C3.25 18.5858 3.58579 18.25 4 18.25H12ZM20 11.25C20.4142 11.25 20.75 11.5858 20.75 12C20.75 12.4142 20.4142 12.75 20 12.75H4C3.58579 12.75 3.25 12.4142 3.25 12C3.25 11.5858 3.58579 11.25 4 11.25H20ZM16 4.25C16.4142 4.25 16.75 4.58579 16.75 5C16.75 5.41421 16.4142 5.75 16 5.75H4C3.58579 5.75 3.25 5.41421 3.25 5C3.25 4.58579 3.58579 4.25 4 4.25H16Z" fill="#050505"/>
+                    </svg>
+                </button>
+
+                {% set menu_settings=settings %}{% include 'components/header-mega-menu.jinja' %}
+            </div>
+
+            <div class="logo">
+                <a href="/" style="width: auto; height: 100%; display: block">
+                    {% if settings.header_logo %}
+                        {% set logoUrl = settings.header_logo %}
+                    {% else %}
+                        {% set logoUrl = store.logo %}
+                    {% endif %}
+                    {% if settings.header_logo_mobile %}
+                        {% set logoUrlMobile = settings.header_logo_mobile %}
+                    {% elif store.settings.branding.mobile_app_logo %}
+                        {% set logoUrlMobile = store.settings.branding.mobile_app_logo %}
+                    {% endif %}
+
+                    <img class="image-logo{% if logoUrlMobile is defined and logoUrlMobile is not none %} d-none d-lg-block {% endif %}" src="{{ image_url(logoUrl, h=175, q=100) }}" alt="{{ store.name }}" style="width: auto; max-height: 100%" decoding="async" fetchpriority="high">
+
+                    {% if logoUrlMobile %}
+                        <img class="image-logo d-block d-lg-none" src="{{ image_url(logoUrlMobile, h=175, q=100) }}" alt="{{ store.name }}" style="width: auto; max-height: 100%" decoding="async" fetchpriority="high">
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="actions">
+                {% if not ('hide_search_bar' in header_options) %}
+                <div class="">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75006 0C4.36528 0 5.72205e-05 4.36522 5.72205e-05 9.75C5.72205e-05 15.1348 4.36528 19.5 9.75006 19.5C12.1727 19.5 14.3867 18.6138 16.0919 17.1514L20.2198 21.2803C20.5127 21.5732 20.9874 21.5732 21.2803 21.2803C21.5732 20.9874 21.5732 20.5126 21.2803 20.2197L17.1524 16.0908C18.6143 14.3858 19.5001 12.1721 19.5001 9.75C19.5001 4.36522 15.1348 0 9.75006 0ZM9.75006 1.5C14.3064 1.5 18.0001 5.19365 18.0001 9.75C18.0001 14.3063 14.3064 18 9.75006 18C5.19371 18 1.50006 14.3063 1.50006 9.75C1.50006 5.19365 5.19371 1.5 9.75006 1.5Z" fill="white"/>
+                    </svg>
+                </div>
+                {% endif %}
+
+                 <div class="account-area">
+                    <button type="button" onclick="handleLoginAction()" id="login-btn">
+                        <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.94445 13.5869C7.49845 11.4709 12.0028 11.4707 15.5568 13.5869C15.6729 13.6561 15.8162 13.7375 15.9786 13.8291C16.6914 14.2312 17.7698 14.839 18.5079 15.5615C18.9696 16.0134 19.4077 16.6093 19.4874 17.3389C19.5722 18.1147 19.2337 18.8424 18.5548 19.4893C17.3834 20.6053 15.9776 21.5 14.1593 21.5H5.34093C3.52273 21.4999 2.11683 20.6053 0.945426 19.4893C0.266619 18.8424 -0.0719361 18.1146 0.0128091 17.3389C0.0925548 16.6093 0.53161 16.0134 0.993278 15.5615C1.73144 14.8391 2.80888 14.2312 3.5216 13.8291C3.68421 13.7374 3.82817 13.6562 3.94445 13.5869ZM14.7892 14.876C11.7081 13.0414 7.79315 13.0415 4.71203 14.876C4.54418 14.9759 4.35975 15.0802 4.16711 15.1895C3.4545 15.5937 2.6222 16.066 2.04211 16.6338C1.68204 16.9863 1.52858 17.2773 1.50402 17.502C1.48458 17.6803 1.53013 17.9742 1.98058 18.4033C3.01636 19.3901 4.0686 19.9999 5.34093 20H14.1593C15.4317 20 16.4848 19.3902 17.5206 18.4033C17.9708 17.9743 18.0157 17.6803 17.9962 17.502C17.9716 17.2773 17.8182 16.9863 17.4581 16.6338C16.878 16.066 16.0457 15.5937 15.3331 15.1895C15.1406 15.0802 14.9569 14.9759 14.7892 14.876ZM9.75011 0C12.6496 0 15.0001 2.3505 15.0001 5.25C15.0001 8.14949 12.6496 10.5 9.75011 10.5C6.85062 10.5 4.50011 8.14949 4.50011 5.25C4.50011 2.3505 6.85062 0 9.75011 0ZM9.75011 1.5C7.67905 1.5 6.00011 3.17893 6.00011 5.25C6.00011 7.32107 7.67905 9 9.75011 9C11.8212 9 13.5001 7.32107 13.5001 5.25C13.5001 3.17893 11.8212 1.5 9.75011 1.5Z" fill="white"/>
+                        </svg>
+                    </button>
+
+                    <button type="button" onclick="window.location.href='{{ url_for("profile") }}'" id="hello-btn" style="display: none;">
+                       <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.94445 13.5869C7.49845 11.4709 12.0028 11.4707 15.5568 13.5869C15.6729 13.6561 15.8162 13.7375 15.9786 13.8291C16.6914 14.2312 17.7698 14.839 18.5079 15.5615C18.9696 16.0134 19.4077 16.6093 19.4874 17.3389C19.5722 18.1147 19.2337 18.8424 18.5548 19.4893C17.3834 20.6053 15.9776 21.5 14.1593 21.5H5.34093C3.52273 21.4999 2.11683 20.6053 0.945426 19.4893C0.266619 18.8424 -0.0719361 18.1146 0.0128091 17.3389C0.0925548 16.6093 0.53161 16.0134 0.993278 15.5615C1.73144 14.8391 2.80888 14.2312 3.5216 13.8291C3.68421 13.7374 3.82817 13.6562 3.94445 13.5869ZM14.7892 14.876C11.7081 13.0414 7.79315 13.0415 4.71203 14.876C4.54418 14.9759 4.35975 15.0802 4.16711 15.1895C3.4545 15.5937 2.6222 16.066 2.04211 16.6338C1.68204 16.9863 1.52858 17.2773 1.50402 17.502C1.48458 17.6803 1.53013 17.9742 1.98058 18.4033C3.01636 19.3901 4.0686 19.9999 5.34093 20H14.1593C15.4317 20 16.4848 19.3902 17.5206 18.4033C17.9708 17.9743 18.0157 17.6803 17.9962 17.502C17.9716 17.2773 17.8182 16.9863 17.4581 16.6338C16.878 16.066 16.0457 15.5937 15.3331 15.1895C15.1406 15.0802 14.9569 14.9759 14.7892 14.876ZM9.75011 0C12.6496 0 15.0001 2.3505 15.0001 5.25C15.0001 8.14949 12.6496 10.5 9.75011 10.5C6.85062 10.5 4.50011 8.14949 4.50011 5.25C4.50011 2.3505 6.85062 0 9.75011 0ZM9.75011 1.5C7.67905 1.5 6.00011 3.17893 6.00011 5.25C6.00011 7.32107 7.67905 9 9.75011 9C11.8212 9 13.5001 7.32107 13.5001 5.25C13.5001 3.17893 11.8212 1.5 9.75011 1.5Z" fill="white"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div style="position: relative">
+                    <a class="a-shopping-cart" href="{{ url_for('cart_page') }}" style="color: inherit">
+                        <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.2503 0C13.4481 0.000135126 16.0829 2.40203 16.4535 5.5L17.7142 5.5C18.2063 5.49994 18.6551 5.50028 19.014 5.55273C19.4087 5.61043 19.8297 5.74836 20.1429 6.13086C20.4525 6.5091 20.5098 6.94732 20.4984 7.3457C20.4878 7.71384 20.4126 8.16451 20.3285 8.66602L19.1087 15.9414C18.9161 17.0906 18.7607 18.0203 18.5462 18.7471C18.3234 19.5023 18.0132 20.1281 17.4554 20.6113C16.8954 21.0965 16.236 21.3067 15.4662 21.4053C14.7299 21.4995 13.8098 21.5 12.6791 21.5H7.82164C6.69049 21.5 5.77004 21.4996 5.03355 21.4053C4.26375 21.3067 3.60429 21.0965 3.04429 20.6113C2.48672 20.1282 2.17722 19.5021 1.95445 18.7471C1.74003 18.0203 1.58361 17.0906 1.39097 15.9414L0.180036 8.71387C0.177352 8.69786 0.173915 8.68192 0.171247 8.66602C0.0871215 8.16449 0.0119039 7.71385 0.00132488 7.3457C-0.0101211 6.94723 0.0479813 6.50917 0.35777 6.13086C0.670974 5.74844 1.09111 5.61045 1.4857 5.55273C1.84465 5.50026 2.2933 5.49994 2.7855 5.5L4.04625 5.5C4.41685 2.40192 7.05245 0 10.2503 0ZM2.83531 7C2.27643 7 1.93968 7.00146 1.7025 7.03613C1.59356 7.05208 1.54215 7.07066 1.52183 7.08008C1.52013 7.08087 1.5191 7.08241 1.51793 7.08301C1.51704 7.08551 1.51556 7.08958 1.51402 7.0957C1.50684 7.12428 1.49698 7.18561 1.50035 7.30273C1.5076 7.5546 1.56487 7.90114 1.65953 8.46582L2.86265 15.6455C3.06518 16.8536 3.2073 17.693 3.39293 18.3223C3.57316 18.9332 3.77011 19.2552 4.02672 19.4775C4.28109 19.6979 4.61627 19.8402 5.22398 19.918C5.85404 19.9986 6.67803 20 7.87144 20H12.6283C13.8217 20 14.6457 19.9986 15.2757 19.918C15.8833 19.8402 16.2186 19.6978 16.473 19.4775C16.7297 19.2552 16.9265 18.9333 17.1068 18.3223C17.2924 17.693 17.4345 16.8537 17.6371 15.6455L18.8412 8.46582C18.9358 7.90116 18.9921 7.55459 18.9994 7.30273C19.0027 7.18561 18.9939 7.12428 18.9867 7.0957C18.9852 7.08966 18.9837 7.08554 18.9828 7.08301C18.9816 7.0824 18.9796 7.08088 18.9779 7.08008C18.9574 7.07061 18.9059 7.05202 18.7972 7.03613C18.56 7.00146 18.2234 7 17.6644 7L2.83531 7ZM10.2503 1.5C7.88225 1.5 5.91957 3.23308 5.55992 5.5L14.9408 5.5C14.5812 3.23313 12.6184 1.50013 10.2503 1.5Z" fill="white"/>
+                        </svg>
+
+                        <span class="cart-badge d-none"></span>
+                    </a>
+
+                    {% if store.settings.checkout.gift_order_settings.is_gift_order_customer_motivation_enabled == '1' %}
+                      <div id="tooltip" class="d-none popover" role="tooltip">
+                        <div class="arrow"></div>
+                        <div class="gift-popover-body">
+                          <img src="{{ 'gift-popover-icon.svg' | asset_url }}" width="24" height="24" />
+                          <p class="h6 my-2">
+                            {{ _('Send as gift') }}
+                          </p>
+                          <button class="btn round primary d-block">
+                            <a href="/cart" class="no-border d-block">
+                              {{ _('continue') }}
+                            </a>
+                          </button>
+                        </div>
+                      </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openSlidingMenu() {
+        if (window.slidingMenu && window.slidingMenu.open) {
+            window.slidingMenu.open();
+
+        } else if (typeof SlideMenu !== 'undefined') {
+            var element = document.getElementById('sliding-menu');
+            if (element) {
+                window.slidingMenu = new SlideMenu(element, {
+                    position: (window.appDirection === 'ltr') ? 'left' : 'right',
+                    showBackLink: true,
+                    backLinkBefore: (window.appDirection === 'ltr') ? '<span class="icon-arrow_left slide-menu-arrow slide-menu-arrow-back"></span>' : '<span class="icon-arrow_right slide-menu-arrow slide-menu-arrow-back"></span>',
+                    submenuLinkAfter: (window.appDirection === 'ltr') ? '<span class="icon-arrow_right slide-menu-arrow"></span>' : '<span class="icon-arrow_left slide-menu-arrow"></span>'
+                });
+
+                if (typeof $ !== 'undefined') {
+                    element.addEventListener('sm.open', () => $('body').addClass('sidenav-open'));
+                    element.addEventListener('sm.close', () => $('body').removeClass('sidenav-open'));
+                }
+
+                window.slidingMenu.open();
+            }
+        }
+    }
+
+    document.addEventListener('zid-customer-fetched', function (event) {
+        const customer = event.detail.customer;
+        if (customer && customer.name) {
+            document.getElementById('hello-btn').style.display = 'flex';
+            document.getElementById('login-btn').style.display = 'none';
+        }
+    });
+</script>
