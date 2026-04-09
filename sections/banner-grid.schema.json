@@ -1,0 +1,70 @@
+{
+  "section_id": "uuid",
+  "template": "sections/banner-grid.jinja",
+  "icon": "fal fa-th-large",
+  "name": {
+    "ar": "شبكة البنرات",
+    "en": "Banner Grid"
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_section",
+      "label": {
+        "ar": "إخفاء القسم",
+        "en": "Hide section"
+      }
+    },
+    {
+      "type": "list",
+      "id": "banners",
+      "label": {
+        "ar": "البنرات",
+        "en": "Banners"
+      },
+      "max_items": 3,
+      "settings": [
+        {
+          "type": "image",
+          "id": "image",
+          "label": { "ar": "الصورة", "en": "Image" }
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": { "ar": "الفيديو", "en": "Video" }
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": { "ar": "العنوان", "en": "Title" }
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": { "ar": "العنوان الفرعي", "en": "Subtitle" }
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": { "ar": "نص الزر", "en": "Button Text" }
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": { "ar": "رابط التحويل", "en": "Redirect Link" }
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": { "ar": "لون العنوان", "en": "Title Color" }
+        },
+        {
+          "type": "color",
+          "id": "subtitle_color",
+          "label": { "ar": "لون العنوان الفرعي", "en": "Subtitle Color" }
+        }
+      ]
+    }
+  ]
+}

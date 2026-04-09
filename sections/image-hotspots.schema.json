@@ -1,0 +1,75 @@
+{
+  "section_id": "uuid",
+  "template": "sections/image-hotspots.jinja",
+  "icon": "fal fa-bullseye",
+  "name": {
+    "ar": "معرض الصور ذو النقاط التفاعلية",
+    "en": "Hotspot Image Gallery"
+  },
+  "settings": [
+    {
+      "id": "show_helper",
+      "type": "checkbox",
+      "label": { "ar": "تفعيل مساعد الإحداثيات", "en": "Enable Coordinate Helper" },
+      "default": false
+    },
+    {
+      "id": "primary_color",
+      "type": "color",
+      "label": { "ar": "اللون الأساسي", "en": "Primary color" },
+      "default": "#333333"
+    },
+    {
+      "id": "hotspot_color",
+      "type": "color",
+      "label": { "ar": "لون النقطة", "en": "Hotspot color" },
+      "default": "#ffffff"
+    },
+    {
+      "id": "trigger_type",
+      "type": "select",
+      "label": { "ar": "طريقة عرض البطاقة", "en": "Card trigger type" },
+      "options": [
+        { "value": "click", "label": "On click" },
+        { "value": "hover", "label": "On hover" }
+      ],
+      "default": "click"
+    },
+    {
+      "type": "list",
+      "id": "gallery",
+      "label": { "ar": "معرض الصور", "en": "Image Gallery" },
+      "settings": [
+        {
+          "type": "image",
+          "id": "image",
+          "label": { "ar": "الصورة", "en": "Image" }
+        },
+        {
+          "type": "list",
+          "id": "hotspots",
+          "label": { "ar": "النقاط التفاعلية لهذه الصورة", "en": "Hotspots for this image" },
+          "settings": [
+            {
+              "type": "product",
+              "id": "product",
+              "label": { "ar": "المنتج", "en": "Product" }
+            },
+            {
+              "type": "text",
+              "id": "x",
+              "label": { "ar": "موضع أفقي (%)", "en": "Horizontal pos (%)" },
+              "default": "50"
+            },
+            {
+              "type": "text",
+              "id": "y",
+              "label": { "ar": "موضع عمودي (%)", "en": "Vertical pos (%)" },
+              "default": "50"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "section_id": "uuid",
+  "template": "sections/simple-hero-banner.jinja",
+  "icon": "fal fa-image",
+  "name": {
+    "ar": "فيديو بانر",
+    "en": "Video Banner"
+  },
+  "settings": [
+    {
+      "type": "video",
+      "id": "bg_video",
+      "label": {
+        "ar": "فيديو الخلفية",
+        "en": "Background Video"
+      }
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "ar": "العنوان",
+        "en": "Title"
+      }
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": {
+        "ar": "قوة التعتيم",
+        "en": "Overlay Opacity"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": {
+        "ar": "لون النص",
+        "en": "Text Color"
+      },
+      "default": "#ffffff"
+    },
+    {
+      "type": "number",
+      "id": "banner_height",
+      "label": {
+        "ar": "ارتفاع البنر (px)",
+        "en": "Banner Height (px)"
+      },
+      "default": 450
+    }
+  ]
+}

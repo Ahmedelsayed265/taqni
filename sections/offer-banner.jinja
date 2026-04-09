@@ -1,0 +1,63 @@
+<section class="offer-banner-section" id="{{ sectionId }}" section-id="{{ sectionId }}"
+    style="margin-top: 32px; position: relative;">
+    <div class="offer-banner-main">
+        <picture>
+            {% if settings.bg_image_desktop %}
+            <source media="(min-width: 992px)" srcset="{{ settings.bg_image_desktop }}">
+            {% endif %}
+            {% if settings.bg_image_mobile %}
+            <source media="(max-width: 991px)" srcset="{{ settings.bg_image_mobile }}">
+            {% elif settings.bg_image_desktop %}
+            <source media="(max-width: 991px)" srcset="{{ settings.bg_image_desktop }}">
+            {% endif %}
+            <img src="{{ settings.bg_image_desktop or settings.bg_image_mobile }}" alt="{{ settings.title }}"
+                class="banner-img" loading="lazy">
+        </picture>
+
+        <div class="container-content p-0"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+            {% if settings.marquee_items and settings.marquee_items|length > 0 %}
+            <div class="offer-marquee-bar" style="color: {{ settings.marquee_text_color | default('#fff') }};">
+                <div class="marquee-inner">
+                    <div class="marquee-content marquee-anim"
+                        style="animation-duration: {{ settings.marquee_speed | default(30) }}s;">
+                        {% for item in settings.marquee_items %}
+                        <span class="marquee-item-text">{{ item.text }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="marquee-content marquee-anim"
+                        style="animation-duration: {{ settings.marquee_speed | default(30) }}s;" aria-hidden="true">
+                        {% for item in settings.marquee_items %}
+                        <span class="marquee-item-text">{{ item.text }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+
+            <div class="container">
+                <div class="content-flex d-flex align-items-end justify-content-between">
+                    <div class="banner-text">
+                        <h2 style="color: {{ settings.text_color | default('#fff') }}">{{ settings.title }}</h2>
+                        <p style="color: {{ settings.text_color | default('#fff') }}">{{ settings.subtitle }}</p>
+                    </div>
+
+                    {% if settings.btn_text %}
+                    <div class="banner-action">
+                        <a href="{{ settings.btn_url | default('#') }}" class="banner-btn">
+                            {{ settings.btn_text }}
+
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M7.70833 0C8.28363 0 8.75 0.46637 8.75 1.04167V6.66667H14.375C14.9503 6.66667 15.4167 7.13304 15.4167 7.70833C15.4167 8.28363 14.9503 8.75 14.375 8.75H8.75V14.375C8.75 14.9503 8.28363 15.4167 7.70833 15.4167C7.13304 15.4167 6.66667 14.9503 6.66667 14.375V8.75H1.04167C0.46637 8.75 0 8.28363 0 7.70833C0 7.13304 0.46637 6.66667 1.04167 6.66667H6.66667V1.04167C6.66667 0.46637 7.13304 0 7.70833 0Z" />
+                            </svg>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -4,7 +4,7 @@
   {% set multiple_countries = store.countries | length > 1 %}
   {% set multiple_languages = store.languages | length > 1 %}
 
-  <div {% if settings.header_sticky %} id="fixed-header" {% endif %} style="z-index: 3">
+  <div {% if settings.header_sticky %} id="fixed-header" {% endif %} style="z-index: 99999">
     {% set header_settings=settings %}{% include 'components/header-search-header.jinja' %}
   </div>
 

@@ -1,0 +1,90 @@
+{% if settings.hide_section != true %}
+<section class="banner-grid-section s_block" id="{{ sectionId }}" section-id="{{ sectionId }}">
+    <div class="container">
+        <div class="banner-grid-wrapper">
+            {# Banner 1 (Large - Left) #}
+            {% set banner1 = settings.banners[0] if settings.banners|length > 0 else none %}
+            {% if banner1 %}
+            <div class="banner-item left-banner">
+                <a href="{{ banner1.btn_link | default('#') }}">
+                    <div class="banner-media">
+                        {% if banner1.video %}
+                            <video autoplay muted loop playsinline class="banner-video">
+                                <source src="{{ banner1.video }}" type="video/mp4">
+                            </video>
+                        {% elif banner1.image %}
+                            <img src="{{ banner1.image }}" alt="Large Banner" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <div class="banner-content">
+                        <h2 style="color: {{ banner1.title_color | default('#fff') }}">{{ banner1.title }}</h2>
+                        <p style="color: {{ banner1.subtitle_color | default('#fff') }}">{{ banner1.subtitle }}</p>
+                        {% if banner1.btn_text %}
+                        <span class="banner-btn">{{ banner1.btn_text }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+
+            {# Right Side Banners Container #}
+            {% if (settings.banners|length > 1) %}
+            <div class="right-banners">
+                {# Banner 2 (Top Right) #}
+                {% set banner2 = settings.banners[1] if settings.banners|length > 1 else none %}
+                {% if banner2 %}
+                <div class="banner-item top-right-banner">
+                    <a href="{{ banner2.btn_link | default('#') }}">
+                        <div class="banner-media">
+                            {% if banner2.video %}
+                                <video autoplay muted loop playsinline class="banner-video">
+                                    <source src="{{ banner2.video }}" type="video/mp4">
+                                </video>
+                            {% elif banner2.image %}
+                                <img src="{{ banner2.image }}" alt="Top Right Banner" loading="lazy">
+                            {% endif %}
+                        </div>
+                        <div class="banner-content">
+                            <h3 style="color: {{ banner2.title_color | default('#fff') }}">{{ banner2.title }}</h3>
+                            <p style="color: {{ banner2.subtitle_color | default('#fff') }}">{{ banner2.subtitle }}</p>
+                            
+                            {% if banner2.btn_text %}
+                            <span class="banner-btn">{{ banner2.btn_text }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+
+                {# Banner 3 (Bottom Right) #}
+                {% set banner3 = settings.banners[2] if settings.banners|length > 2 else none %}
+                {% if banner3 %}
+                <div class="banner-item bottom-right-banner">
+                    <a href="{{ banner3.btn_link | default('#') }}">
+                        <div class="banner-media">
+                            {% if banner3.video %}
+                                <video autoplay muted loop playsinline class="banner-video">
+                                    <source src="{{ banner3.video }}" type="video/mp4">
+                                </video>
+                            {% elif banner3.image %}
+                                <img src="{{ banner3.image }}" alt="Bottom Right Banner" loading="lazy">
+                            {% endif %}
+                        </div>
+                        <div class="banner-content">
+                            <h3 style="color: {{ banner3.title_color | default('#fff') }}">{{ banner3.title }}</h3>
+
+                            <p style="color: {{ banner3.subtitle_color | default('#fff') }}">{{ banner3.subtitle }}</p>
+
+                            {% if banner3.btn_text %}
+                            <span class="banner-btn">{{ banner3.btn_text }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}

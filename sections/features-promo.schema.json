@@ -1,0 +1,148 @@
+{
+  "section_id": "uuid",
+  "template": "sections/features-promo.jinja",
+  "icon": "fal fa-palette",
+  "name": {
+    "ar": "قسم المميزات والصورة",
+    "en": "Features & Image Promo"
+  },
+  "settings": [
+    {
+      "type": "image",
+      "id": "image",
+      "label": {
+        "ar": "الصورة",
+        "en": "Image"
+      }
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "ar": "العنوان",
+        "en": "Title"
+      }
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": {
+        "ar": "الوصف",
+        "en": "Description"
+      }
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": {
+        "ar": "نص الزر",
+        "en": "Button Text"
+      }
+    },
+    {
+      "type": "url",
+      "id": "btn_url",
+      "label": {
+        "ar": "رابط الزر",
+        "en": "Button URL"
+      }
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": {
+        "ar": "موضع الصورة",
+        "en": "Image Position"
+      },
+      "options": [
+        {
+          "value": "left",
+          "label": {
+            "ar": "يسار",
+            "en": "Left"
+          }
+        },
+        {
+          "value": "right",
+          "label": {
+            "ar": "يمين",
+            "en": "Right"
+          }
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": {
+        "ar": "لون خلفية السكشن",
+        "en": "Section Background Color"
+      },
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": {
+        "ar": "لون العنوان",
+        "en": "Title Color"
+      },
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": {
+        "ar": "لون الوصف",
+        "en": "Description Color"
+      },
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": {
+        "ar": "لون خلفية الزر",
+        "en": "Button Background Color"
+      },
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": {
+        "ar": "لون نص الزر",
+        "en": "Button Text Color"
+      },
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "btn_border_color",
+      "label": {
+        "ar": "لون حدود الزر",
+        "en": "Button Border Color"
+      },
+      "default": "#dddddd"
+    },
+    {
+      "type": "color",
+      "id": "btn_hover_bg_color",
+      "label": {
+        "ar": "لون خلفية الزر عند التمرير",
+        "en": "Button Hover Background Color"
+      },
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_hover_text_color",
+      "label": {
+        "ar": "لون نص الزر عند التمرير",
+        "en": "Button Hover Text Color"
+      },
+      "default": "#ffffff"
+    }
+  ]
+}

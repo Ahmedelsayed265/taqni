@@ -61,8 +61,60 @@
       "id": "links_2",
       "icon": "font_awesome",
       "name": {
-        "ar": "روابط مهمة",
-        "en": "Links"
+        "ar": "روابط مهمة 2",
+        "en": "Links 2"
+      },
+      "settings": [
+        {
+          "id": "hide",
+          "type": "checkbox",
+          "label": {
+            "ar": "إخفاء",
+            "en": "Hide"
+          }
+        },
+        {
+          "id": "links",
+          "type": "list",
+          "label": {
+            "ar": "الروابط",
+            "en": "Links"
+          },
+          "settings": [
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "Link"
+              }
+            },
+            {
+              "id": "title",
+              "type": "text",
+              "label": {
+                "ar": "العنوان",
+                "en": "text"
+              }
+            }
+          ]
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "label": {
+            "ar": "العنوان",
+            "en": "Title"
+          }
+        }
+      ]
+    },
+    {
+      "id": "links_3",
+      "icon": "font_awesome",
+      "name": {
+        "ar": "روابط مهمة 3",
+        "en": "Links 3"
       },
       "settings": [
         {
@@ -132,41 +184,31 @@
             "ar": "العنوان",
             "en": "Title"
           }
-        }
-      ]
-    },
-    {
-      "id": "social_media",
-      "icon": "font_awesome",
-      "name": {
-        "ar": "وسائل التواصل",
-        "en": "Business location"
-      },
-      "settings": [
+        },
         {
-          "id": "title",
-          "type": "text",
+          "id": "logo",
+          "type": "image",
           "label": {
-            "ar": "العنوان",
-            "en": "Title"
+            "ar": "اللوجو الخاص بالفوتر",
+            "en": "Footer Logo"
           }
         }
       ]
     },
     {
-      "id": "business_location",
+      "id": "featured_image",
       "icon": "font_awesome",
       "name": {
-        "ar": "الموقع الجغرافي",
-        "en": "Business location"
+        "ar": "الصورة المميزة",
+        "en": "Featured Image"
       },
       "settings": [
         {
-          "id": "title",
-          "type": "text",
+          "id": "image",
+          "type": "image",
           "label": {
-            "ar": "العنوان",
-            "en": "Title"
+            "ar": "الصورة",
+            "en": "Image"
           }
         }
       ]

@@ -1,0 +1,126 @@
+<style>
+    :root {
+        --banner-text-color: {{ settings.text_color | default('#ffffff') }};
+        --banner-overlay: rgba(0, 0, 0, {{ (settings.overlay_opacity | default(40)) / 100 }});
+    }
+
+    .hero-banner-promo {
+        margin-top: 32px;
+        position: relative;
+        width: 100%;
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        background-color: #f0f0f0;
+    }
+
+    .hero-banner-promo__bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+    }
+
+    .hero-banner-promo__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--banner-overlay);
+        z-index: 2;
+    }
+
+    .hero-banner-promo__content-wrap {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+    }
+
+    .hero-banner-promo__content {
+        max-width: 600px;
+    }
+
+    .hero-banner-promo__content.text-center { margin: 0 auto; text-align: center; }
+    .hero-banner-promo__content.text-left { margin-right: auto; text-align: left; }
+    .hero-banner-promo__content.text-right { margin-left: auto; text-align: right; }
+
+    .hero-banner-promo__title {
+        font-size: clamp(2rem, 5vw, 3.8rem);
+        font-weight: 600;
+        color: var(--banner-text-color);
+        margin-bottom: 20px;
+        line-height: 1.1;
+    }
+
+    .hero-banner-promo__subtitle {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        color: var(--banner-text-color);
+        margin-bottom: 35px;
+        opacity: 0.95;
+    }
+
+    .hero-banner-promo__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        color: #000000;
+        padding: 14px 28px;
+        border-radius: 100px;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-banner-promo__btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        background: #f8f8f8;
+    }
+
+    .hero-banner-promo__btn-icon {
+        font-size: 1.2rem;
+        line-height: 0;
+    }
+
+    @media (max-width: 768px) {
+        .hero-banner-promo {
+            min-height: 400px;
+        }
+    }
+</style>
+
+<section class="hero-banner-promo s_block" id="{{ sectionId }}" section-id="{{ sectionId }}">
+    {% if settings.bg_image %}
+        <img src="{{ settings.bg_image }}" class="hero-banner-promo__bg" alt="{{ settings.title }}">
+    {% else %}
+        <img src="https://picsum.photos/seed/hero/1920/800" class="hero-banner-promo__bg" alt="Placeholder">
+    {% endif %}
+    
+    <div class="hero-banner-promo__overlay"></div>
+
+    <div class="container hero-banner-promo__content-wrap">
+        <div class="hero-banner-promo__content text-{{ settings.text_align | default('left') }}">
+            {% if settings.title %}
+                <h2 class="hero-banner-promo__title">{{ settings.title }}</h2>
+            {% endif %}
+            
+            {% if settings.subtitle %}
+                <p class="hero-banner-promo__subtitle">{{ settings.subtitle }}</p>
+            {% endif %}
+
+            {% if settings.btn_text %}
+                <a href="{{ settings.btn_url | default('#') }}" class="hero-banner-promo__btn">
+                    <span>{{ settings.btn_text }}</span>
+                    <span class="hero-banner-promo__btn-icon">+</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>

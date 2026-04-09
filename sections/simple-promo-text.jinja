@@ -1,0 +1,53 @@
+<section class="simple-promo-text s_block promo-{{ sectionId }}" id="{{ sectionId }}" 
+    style="background-color: {{ settings.bg_color | default('#f4f4f4') }}; 
+           color: {{ settings.text_color | default('#000') }};
+           padding: 100px 20px;">
+    
+    <style>
+        .promo-{{ sectionId }} .promo-text-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .promo-{{ sectionId }} .promo-title {
+            font-size: {{ settings.title_size | default(48) }}px;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .promo-{{ sectionId }} .promo-description {
+            font-size: {{ settings.desc_size | default(18) }}px;
+            line-height: 1.6;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .promo-{{ sectionId }} {
+                padding: 60px 20px;
+            }
+            .promo-{{ sectionId }} .promo-title {
+                font-size: clamp(32px, 8vw, {{ settings.title_size | default(48) }}px);
+            }
+            .promo-{{ sectionId }} .promo-description {
+                font-size: clamp(14px, 4vw, {{ settings.desc_size | default(18) }}px);
+            }
+        }
+    </style>
+
+    <div class="container">
+        <div class="promo-text-inner">
+            {% if settings.title %}
+                <h2 class="promo-title">{{ settings.title }}</h2>
+            {% endif %}
+            
+            {% if settings.description %}
+                <p class="promo-description">{{ settings.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+</section>

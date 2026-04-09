@@ -1,0 +1,67 @@
+{
+  "section_id": "uuid",
+  "template": "sections/offer-banner.jinja",
+  "icon": "fal fa-gift",
+  "name": {
+    "ar": "بنر عرض ترويجي",
+    "en": "Offer Banner"
+  },
+  "settings": [
+    {
+      "type": "list",
+      "id": "marquee_items",
+      "label": { "ar": "نصوص الشريط", "en": "Marquee Texts" },
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": { "ar": "النص", "en": "Text" }
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "marquee_text_color",
+      "label": { "ar": "لون نص الشريط", "en": "Marquee Text Color" }
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": { "ar": "سرعة الحركة (ثانية)", "en": "Marquee Speed (s)" },
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "image",
+      "id": "bg_image_desktop",
+      "label": { "ar": "صورة الخلفية", "en": "Background Image" }
+    },
+    {
+      "type": "image",
+      "id": "bg_image_mobile",
+      "label": { "ar": "صورة الخلفية", "en": "Background Image" }
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": { "ar": "العنوان الفرعي", "en": "Subtitle" }
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": { "ar": "نص الزر", "en": "Button Text" }
+    },
+    {
+      "type": "url",
+      "id": "btn_url",
+      "label": { "ar": "رابط الزر", "en": "Button Link" }
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": { "ar": "لون النصوص", "en": "Text Color" }
+    }
+  ]
+}

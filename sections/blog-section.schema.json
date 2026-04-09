@@ -1,0 +1,133 @@
+{
+  "section_id": "uuid",
+  "template": "sections/blog-section.jinja",
+  "icon": "fal fa-newspaper",
+  "name": {
+    "ar": "قسم المدونات المتميز",
+    "en": "Blog Section Premium"
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "ar": "العنوان",
+        "en": "Section Title"
+      },
+      "default": "Our Blogs"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": {
+        "ar": "رابط عرض الكل",
+        "en": "View All URL"
+      }
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": {
+        "ar": "نص عرض الكل",
+        "en": "View All Text"
+      },
+      "default": "View All"
+    },
+    {
+      "type": "list",
+      "id": "blogs",
+      "label": {
+        "ar": "المدونات",
+        "en": "Blogs"
+      },
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": {
+            "ar": "العنوان",
+            "en": "Title"
+          },
+          "default": "Blog"
+        },
+        {
+          "type": "image",
+          "id": "image",
+          "label": {
+            "ar": "الصورة",
+            "en": "Image"
+          }
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": {
+            "ar": "الرابط",
+            "en": "URL"
+          }
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": {
+            "ar": "الوصف",
+            "en": "Description"
+          }
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": {
+            "ar": "اسم المؤلف",
+            "en": "Author Name"
+          },
+          "default": "Abdullah"
+        },
+        {
+          "type": "image",
+          "id": "author_image",
+          "label": {
+            "ar": "صورة المؤلف",
+            "en": "Author Image"
+          }
+        },
+        {
+          "type": "text",
+          "id": "read_time",
+          "label": {
+            "ar": "وقت القراءة",
+            "en": "Read Time"
+          },
+          "default": "5 min read"
+        }
+      ]
+    },
+    {
+      "id": "slider_autoplay",
+      "type": "checkbox",
+      "label": {
+        "ar": "تشغيل تلقائي",
+        "en": "Autoplay"
+      },
+      "default": false
+    },
+    {
+      "id": "slider_show_arrows",
+      "type": "checkbox",
+      "label": {
+        "ar": "إظهار أسهم التنقل",
+        "en": "Show Arrows"
+      },
+      "default": true
+    },
+    {
+      "id": "slider_show_pagination",
+      "type": "checkbox",
+      "label": {
+        "ar": "إظهار نقاط الترقيم",
+        "en": "Show Pagination"
+      },
+      "default": true
+    }
+  ]
+}

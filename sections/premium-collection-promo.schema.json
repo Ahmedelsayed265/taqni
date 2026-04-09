@@ -1,0 +1,88 @@
+{
+  "section_id": "uuid",
+  "template": "sections/premium-collection-promo.jinja",
+  "icon": "fal fa-gem",
+  "name": {
+    "ar": "مجموعة مميزة - عرض",
+    "en": "Premium Collection - Promo"
+  },
+  "settings": [
+    {
+      "type": "list",
+      "id": "marquee_items",
+      "label": { "ar": "نصوص الشريط", "en": "Marquee Texts" },
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": { "ar": "النص", "en": "Text" }
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "marquee_text_color",
+      "label": { "ar": "لون نص الشريط", "en": "Marquee Text Color" },
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": { "ar": "سرعة الحركة (ثانية)", "en": "Marquee Speed (s)" },
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "list",
+      "id": "collection_items",
+      "label": { "ar": "الأصناف (بحد أقصى 2)", "en": "Items (Max 2)" },
+      "max": 2,
+      "settings": [
+        {
+          "type": "image",
+          "id": "main_image",
+          "label": {
+            "ar": "الصورة الرئيسية (ليف ستايل)",
+            "en": "Main Image (Lifestyle)"
+          }
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": { "ar": "المنتج المرتبط", "en": "Linked Product" }
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": { "ar": "العنوان الرئيسي", "en": "Main Title" },
+      "default": "Pure Sound Pure Power"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": { "ar": "الوصف", "en": "Description" }
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": { "ar": "لون الخلفية", "en": "Background Color" },
+      "default": "#0a0a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": { "ar": "لون النصوص", "en": "Text Color" },
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": { "ar": "اللون التمييزي (الأزرار)", "en": "Accent Color" },
+      "default": "#7c73e6"
+    }
+  ]
+}

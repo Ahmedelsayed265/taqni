@@ -1,0 +1,51 @@
+{
+  "section_id": "uuid",
+  "template": "sections/image-comparison.jinja",
+  "icon": "fal fa-columns",
+  "name": {
+    "ar": "مقارنة الصور (قبل وبعد)",
+    "en": "Image Comparison (Before/After)"
+  },
+  "settings": [
+    {
+      "type": "image",
+      "id": "before_image",
+      "label": { "ar": "الصورة (قبل)", "en": "Before Image" }
+    },
+    {
+      "type": "image",
+      "id": "after_image",
+      "label": { "ar": "الصورة (بعد)", "en": "After Image" }
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": { "ar": "نص (قبل)", "en": "Before Label" },
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": { "ar": "نص (بعد)", "en": "After Label" },
+      "default": "After"
+    },
+    {
+      "type": "color",
+      "id": "label_bg",
+      "label": { "ar": "خلفية التسمية", "en": "Label Background" },
+      "default": "#e6e1ff"
+    },
+    {
+      "type": "color",
+      "id": "label_text",
+      "label": { "ar": "لون نص التسمية", "en": "Label Text Color" },
+      "default": "#4b4488"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": { "ar": "لون المقبض", "en": "Handle Color" },
+      "default": "#ffffff"
+    }
+  ]
+}

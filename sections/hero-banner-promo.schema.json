@@ -1,0 +1,89 @@
+{
+  "section_id": "uuid",
+  "template": "sections/hero-banner-promo.jinja",
+  "icon": "fal fa-image",
+  "name": {
+    "ar": "بنر ترويجي (خلفية صورة)",
+    "en": "Promo Hero Banner (Image BG)"
+  },
+  "settings": [
+    {
+      "type": "image",
+      "id": "bg_image",
+      "label": {
+        "ar": "خلفية الصورة",
+        "en": "Background Image"
+      }
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": {
+        "ar": "قوة التعتيم",
+        "en": "Overlay Opacity"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "default": 40
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "ar": "العنوان",
+        "en": "Title"
+      },
+      "default": "Your favorite headphones"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": {
+        "ar": "العنوان الفرعي",
+        "en": "Subtitle"
+      },
+      "default": "with the lifestyle you've always dreamed of"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": {
+        "ar": "نص الزر",
+        "en": "Button Text"
+      },
+      "default": "Explore All Collections"
+    },
+    {
+      "type": "url",
+      "id": "btn_url",
+      "label": {
+        "ar": "رابط الزر",
+        "en": "Button URL"
+      }
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": {
+        "ar": "محاذاة النص",
+        "en": "Text Alignment"
+      },
+      "options": [
+        { "value": "left", "label": { "ar": "يسار", "en": "Left" } },
+        { "value": "center", "label": { "ar": "منتصف", "en": "Center" } },
+        { "value": "right", "label": { "ar": "يمين", "en": "Right" } }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": {
+        "ar": "لون النص",
+        "en": "Text Color"
+      },
+      "default": "#ffffff"
+    }
+  ]
+}

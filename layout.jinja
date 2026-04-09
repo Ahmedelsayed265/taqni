@@ -165,6 +165,64 @@
       {% if settings.colors_header_text_color %}--header-text-color-primary-bg: {{settings.colors_header_text_color}};{% endif %}
       {% if settings.colors_footer_background_color %}--footer-primary-color: {{settings.colors_footer_background_color}};{% endif %}
       {% if settings.colors_footer_text_color %}--footer-text-color-primary-bg: {{settings.colors_footer_text_color}};{% endif %}
+
+      {# Product card control (layout.schema.json → product_card_control) #}
+      {% set _card_bg = safeget(settings, 'product_card_control_product_card_background_color') %}
+      {% if _card_bg %}
+        --product-card-bg: {{ _card_bg }};
+      {% endif %}
+
+      {% set _radius = safeget(settings, 'product_card_control_product_card_border_radius') %}
+      {% if _radius is not none %}
+        --product-card-radius: {{ _radius }}px;
+      {% endif %}
+
+      {# طول صورة المنتج (%) من schema → product_card_image_display (0-100), 100% = 280px #}
+      {% set _img_percent = (safeget(settings, 'product_card_control_product_card_image_display') | default(100) | int) %}
+      --outlit-card-img-height: {{ (_img_percent * 2.8) | round(0, 'floor') }}px;
+
+      {# شكل صورة المنتج من schema → product_card_button_style (cover | contain) #}
+      {% set _img_fit = safeget(settings, 'product_card_control_product_card_button_style') | default('contain') %}
+      --outlit-card-object-fit: {{ _img_fit }};
+
+      {% set _title_color = safeget(settings, 'product_card_control_product_card_title_color') %}
+      {% if _title_color %}
+        --product-card-title-color: {{ _title_color }};
+      {% endif %}
+
+      {% set _title_lines = safeget(settings, 'product_card_control_product_card_title_lines') %}
+      {% if _title_lines %}
+        --product-card-title-lines: {{ _title_lines }};
+      {% endif %}
+
+      {% set _price_color = safeget(settings, 'product_card_control_product_card_price_color') %}
+      {% if _price_color %}
+        --product-card-price-color: {{ _price_color }};
+      {% endif %}
+
+      {% set _compare_color = safeget(settings, 'product_card_control_product_card_compare_price_color') %}
+      {% if _compare_color %}
+        --product-card-compare-price-color: {{ _compare_color }};
+      {% endif %}
+
+      {% set _discount_color = safeget(settings, 'product_card_control_product_Discount_percentage_color') %}
+      {% if _discount_color %}
+        --product-card-discount-color: {{ _discount_color }};
+      {% endif %}
+
+      {% set _btn_color = safeget(settings, 'product_card_control_product_card_add_to_cart_button_color') %}
+      {% if _btn_color %}
+        --product-card-add-to-cart-bg: {{ _btn_color }};
+      {% endif %}
+
+      {% set _btn_icon_color = safeget(settings, 'product_card_control_product_card_add_to_cart_button_icon_color') %}
+      {% if _btn_icon_color %}
+        --product-card-add-to-cart-icon-color: {{ _btn_icon_color }};
+      {% endif %}
+
+      {% if settings.colors_background_color %}
+        --body-bg-color: {{ settings.colors_background_color }};
+      {% endif %}
     {% endif %}
   }
 </style>
@@ -177,7 +235,7 @@
     </div>
     
     <div class="main flex-grow-1 app-content"
-            {% if settings.colors_background_color %} style="background-color: {{ settings.colors_background_color }};" {% endif %}>
+            {% if settings.colors_background_color %} style="background-color: {{ settings.colors_background_color }}; padding-bottom: 32px;" {% endif %}>
         {% block main_content %}{% endblock %}
     </div>
     

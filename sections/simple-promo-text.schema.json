@@ -1,0 +1,53 @@
+{
+  "section_id": "uuid",
+  "template": "sections/simple-promo-text.jinja",
+  "icon": "fal fa-align-center",
+  "name": {
+    "ar": "نص ترويجي بسيط",
+    "en": "Simple Promo Text"
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": { "ar": "العنوان", "en": "Title" },
+      "default": "Next-Level Audio Performance"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": { "ar": "الوصف", "en": "Description" },
+      "default": "Engineered with advanced audio technology to deliver powerful performance, seamless connectivity, and lasting comfort"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": { "ar": "لون الخلفية", "en": "Background Color" },
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": { "ar": "لون النصوص", "en": "Text Color" },
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": { "ar": "حجم العنوان (px)", "en": "Title Size (px)" },
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "desc_size",
+      "label": { "ar": "حجم الوصف (px)", "en": "Description Size (px)" },
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "default": 18
+    }
+  ]
+}

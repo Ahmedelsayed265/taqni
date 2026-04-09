@@ -329,6 +329,126 @@
           ]
         }
       ]
+    },
+    {
+      "id": "product_card_control",
+      "icon": "fa fa-shopping-bag",
+      "name": {
+        "ar": "تحكم بوكس المنتج",
+        "en": "Product box Control"
+      },
+      "settings": [
+        {
+          "id": "product_card_background_color",
+          "type": "color",
+          "label": {
+            "ar": "لون خلفية الكارد",
+            "en": "Card background color"
+          },
+          "default": "#ffffff"
+        },
+        {
+          "id": "product_card_border_radius",
+          "type": "range",
+          "label": {
+            "ar": " حواف الكارد",
+            "en": "Card border radius"
+          },
+          "min": 0,
+          "max": 20,
+          "step": 2,
+          "default": 12
+        },
+        {
+          "id": "product_card_image_display",
+          "type": "range",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "label": {
+            "ar": "طول  صورة المنتج (%)",
+            "en": "Product image display (%)"
+          },
+          "default": 100
+        },
+        {
+          "id": "product_card_button_style",
+          "type": "select",
+          "label": {
+            "ar": "شكل صورة المنتج",
+            "en": "Product image style"
+          },
+          "options": [
+            { "value": "cover", "label": { "ar": "cover ", "en": "cover" } },
+            {
+              "value": "contain",
+              "label": { "ar": "contain", "en": "contain" }
+            }
+          ],
+          "default": "contain"
+        },
+        {
+          "id": "product_card_title_color",
+          "type": "color",
+          "label": {
+            "ar": "لون عنوان المنتج ",
+            "en": "Product title color"
+          }
+        },
+        {
+          "id": "product_card_title_lines",
+          "type": "range",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "label": {
+            "ar": "عدد أسطر عنوان المنتج",
+            "en": "Product title lines number"
+          },
+          "default": 2
+        },
+        {
+          "id": "product_card_price_color",
+          "type": "color",
+          "label": {
+            "ar": "لون السعر",
+            "en": "Price color"
+          }
+        },
+        {
+          "id": "product_card_compare_price_color",
+          "type": "color",
+          "label": {
+            "ar": "لون السعر قبل الخصم",
+            "en": "Compare price color"
+          }
+        },
+        {
+          "id": "product_Discount_percentage_color",
+          "type": "color",
+          "label": {
+            "ar": "لون نسبة الخصم",
+            "en": "Discount percentage color"
+          }
+        },
+        {
+          "id": "product_card_add_to_cart_button_color",
+          "type": "color",
+          "label": {
+            "ar": "لون زر أضف للسلة",
+            "en": "Add to cart button color"
+          },
+          "default": true
+        },
+        {
+          "id": "product_card_add_to_cart_button_icon_color",
+          "type": "color",
+          "label": {
+            "ar": "لون ايقونة زر أضف للسلة",
+            "en": "Add to cart button icon color"
+          }
+        }
+      ]
     }
   ]
 }

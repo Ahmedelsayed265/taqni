@@ -1,0 +1,63 @@
+<style>
+   :root {
+        --promo-bg: {{ settings.bg_color | default('#ffffff') }};
+        --promo-title: {{ settings.title_color | default('#000000') }};
+        --promo-desc: {{ settings.description_color | default('#333333') }};
+        --promo-btn-bg: {{ settings.btn_bg_color | default('#ffffff') }};
+        --promo-btn-text: {{ settings.btn_text_color | default('#111111') }};
+        --promo-btn-border: {{ settings.btn_border_color | default('#dddddd') }};
+        --promo-btn-hover-bg: {{ settings.btn_hover_bg_color | default('#000000') }};
+        --promo-btn-hover-text: {{ settings.btn_hover_text_color | default('#ffffff') }};
+    }
+
+    .features-promo-dynamic {
+        background-color: var(--promo-bg);
+    }
+
+    .features-promo-dynamic .features-promo__title {
+        color: var(--promo-title);
+    }
+
+    .features-promo-dynamic .features-promo__description {
+        color: var(--promo-desc);
+    }
+
+    .features-promo-dynamic .features-promo__btn {
+        background-color: var(--promo-btn-bg);
+        color: var(--promo-btn-text);
+        border-color: var(--promo-btn-border);
+    }
+
+    .features-promo-dynamic .features-promo__btn:hover {
+        background-color: var(--promo-btn-hover-bg);
+        color: var(--promo-btn-hover-text);
+        border-color: var(--promo-btn-hover-bg);
+    }
+</style>
+
+<section class="features-promo features-promo-dynamic s_block" id="{{ sectionId }}" section-id="{{ sectionId }}">
+    <div class="container">
+        <div class="row align-items-center {% if settings.image_position == 'right' %}flex-row-reverse{% endif %}">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="features-promo__image-wrap">
+                    {% if settings.image %}
+                        <img src="{{ settings.image }}" alt="{{ settings.title }}" class="features-promo__image">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="features-promo__content {% if settings.image_position == 'right' %}pe-lg-5{% else %}ps-lg-5{% endif %}">
+                    <h2 class="features-promo__title">{{ settings.title }}</h2>
+                    <div class="features-promo__description">
+                        {{ settings.description }}
+                    </div>
+                    {% if settings.btn_text %}
+                        <a href="{{ settings.btn_url }}" class="features-promo__btn">
+                            {{ settings.btn_text }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

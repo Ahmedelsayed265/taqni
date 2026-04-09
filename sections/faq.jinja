@@ -1,0 +1,108 @@
+<section class="faq-section s_block" id="{{ sectionId }}" section-id="{{ sectionId }}" style="
+    --faq-primary: {{ settings.color_primary }}; 
+    --faq-bg: {{ settings.color_bg }};
+    --faq-card-bg: {{ settings.color_tab_bg }};
+">
+    <div class="container container-content">
+        <div class="faq-header mb-5">
+            {% if settings.tag_text %}
+                <span class="faq-tag">{{ settings.tag_text }}</span>
+            {% endif %}
+            <h2 class="faq-title">{{ settings.title }}</h2>
+        </div>
+
+        <div class="faq-layout">
+            {# Sidebar / Tabs #}
+            <aside class="faq-sidebar">
+                {% for cat in settings.categories %}
+                <button class="faq-tab {% if loop.first %}active{% endif %}" data-category="cat-{{ loop.index }}">
+                    {% if cat.icon %}
+                        <img src="{{ cat.icon }}" alt="{{ cat.name }}">
+                    {% endif %}
+                    <span>{{ cat.name }}</span>
+                </button>
+                {% endfor %}
+            </aside>
+
+            {# Content / Accordion #}
+            <div class="faq-content">
+                {% for cat in settings.categories %}
+                <div class="faq-group {% if not loop.first %}d-none{% endif %}" id="cat-{{ loop.index }}">
+                    {% for item in cat.questions %}
+                        <div class="faq-item {% if loop.first %}active{% endif %}">
+                            <button class="faq-question">
+                                <span>{{ item.question }}</span>
+                                <i class="fal fa-plus"></i>
+                            </button>
+                            <div class="faq-answer" {% if loop.first %}style="max-height: 1000px;"{% endif %}>
+                                <div class="faq-answer-inner">
+                                    {{ item.answer }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('.faq-section');
+    if (!section) return;
+
+    const faqTabs = section.querySelectorAll('.faq-tab');
+    const faqGroups = section.querySelectorAll('.faq-group');
+    const faqQuestions = section.querySelectorAll('.faq-question');
+
+    // Tab Switching
+    faqTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-category');
+            
+            // Update tabs
+            faqTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // Update content with a small fade effect
+            faqGroups.forEach(group => {
+                if (group.id === targetId) {
+                    group.classList.remove('d-none');
+                    setTimeout(() => group.style.opacity = '1', 10);
+                } else {
+                    group.classList.add('d-none');
+                    group.style.opacity = '0';
+                }
+            });
+        });
+    });
+
+    // Accordion
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            const item = this.parentElement;
+            const answer = this.nextElementSibling;
+            const isActive = item.classList.contains('active');
+
+            // Close others in the same group
+            const currentGroup = item.closest('.faq-group');
+            currentGroup.querySelectorAll('.faq-item.active').forEach(activeItem => {
+                if (activeItem !== item) {
+                    activeItem.classList.remove('active');
+                    activeItem.querySelector('.faq-answer').style.maxHeight = null;
+                }
+            });
+
+            if (!isActive) {
+                item.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + "px";
+            } else {
+                item.classList.remove('active');
+                answer.style.maxHeight = null;
+            }
+        });
+    });
+});
+</script>

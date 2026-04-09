@@ -1,0 +1,115 @@
+<section class="category-slider s_block" id="{{ sectionId }}" section-id="{{ sectionId }}">
+    <div class="container">
+        <div class="blog-section__header d-flex justify-content-between align-items-center">
+            <div class="blog-section__title-wrap">
+                <h2 class="blog-section__title">{{ settings.title }}</h2>
+                {% if settings.subtitle %}
+                    <p class="blog-section__subtitle">{{ settings.subtitle }}</p>
+                {% endif %}
+                {% if settings.view_all_url %}
+                    <a href="{{ settings.view_all_url }}" class="blog-section__view-all">{{ settings.view_all_text }}</a>
+                {% endif %}
+            </div>
+
+            {% if settings.slider_show_arrows %}
+            <div class="blog-slider-nav d-none d-md-flex gap-2">
+                <div class="swiper-button-prev-blog custom-nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div class="swiper-button-next-blog custom-nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="swiper category-slider-swiper" 
+             data-autoplay="{{ settings.slider_autoplay }}"
+             data-arrows="{{ settings.slider_show_arrows }}"
+             data-pagination="{{ settings.slider_show_pagination }}">
+
+            <div class="swiper-wrapper">
+                {% for item in safeget(settings, 'items', []) %}
+                <div class="swiper-slide">
+                    <a href="{{ item.url }}" class="category-card">
+                        <div class="category-card__image-wrap">
+                            <img src="{{ item.image }}" alt="{{ item.title }}" class="category-card__image" loading="lazy">
+                        </div>
+                        <div class="category-card__content">
+                            <h3 class="category-card__title">{{ item.title }}</h3>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if settings.slider_show_pagination %}
+            <div class="swiper-pagination blog-swiper-pagination"></div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        function initCategorySlider() {
+            var section = document.querySelector('[section-id="{{ sectionId }}"]');
+            if (!section) return;
+
+            var swiperEl = section.querySelector('.category-slider-swiper');
+            if (!swiperEl) return;
+
+            var isAutoplay = swiperEl.getAttribute('data-autoplay') === 'true';
+            var isArrows = swiperEl.getAttribute('data-arrows') === 'true';
+            var isPagination = swiperEl.getAttribute('data-pagination') === 'true';
+
+            if (window.Swiper) {
+                new Swiper(swiperEl, {
+                    slidesPerView: 1.5,
+                    spaceBetween: 16,
+                    loop: false,
+                    rtl: document.documentElement.dir === 'rtl',
+                    autoplay: isAutoplay ? {
+                        delay: 4000,
+                        disableOnInteraction: false
+                    } : false,
+                    pagination: isPagination ? {
+                        el: section.querySelector('.blog-swiper-pagination'),
+                        clickable: true
+                    } : false,
+                    navigation: isArrows ? {
+                        nextEl: section.querySelector('.swiper-button-next-blog'),
+                        prevEl: section.querySelector('.swiper-button-prev-blog')
+                    } : false,
+                    breakpoints: {
+                        768: {
+                            slidesPerView: 3,
+                            spaceBetween: 20
+                        },
+                        1024: {
+                            slidesPerView: 5,
+                            spaceBetween: 24
+                        }
+                    }
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCategorySlider);
+        } else {
+            initCategorySlider();
+        }
+
+        // Handling editor events
+        document.addEventListener('shopify:section:load', function (event) {
+            if (event.detail.sectionId === '{{ sectionId }}') {
+                initCategorySlider();
+            }
+        });
+    })();
+</script>

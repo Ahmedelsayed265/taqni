@@ -1,95 +1,225 @@
 {% if product %}
-
-<div class="product-item position-relative {% if product.is_infinite == false and product.quantity <= 0 %}product-item-out-of-stock{% endif %}">
-    {% if store.settings.products.wishlist_enabled == true %}
-      <span class="add-to-wishlist" data-wishlist-id="{{ product.id }}">
-        <span zid-visible-customer="true">
-            <button zid-visible-wishlist="{{ product.id }}" class="icon-heart-mask filled" onclick="addToWishlist(this, '{{ product.id }}')"></button>
-            <button zid-hidden-wishlist="{{ product.id }}" class="icon-heart-mask" onclick="addToWishlist(this, '{{ product.id }}')"></button>
-        </span>
-        <a zid-visible-guest="true" class="icon-heart-mask" href="/auth/login?redirect_to={{ session.url.path }}" onclick="event.preventDefault(); handleLoginAction('', false); return false;"></a>
-        <img class="loader d-none" src="{{ 'spinner.gif' | asset_url }}" width="20" height="20"/>
-      </span>
-    {% endif %}
-    
-    <a href="/products/{{ product.slug }}" class="d-flex flex-column justify-content-start">
-
-        <div class="box-1-1">
-            <div class="content">
-                <div class="d-flex justify-content-center" style="width: 100%; height: 100%;">
-                   {% if product.badge %}
-                        {% set positionProductCard = true %}
-                        {% include 'vitrin:products/badge.jinja' %}
-                  {% endif %}
-                    <img id="product-card-img-{{ product.id }}"
-                            {% if product.images or product.videos %}
-                                    src="{{ product.main_image.image.small if product.main_image else '' }}"
-                             {% else %}
-                                 src="{{ image_url(('product-img.svg' | asset_url), w=235, q=100, f='auto') }}"
-                            {% endif %}
-                         alt="{{ product.name }}">
-                    <span class="product-card-bundle-offer" data-bundle-offer-product-id="{{ product.id }}"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-title" style="margin-top: 15px"><span>{{ product.name | safe }}</span></div>
-        {% if store.settings.products.reviews_enabled %}
-            <div class="product-card-rating-wrapper" style="height: 18px">
-                {% if product.rating %}
-                    {% set rating=product.rating.average %}{% include 'components/rating-stars.jinja' %}
-                    {% if product.rating.total_count > 0 %}<span class="product-card-rating-count">({{ product.rating.total_count }})</span>{% endif %}
-                {% endif %}
-            </div>
+<article
+  class="outlit-product-card product-item position-relative {% if product.is_infinite == false and product.quantity <= 0 %}outlit-product-card--out-of-stock{% endif %}"
+  itemscope itemtype="https://schema.org/Product">
+  {# --- Part 1: Image --- #}
+  <div class="outlit-product-card__img-wrap" style="height: var(--outlit-card-img-height, 280px);">
+    <a href="/products/{{ product.slug }}" class="outlit-product-card__img-link" aria-label="{{ product.name }}">
+      <div class="outlit-product-card__img-inner">
+        {% if product.images or product.videos %}
+        <img id="product-card-img-{{ product.id }}" class="outlit-product-card__img"
+          src="{{ product.main_image.image.small if product.main_image else '' }}" {% if product.main_image and
+          product.main_image.image %} width="{{ product.main_image.image.width | default(235) }}"
+          height="{{ product.main_image.image.height | default(235) }}" {% else %} width="235" height="235" {% endif %}
+          loading="lazy" decoding="async" alt="{{ product.name }}">
+        {% else %}
+        <img id="product-card-img-{{ product.id }}" class="outlit-product-card__img"
+          src="{{ image_url(('product-img.svg' | asset_url), w=235, q=100, f='auto') }}" width="235" height="235"
+          loading="lazy" decoding="async" alt="{{ product.name }}">
         {% endif %}
-        <div class="product-crd-spec">
-            {% if product.formatted_sale_price is not none %}
-                <div class="section-product-price">
-                    <div class="product-price theme-title-primary"><span>{{ product.formatted_sale_price }}</span></div>
-                    <div style="color: #494949"><span class="product-prev-price">{{ product.formatted_price }}</span>
-                        <span style="color:#f25f5f;">
-                        &nbsp;  &nbsp;{{ _("Discount") }}&nbsp;{{ product.discount_percentage }}%
-                        </span>
-                    </div>
-                </div>
-            {% else %}
-                <div class="product-price section-product-price theme-title-primary" ><span>{{ product.formatted_price }}</span></div>
-            {% endif %}
-
-            {% if product.is_infinite or product.quantity > 0 %}
-
-                {% if (product.has_options or product.has_fields) %}
-                    <small style="font-size: 1.1rem; white-space: break-spaces">{{ _("Available in several options") }}</small>
-                {% endif %}
-
-                {% if not product.is_taxable %}
-                    <small style="font-size: 1.1rem; white-space: break-spaces">{{ _("Tax free") }}</small>
-                {% endif %}
-
-            {% endif %}
-
-            {% if product.is_infinite == false and product.quantity <= 0 %}
-                <small style="font-size: 1.1rem; white-space: break-spaces">{{ _("This product is out of stock") }}</small>
-            {% endif %}
-
-        </div>
-
-        <div style="text-align: center">
-            {% if product.is_infinite == false and product.quantity <= 0 %}
-                <a href="/products/{{ product.slug }}" class="btn btn-primary btn-product-card-out-of-stock">
-                    <img src="{{ 'u_bell.svg' | asset_url }}" alt="" width="18" height="18" class="d-inline">
-                    <span>{{ _("Notify me when available") }}</span>
-                </a>
-            {% elif ( product.has_options or product.has_fields or product.product_class == 'dynamic_bundle' ) %}
-                <a class="btn btn-primary btn-product-card-select-variant" href="/products/{{ product.slug }}">{{ _("add to cart") }}</a>
-            {% else %}
-            <a class="btn btn-primary product-card-add-to-cart" onclick="event.preventDefault(); event.stopPropagation(); productCartAddToCart(this,'{{ product.id }}')">
-                <img style="display: inline" class="add-to-cart-progress d-none" src="{{ 'spinner.gif' | asset_url }}" width="20" height="20"/>
-                {{ _("add to cart") }}
-            </a>
-            {% endif %}
-        </div>
-
+      </div>
     </a>
-</div>
+
+    {% if product.badge %}
+    {% set positionProductCard = true %}
+    {% include 'vitrin:products/badge.jinja' %}
+    {% endif %}
+
+    {% if store.settings.products.wishlist_enabled == true %}
+    <div class="outlit-product-card__wishlist">
+      <span zid-visible-customer="true">
+        <button type="button" zid-visible-wishlist="{{ product.id }}"
+          class="outlit-product-card__wishlist-btn icon-heart-mask filled"
+          onclick="addToWishlist(this, '{{ product.id }}')" aria-label="{{ _('Add to favorites') }}"></button>
+        <button type="button" zid-hidden-wishlist="{{ product.id }}"
+          class="outlit-product-card__wishlist-btn icon-heart-mask" onclick="addToWishlist(this, '{{ product.id }}')"
+          aria-label="{{ _('Add to favorites') }}"></button>
+      </span>
+      <a zid-visible-guest="true" class="outlit-product-card__wishlist-btn icon-heart-mask"
+        href="/auth/login?redirect_to={{ session.url.path }}"
+        onclick="event.preventDefault(); handleLoginAction('', false); return false;"
+        aria-label="{{ _('Add to favorites') }}"></a>
+      <img class="loader d-none" src="{{ 'spinner.gif' | asset_url }}" width="20" height="20" alt="" aria-hidden="true">
+    </div>
+    {% endif %}
+
+    <span class="product-card-bundle-offer" data-bundle-offer-product-id="{{ product.id }}" aria-hidden="true"></span>
+
+
+    <div class="outlit-product-card__row outlit-product-card__row--rating-cart">
+      {% if store.settings.products.reviews_enabled %}
+      {% set _rating_obj = product.rating or {} %}
+      {% set _rating_count = _rating_obj.total_count or 0 %}
+      {% set _rating_avg = _rating_obj.average or 0 %}
+      <div class="outlit-product-card__rating">
+        <span class="product-card-rating-count">({{ _rating_count }})</span>
+        {% if _rating_count > 0 %}
+            {% set rating = _rating_avg %}
+            {% include 'components/rating-stars.jinja' %}
+        {% endif %}
+        <span class="outlit-product-card__rating-value">{{ '%.1f'|format(_rating_avg) }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# --- Part 2: Text --- #}
+  <div class="outlit-product-card__body">
+
+    {% set _cats = product.categories or [] %}
+    {% if _cats|length > 0 %}
+    {% set last_cat = _cats[-1] %}
+    {% set cat_name = last_cat.name if last_cat.name is string else (safeget(last_cat.name, session.lang) or
+    safeget(last_cat.name, 'ar') or safeget(last_cat.name, 'en') or '') %}
+    {% if cat_name %}
+    <p class="outlit-product-card__category">
+      <a href="/categories/{{ last_cat.id }}/{{ last_cat.slug }}">{{ cat_name }}</a>
+    </p>
+    {% endif %}
+    {% elif product.category and product.category.name %}
+    <p class="outlit-product-card__category">{{ product.category.name }}</p>
+    {% endif %}
+
+    <h3 class="outlit-product-card__title">
+      <a href="/products/{{ product.slug }}">{{ product.name | safe }}</a>
+    </h3>
+
+    <div class="outlit-product-card__price-cart-row">
+      <div class="outlit-product-card__price-wrap">
+        {% if product.formatted_sale_price is not none %}
+        <div class="outlit-product-card__price-row">
+          <span class="outlit-product-card__price outlit-product-card__price--old">{{ product.formatted_price }}</span>
+          <span class="outlit-product-card__price outlit-product-card__price--current">{{ product.formatted_sale_price
+            }}</span>
+        </div>
+        {% else %}
+        <span class="outlit-product-card__price outlit-product-card__price--current">{{ product.formatted_price }}</span>
+        {% endif %}
+      </div>
+
+      {% if product.is_infinite or product.quantity > 0 %}
+      {% if product.has_options or product.has_fields or product.product_class == 'dynamic_bundle' %}
+      <a href="/products/{{ product.slug }}" class="outlit-product-card__add-cart-btn"
+        aria-label="{{ _('Add to cart') }}">
+        <span class="outlit-product-card__add-cart-icon" aria-hidden="true">
+          <svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_982_5238)">
+              <g clip-path="url(#clip1_982_5238)">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.06467 1.72682C5.06467 1.40194 4.8013 1.13858 4.47643 1.13858C4.15156 1.13858 3.88819 1.40194 3.88819 1.72682V3.8837H1.73131C1.40643 3.8837 1.14307 4.14706 1.14307 4.47193C1.14307 4.79681 1.40643 5.06017 1.73131 5.06017H3.88819V7.21703C3.88819 7.5419 4.15156 7.80525 4.47643 7.80525C4.8013 7.80525 5.06467 7.5419 5.06467 7.21703V5.06017H7.22151C7.54638 5.06017 7.80974 4.79681 7.80974 4.47193C7.80974 4.14706 7.54638 3.8837 7.22151 3.8837H5.06467V1.72682Z"
+                  fill="#050505" />
+                <path
+                  d="M3.88777 3.88371V4.16942H4.17348V3.88371H3.88777ZM3.88777 5.06018H4.17348V4.77446H3.88777V5.06018ZM5.06425 5.06018V4.77446H4.77853V5.06018H5.06425ZM5.06425 3.88371H4.77853V4.16942H5.06425V3.88371ZM4.47601 1.4243C4.64308 1.4243 4.77853 1.55974 4.77853 1.72683H5.34996C5.34996 1.24415 4.95868 0.852875 4.47601 0.852875V1.4243ZM4.17348 1.72683C4.17348 1.55974 4.30893 1.4243 4.47601 1.4243V0.852875C3.99333 0.852875 3.60205 1.24415 3.60205 1.72683H4.17348ZM4.17348 3.88371V1.72683H3.60205V3.88371H4.17348ZM1.73089 4.16942H3.88777V3.59799H1.73089V4.16942ZM1.42836 4.47194C1.42836 4.30486 1.5638 4.16942 1.73089 4.16942V3.59799C1.24821 3.59799 0.856934 3.98927 0.856934 4.47194H1.42836ZM1.73089 4.77446C1.5638 4.77446 1.42836 4.63902 1.42836 4.47194H0.856934C0.856934 4.95461 1.24821 5.34589 1.73089 5.34589V4.77446ZM3.88777 4.77446H1.73089V5.34589H3.88777V4.77446ZM4.17348 7.21703V5.06018H3.60205V7.21703H4.17348ZM4.47601 7.51955C4.30893 7.51955 4.17348 7.38411 4.17348 7.21703H3.60205C3.60205 7.6997 3.99333 8.09098 4.47601 8.09098V7.51955ZM4.77853 7.21703C4.77853 7.38411 4.64308 7.51955 4.47601 7.51955V8.09098C4.95868 8.09098 5.34996 7.6997 5.34996 7.21703H4.77853ZM4.77853 5.06018V7.21703H5.34996V5.06018H4.77853ZM7.22109 4.77446H5.06425V5.34589H7.22109V4.77446ZM7.52361 4.47194C7.52361 4.63902 7.38817 4.77446 7.22109 4.77446V5.34589C7.70376 5.34589 8.09504 4.95461 8.09504 4.47194H7.52361ZM7.22109 4.16942C7.38817 4.16942 7.52361 4.30486 7.52361 4.47194H8.09504C8.09504 3.98927 7.70376 3.59799 7.22109 3.59799V4.16942ZM5.06425 4.16942H7.22109V3.59799H5.06425V4.16942ZM4.77853 1.72683V3.88371H5.34996V1.72683H4.77853Z"
+                  fill="#050505" />
+                <path
+                  d="M21.714 1.82431H12.5712C11.6875 1.82431 10.9712 2.54065 10.9712 3.42431V12.5672C10.9712 13.4508 11.6875 14.1672 12.5712 14.1672H21.714C22.5977 14.1672 23.314 13.4508 23.314 12.5672V3.42431C23.314 2.54065 22.5977 1.82431 21.714 1.82431Z"
+                  fill="#FFF4FA" stroke="#050505" stroke-width="1.37143" />
+                <path
+                  d="M17.1427 6.39572H10.2855C9.40189 6.39572 8.68555 7.11207 8.68555 7.99572V14.8529C8.68555 15.7365 9.40189 16.4529 10.2855 16.4529H17.1427C18.0263 16.4529 18.7427 15.7365 18.7427 14.8529V7.99572C18.7427 7.11207 18.0263 6.39572 17.1427 6.39572Z"
+                  fill="#FFF4FA" stroke="#050505" stroke-width="1.37143" />
+                <path
+                  d="M12.5713 10.9672H7.9999C7.11625 10.9672 6.3999 11.6835 6.3999 12.5672V17.1386C6.3999 18.0222 7.11625 18.7386 7.9999 18.7386H12.5713C13.455 18.7386 14.1713 18.0222 14.1713 17.1386V12.5672C14.1713 11.6835 13.455 10.9672 12.5713 10.9672Z"
+                  fill="#FFF4FA" stroke="#050505" stroke-width="1.37143" />
+              </g>
+            </g>
+            <defs>
+              <clipPath id="clip0_982_5238">
+                <rect width="24" height="19.42" fill="white" />
+              </clipPath>
+              <clipPath id="clip1_982_5238">
+                <rect width="24" height="19.4286" fill="white" transform="translate(0 -0.00427246)" />
+              </clipPath>
+            </defs>
+          </svg>
+        </span>
+      </a>
+      {% else %}
+      <div class="outlit-product-card__add-cart-wrap" data-product-id="{{ product.id }}">
+        <button type="button" class="outlit-product-card__add-cart-btn outlit-product-card__add-cart-btn--ajax"
+          onclick="event.preventDefault(); event.stopPropagation(); productCartAddToCart(this, '{{ product.id }}')"
+          aria-label="{{ _('Add to cart') }}">
+          <span
+            class="outlit-product-card__add-cart-progress add-to-cart-progress outlit-product-card__add-cart-points d-none"
+            aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span class="outlit-product-card__add-cart-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 18H21M17 22L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M7 7.5V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V7.5" stroke="currentColor"
+                stroke-width="1.5" />
+              <path
+                d="M10 22C7.71999 21.9999 6.57085 21.9917 5.76809 21.2752C4.95603 20.5505 4.75097 19.3264 4.34085 16.8781L3.17786 9.93557C2.98869 8.8063 2.89411 8.24167 3.18537 7.87083C3.47662 7.5 4.01468 7.5 5.09079 7.5H18.9092C19.9853 7.5 20.5234 7.5 20.8146 7.87083C21.1059 8.24167 21.0113 8.8063 20.8221 9.93557L20.4763 12"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M4.5 17.5H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </span>
+        </button>
+        <div class="outlit-product-card__quantity-wrap d-none" role="group" aria-label="{{ _('Quantity') }}">
+          <button type="button" class="outlit-product-card__qty-btn outlit-product-card__qty-plus"
+            aria-label="{{ _('Increase quantity') }}">+</button>
+          <span class="outlit-product-card__qty-num" data-qty>1</span>
+          <button type="button" class="outlit-product-card__qty-btn outlit-product-card__qty-minus"
+            aria-label="{{ _('Decrease quantity') }}">−</button>
+          <button type="button" class="outlit-product-card__qty-remove"
+            onclick="event.preventDefault(); event.stopPropagation(); productCardRemoveFromCart(this)"
+            aria-label="{{ _('Remove from cart') }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" aria-hidden="true">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" />
+              <path d="M10 11v6M14 11v6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {% endif %}
+      {% else %}
+      <span class="outlit-product-card__add-cart-btn outlit-product-card__add-cart-btn--disabled"
+        aria-hidden="true"></span>
+      {% endif %}
+    </div>
+  </div>
+
+  {# --- Part 2: Text --- #}
+  <div class="outlit-product-card__body">
+
+    {% set _cats = product.categories or [] %}
+    {% if _cats|length > 0 %}
+    {% set last_cat = _cats[-1] %}
+    {% set cat_name = last_cat.name if last_cat.name is string else (safeget(last_cat.name, session.lang) or
+    safeget(last_cat.name, 'ar') or safeget(last_cat.name, 'en') or '') %}
+    {% if cat_name %}
+    <p class="outlit-product-card__category">
+      <a href="/categories/{{ last_cat.id }}/{{ last_cat.slug }}">{{ cat_name }}</a>
+    </p>
+    {% endif %}
+    {% elif product.category and product.category.name %}
+    <p class="outlit-product-card__category">{{ product.category.name }}</p>
+    {% endif %}
+
+    <h3 class="outlit-product-card__title">
+      <a href="/products/{{ product.slug }}">{{ product.name | safe }}</a>
+    </h3>
+
+    <div class="outlit-product-card__price-wrap">
+      {% if product.formatted_sale_price is not none %}
+      <div class="outlit-product-card__price-row">
+        <span class="outlit-product-card__price outlit-product-card__price--old">{{ product.formatted_price }}</span>
+        <span class="outlit-product-card__price outlit-product-card__price--current">{{ product.formatted_sale_price
+          }}</span>
+      </div>
+      {% else %}
+      <span class="outlit-product-card__price outlit-product-card__price--current">{{ product.formatted_price }}</span>
+      {% endif %}
+    </div>
+
+    {% if product.is_infinite == false and product.quantity <= 0 %} <div class="outlit-product-card__out-of-stock-cta">
+      <a class="btn btn-primary btn-product-card-out-of-stock" href="/products/{{ product.slug }}">
+        <img src="{{ 'u_bell.svg' | asset_url }}" alt="" width="18" height="18" class="d-inline" aria-hidden="true">
+        <span>{{ _("Notify me when available") }}</span>
+      </a>
+  </div>
+  {% endif %}
+  </div>
+</article>
 {% endif %}

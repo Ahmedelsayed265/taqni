@@ -8,13 +8,6 @@
   },
   "settings": [
     {
-      "type": "header",
-      "label": {
-        "ar": "إعدادات المحتوى",
-        "en": "Content Settings"
-      }
-    },
-    {
       "type": "text",
       "id": "title",
       "label": {
@@ -28,13 +21,6 @@
       "label": {
         "ar": "الوصف",
         "en": "Description"
-      }
-    },
-    {
-      "type": "header",
-      "label": {
-        "ar": "إعدادات الألوان",
-        "en": "Color Settings"
       }
     },
     {
@@ -63,13 +49,6 @@
         "en": "Description Color"
       },
       "default": "#555555"
-    },
-    {
-      "type": "header",
-      "label": {
-        "ar": "إعدادات السلايدر (Swiper)",
-        "en": "Slider (Swiper) Settings"
-      }
     },
     {
       "type": "number",

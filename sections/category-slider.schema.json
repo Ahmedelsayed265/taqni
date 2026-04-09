@@ -1,0 +1,108 @@
+{
+  "section_id": "uuid",
+  "template": "sections/category-slider.jinja",
+  "icon": "fal fa-th-list",
+  "name": {
+    "ar": "سلايدر تصنيفات/صور",
+    "en": "Category/Image Slider"
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": {
+        "ar": "العنوان",
+        "en": "Section Title"
+      },
+      "default": "Popular Categories"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": {
+        "ar": "الوصف الفرعي",
+        "en": "Subtitle"
+      },
+      "default": "Best-selling audio essentials in one place"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": {
+        "ar": "رابط عرض الكل",
+        "en": "View All URL"
+      }
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": {
+        "ar": "نص عرض الكل",
+        "en": "View All Text"
+      },
+      "default": "View All"
+    },
+    {
+      "type": "list",
+      "id": "items",
+      "label": {
+        "ar": "العناصر",
+        "en": "Items"
+      },
+      "settings": [
+        {
+          "type": "image",
+          "id": "image",
+          "label": {
+            "ar": "الصورة",
+            "en": "Image"
+          }
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": {
+            "ar": "العنوان",
+            "en": "Title"
+          },
+          "default": "Category Name"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": {
+            "ar": "الرابط",
+            "en": "URL"
+          }
+        }
+      ]
+    },
+    {
+      "id": "slider_autoplay",
+      "type": "checkbox",
+      "label": {
+        "ar": "تشغيل تلقائي",
+        "en": "Autoplay"
+      },
+      "default": false
+    },
+    {
+      "id": "slider_show_arrows",
+      "type": "checkbox",
+      "label": {
+        "ar": "إظهار أسهم التنقل",
+        "en": "Show Arrows"
+      },
+      "default": true
+    },
+    {
+      "id": "slider_show_pagination",
+      "type": "checkbox",
+      "label": {
+        "ar": "إظهار نقاط الترقيم",
+        "en": "Show Pagination"
+      },
+      "default": false
+    }
+  ]
+}

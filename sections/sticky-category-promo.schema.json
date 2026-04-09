@@ -1,0 +1,50 @@
+{
+  "section_id": "uuid",
+  "template": "sections/sticky-category-promo.jinja",
+  "icon": "fal fa-th-list",
+  "name": {
+    "ar": "عرض فئة بجهة ثابتة",
+    "en": "Sticky Category Promo"
+  },
+  "settings": [
+    {
+      "type": "image",
+      "id": "main_image",
+      "label": { "ar": "الصورة الرئيسية", "en": "Main Image" }
+    },
+    {
+      "type": "list",
+      "id": "content_blocks",
+      "label": { "ar": "فقرات النصوص", "en": "Text Blocks" },
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": { "ar": "العنوان", "en": "Title" }
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": { "ar": "الوصف", "en": "Description" }
+        }
+      ]
+    },
+    {
+      "type": "category_products",
+      "id": "category",
+      "label": { "ar": "الفئة المختارة", "en": "Selected Category" }
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": { "ar": "لون الخلفية", "en": "Background Color" },
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": { "ar": "لون النصوص", "en": "Text Color" },
+      "default": "#111111"
+    }
+  ]
+}

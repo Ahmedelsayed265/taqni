@@ -1,0 +1,222 @@
+<section class="image-comparison-section comparison-{{ sectionId }}" id="{{ sectionId }}">
+    <style>
+        .comparison-{{ sectionId }} {
+            --handle-color: {{ settings.handle_color | default('#fff') }};
+            --label-bg: {{ settings.label_bg | default('rgba(255, 255, 255, 0.9)') }};
+            --label-text: {{ settings.label_text | default('#1a1a1a') }};
+            --reveal-x: 50%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .comparison-{{ sectionId }} .comparison-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            aspect-ratio: 21 / 9;
+            overflow: hidden;
+            cursor: ew-resize;
+            user-select: none;
+            background: #000;
+        }
+
+        /* Adjust aspect ratio for better full-width appearance */
+        @media (min-width: 2000px) {
+            .comparison-{{ sectionId }} .comparison-container {
+                aspect-ratio: 3 / 1;
+            }
+        }
+
+        .comparison-{{ sectionId }} .image-after,
+        .comparison-{{ sectionId }} .image-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .comparison-{{ sectionId }} .image-after img,
+        .comparison-{{ sectionId }} .image-before img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+        }
+
+        .comparison-{{ sectionId }} .reveal-overlay {
+            z-index: 2;
+            clip-path: inset(0 calc(100% - var(--reveal-x)) 0 0);
+            transition: clip-path 0.1s ease-out;
+        }
+
+        /* Labels */
+        .comparison-{{ sectionId }} .label {
+            position: absolute;
+            top: 40px;
+            padding: 12px 32px;
+            background: var(--label-bg);
+            color: var(--label-text);
+            border-radius: 100px;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 5;
+            pointer-events: none;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            transition: opacity 0.3s ease;
+        }
+
+        .comparison-{{ sectionId }} .label-before {
+            left: 40px;
+        }
+
+        .comparison-{{ sectionId }} .label-after {
+            right: 40px;
+        }
+
+        /* Slider */
+        .comparison-{{ sectionId }} .comparison-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .comparison-{{ sectionId }} .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: var(--reveal-x);
+            width: 4px;
+            background: var(--handle-color);
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.4);
+            transition: left 0.1s ease-out;
+        }
+
+        .comparison-{{ sectionId }} .slider-icon {
+            min-width: 32px;
+            height: 80px;
+            background: var(--handle-color);
+            border: 4px solid rgba(212, 212, 212, 0.6);
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+            cursor: grab;
+        }
+
+        .comparison-{{ sectionId }} .slider-icon svg {
+            width: 12px;
+            height: auto;
+        }
+
+        /* Range Input covering the whole area */
+        .comparison-{{ sectionId }} .comparison-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: ew-resize;
+            z-index: 20;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-{{ sectionId }} .comparison-container {
+                aspect-ratio: 1 / 1;
+            }
+            .comparison-{{ sectionId }} .label {
+                top: 25px;
+                padding: 10px 24px;
+                font-size: 13px;
+            }
+            .comparison-{{ sectionId }} .label-before { left: 25px; }
+            .comparison-{{ sectionId }} .label-after { right: 25px; }
+            .comparison-{{ sectionId }} .slider-icon {
+                width: 44px;
+                height: 44px;
+            }
+        }
+    </style>
+
+    <div class="comparison-container" style="--reveal-x: 50%;">
+        <!-- Background Image (After) -->
+        <div class="image-after">
+            {% if settings.after_image %}
+                <img src="{{ image_url(settings.after_image, w=2000, q=90) }}" alt="After">
+            {% else %}
+                <div style="width:100%; height:100%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; color:#fff;">After Image</div>
+            {% endif %}
+            {% if settings.after_label %}
+                <span class="label label-after">{{ settings.after_label }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Foreground Image (Before) -->
+        <div class="image-before reveal-overlay" id="reveal-{{ sectionId }}">
+            {% if settings.before_image %}
+                <img src="{{ image_url(settings.before_image, w=2000, q=90) }}" alt="Before">
+            {% else %}
+                <div style="width:100%; height:100%; background:#2a2a2a; display:flex; align-items:center; justify-content:center; color:#fff;">Before Image</div>
+            {% endif %}
+            {% if settings.before_label %}
+                <span class="label label-before">{{ settings.before_label }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Slider Visual -->
+        <div class="comparison-slider">
+            <div class="slider-handle" id="handle-{{ sectionId }}">
+                <div class="slider-icon">
+                    <svg width="13" height="27" viewBox="0 0 13 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.5 1.15625C10.5 0.517671 11.0037 -4.80986e-07 11.625 -5.08145e-07C12.2463 -5.35304e-07 12.75 0.517671 12.75 1.15625L12.75 25.8223C12.75 26.4608 12.2463 26.9785 11.625 26.9785C11.0037 26.9785 10.5 26.4608 10.5 25.8223L10.5 1.15625ZM5.25 1.15625C5.25 0.517671 5.75368 1.65585e-06 6.375 -2.7866e-07C6.99632 -3.05819e-07 7.5 0.517671 7.5 1.15625L7.5 25.8223C7.5 26.4608 6.99632 26.9785 6.375 26.9785C5.75368 26.9785 5.25 26.4608 5.25 25.8223L5.25 1.15625ZM-1.12873e-06 1.15625C-1.11081e-06 0.517672 0.503679 1.88533e-06 1.125 -4.91753e-08C1.74632 -7.63341e-08 2.25 0.517671 2.25 1.15625L2.25 25.8223C2.25 26.4608 1.74632 26.9785 1.125 26.9785C0.50368 26.9785 -6.84585e-08 26.4608 -5.05413e-08 25.8223L-1.12873e-06 1.15625Z" fill="#161616"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real Input Control -->
+        <input type="range" min="0" max="100" value="50" class="comparison-input" id="range-{{ sectionId }}" aria-label="Image comparison slider">
+    </div>
+
+    <script>
+        (function() {
+            const range = document.getElementById('range-{{ sectionId }}');
+            const container = range.closest('.comparison-container');
+            
+            if (!range || !container) return;
+
+            const updateReveal = (value) => {
+                container.style.setProperty('--reveal-x', value + '%');
+            };
+
+            range.addEventListener('input', (e) => {
+                updateReveal(e.target.value);
+            });
+
+            // Smooth initial entrance if needed, or just handle resize
+            window.addEventListener('resize', () => {
+                updateReveal(range.value);
+            });
+        })();
+    </script>
+</section>

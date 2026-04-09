@@ -1,0 +1,126 @@
+<section class="sticky-category-promo" id="{{ sectionId }}" 
+    style="--bg-color: {{ settings.bg_color | default('#fff') }}; 
+           --text-color: {{ settings.text_color | default('#111') }};">
+    
+    <style>
+        .sticky-category-promo {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: clip;
+        }
+
+        .promo-container {
+            display: flex;
+            gap: 62px;
+            align-items: flex-start;
+            padding-inline-end: 50px;
+        }
+
+        .sticky-image-box {
+            flex: 0 0 45%;
+            position: sticky;
+            top: 0;
+            overflow: hidden;
+        }
+
+        .sticky-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sticky-content-box {
+            flex: 0 0 28%;
+            position: sticky;
+            top: 80px;
+            padding-top: 20px;
+        }
+
+        .content-block {
+            margin-bottom: 48px;
+        }
+
+        .content-block h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .content-block p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .products-scroll-box {
+            padding: 20px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .products-scroll-box .product-card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        @media (max-width: 1024px) {
+            .promo-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+            .sticky-image-box, .sticky-content-box {
+                flex: none;
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+            }
+            .sticky-image-box {
+                aspect-ratio: 4/5;
+            }
+            .products-scroll-box {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .products-scroll-box {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+   
+    <div class="promo-container">
+        <div class="sticky-image-box">
+            {% if settings.main_image %}
+                <img src="{{ image_url(settings.main_image, w=1000, q=90) }}" alt="Sticky Promo" loading="lazy">
+            {% endif %}
+        </div>
+
+        <div class="sticky-content-box">
+            {% for block in settings.content_blocks %}
+                <div class="content-block">
+                    {% if block.title %}
+                        <h3>{{ block.title }}</h3>
+                    {% endif %}
+                    {% if block.description %}
+                        <p>{{ block.description }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="products-scroll-box">
+            {% for product in safeget(settings, "category.products.results", []) %}
+                {% set index=loop.index0 %}{% include 'components/product-card.jinja' %}
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
