@@ -4,7 +4,7 @@
        <div class="container">
          <div class="announcement-bar-wrapper">
 
-            <div class="count_down_timer" id="announcement-timer" 
+            <div class="count_down_timer d-none d-lg-flex" id="announcement-timer" 
                 style="{% if not settings.announcement_bar_timer_display %}display: none;{% endif %}" 
                 data-end-date="{{ settings.announcement_bar_timer_date }}">
                 <div class="timer-item">
@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="lang">
+            <div class="lang d-none d-lg-flex">
                 {% set multiple_languages = store.languages | length > 1 %}
                 
                 {% if multiple_languages %}

@@ -1,26 +1,30 @@
 #sliding-menu {
     position: fixed;
     top: 0;
-    right: -100%;
+    right: 0;
     width: 100% !important;
+    max-width: 100% !important;
     height: 100%;
     background: #fff;
     z-index: 10000;
-    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(100%);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -10px 0 50px rgba(0,0,0,0.1);
 }
 
 .sidenav-open #sliding-menu {
-    right: 0;
+    transform: translateX(0);
 }
 
 /* For RTL */
 .rtl #sliding-menu {
     right: auto;
-    left: -100%;
+    left: 0;
+    transform: translateX(-100%);
 }
 
 .rtl.sidenav-open #sliding-menu {
-    left: 0;
+    transform: translateX(0);
 }
 
 .side-menu__inner {
@@ -123,7 +127,7 @@
 }
 
 .side-menu__nav-link {
-    font-size: 48px;
+    font-size: 36px;
     font-weight: 600;
     color: #1a1a1a;
     text-decoration: none;
@@ -177,26 +181,31 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 0;
-    height: 100%;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 9999;
     cursor: pointer;
-    transition: opacity 0.3s;
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     opacity: 0;
+    visibility: hidden;
 }
 
 .sidenav-open #sidenav-overlay {
-    width: 100%;
     opacity: 1;
+    visibility: visible;
 }
 
 @media (max-width: 768px) {
+    #sliding-menu {
+        width: 100% !important;
+        box-shadow: none;
+    }
     .side-menu__promo {
         display: none;
     }
     .side-menu__nav-link {
-        font-size: 32px;
+        font-size: 28px;
     }
     .side-menu__main {
         padding: 60px 24px 24px;

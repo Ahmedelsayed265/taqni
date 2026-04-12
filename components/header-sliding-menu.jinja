@@ -1,5 +1,3 @@
-{% set side_menu = settings.side_menu %}
-<div id="sidenav-overlay" onclick="closeSlidingMenu()"></div>
 <nav class="side-menu-new" id="sliding-menu">
     <div class="side-menu__inner">
         <!-- Close Button -->
@@ -10,16 +8,12 @@
         <!-- Left Side: Promo Image Section -->
         <div class="side-menu__promo">
             <div class="side-menu__promo-bg">
-                {% if side_menu.image %}
-                    <img src="{{ side_menu.image }}" alt="{{ side_menu.image_title }}">
-                {% else %}
-                    <img src="{{ 'placeholder.jpg' | asset_url }}" alt="Promo">
-                {% endif %}
+                <img src="{{ settings.side_menu_image }}" alt="{{ settings.side_menu_image_title }}">
                 <div class="side-menu__promo-overlay"></div>
             </div>
             <div class="side-menu__promo-content">
-                <h2 class="side-menu__promo-title">{{ side_menu.image_title }}</h2>
-                <a href="{{ side_menu.image_link }}" class="side-menu__promo-link">{{ side_menu.image_link_text }}</a>
+                <h2 class="side-menu__promo-title">{{ settings.side_menu_image_title }}</h2>
+                <a href="{{ settings.side_menu_image_link }}" class="side-menu__promo-link">{{ settings.side_menu_image_link_text }}</a>
             </div>
         </div>
 
@@ -40,15 +34,15 @@
                 <div class="side-menu__footer-row">
                     <div class="side-menu__contact-group">
                         <span class="side-menu__label">Contact</span>
-                        <a href="#" class="side-menu__footer-link">{{ side_menu.privacy_text }}</a>
+                        <a href="#" class="side-menu__footer-link">{{ settings.side_menu_privacy_text }}</a>
                     </div>
                     <div class="side-menu__contact-group side-menu__contact-group--right">
                         <span class="side-menu__label">EMAIL</span>
-                        <a href="mailto:{{ side_menu.email }}" class="side-menu__footer-link">{{ side_menu.email }}</a>
+                        <a href="mailto:{{ settings.side_menu_email }}" class="side-menu__footer-link">{{ settings.side_menu_email }}</a>
                         
                         <div class="side-menu__support">
                             <span class="side-menu__label">Contact Customer Support</span>
-                            <a href="tel:{{ side_menu.phone }}" class="side-menu__footer-link">{{ side_menu.phone }}</a>
+                            <a href="tel:{{ settings.side_menu_phone }}" class="side-menu__footer-link">{{ settings.side_menu_phone }}</a>
                         </div>
                     </div>
                 </div>
@@ -56,6 +50,8 @@
         </div>
     </div>
 </nav>
+
+<div id="sidenav-overlay" onclick="closeSlidingMenu()"></div>
 
 <script>
 function closeSlidingMenu() {

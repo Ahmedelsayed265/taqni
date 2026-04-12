@@ -11,9 +11,9 @@
 
         .promo-container {
             display: flex;
-            gap: 62px;
             align-items: flex-start;
-            padding-inline-end: 50px;
+            width: 100%;
+            gap: 0;
         }
 
         .sticky-image-box {
@@ -21,6 +21,8 @@
             position: sticky;
             top: 0;
             overflow: hidden;
+            aspect-ratio: auto;
+            height: 100vh;
         }
 
         .sticky-image-box img {
@@ -29,8 +31,17 @@
             object-fit: cover;
         }
 
+        .content-products-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            padding: 0 50px;
+            box-sizing: border-box;
+        }
+
         .sticky-content-box {
-            flex: 0 0 28%;
+            flex: 0 0 62%;
             position: sticky;
             top: 80px;
             padding-top: 20px;
@@ -69,28 +80,70 @@
         @media (max-width: 1024px) {
             .promo-container {
                 flex-direction: column;
-                gap: 30px;
+                display: flex;
             }
-            .sticky-image-box, .sticky-content-box {
-                flex: none;
-                width: 100%;
+
+            .sticky-image-box {
+                flex: 0 0 100% !important;
+                width: 100% !important;
+                height: auto;
                 position: relative;
                 top: 0;
-                height: auto;
             }
-            .sticky-image-box {
-                aspect-ratio: 4/5;
+
+            .content-products-wrapper {
+                flex: 0 0 100%;
+                display: flex;
+                flex-wrap: nowrap; 
+                gap: 10px;
+                padding: 0;
+                width: 100%;
+                align-items: flex-start;
             }
+
+            .sticky-content-box {
+                flex: 0 0 38%; /* Fixed percentage */
+                position: sticky;
+                top: 80px;
+                padding: 15px 0 15px 15px;
+                z-index: 10;
+                box-sizing: border-box;
+            }
+
             .products-scroll-box {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                flex: 1; /* Take remaining space */
+                gap: 12px;
+                padding: 15px 15px 15px 0;
+                box-sizing: border-box;
+                min-width: 0; /* Allow shrinking */
+            }
+
+            .products-scroll-box .product-card {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+
+            .content-block {
+                margin-bottom: 20px;
+            }
+
+            .content-block h3 {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            .content-block p {
+                font-size: 12px;
+                line-height: 1.3;
             }
         }
 
         @media (max-width: 576px) {
+            .sticky-content-box {
+                flex: 0 0 calc(40% - 8px);
+            }
             .products-scroll-box {
-                grid-template-columns: 1fr;
+                flex: 0 0 calc(60% - 8px);
             }
         }
     </style>
@@ -103,23 +156,25 @@
             {% endif %}
         </div>
 
-        <div class="sticky-content-box">
-            {% for block in settings.content_blocks %}
-                <div class="content-block">
-                    {% if block.title %}
-                        <h3>{{ block.title }}</h3>
-                    {% endif %}
-                    {% if block.description %}
-                        <p>{{ block.description }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        </div>
+        <div class="content-products-wrapper">
+            <div class="sticky-content-box">
+                {% for block in settings.content_blocks %}
+                    <div class="content-block">
+                        {% if block.title %}
+                            <h3>{{ block.title }}</h3>
+                        {% endif %}
+                        {% if block.description %}
+                            <p>{{ block.description }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
 
-        <div class="products-scroll-box">
-            {% for product in safeget(settings, "category.products.results", []) %}
-                {% set index=loop.index0 %}{% include 'components/product-card.jinja' %}
-            {% endfor %}
+            <div class="products-scroll-box">
+                {% for product in safeget(settings, "category.products.results", []) %}
+                    {% set index=loop.index0 %}{% include 'components/product-card.jinja' %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 

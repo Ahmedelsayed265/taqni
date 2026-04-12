@@ -1,4 +1,4 @@
-{% set ver = '0.1.037' %}
+{% set ver = '0.1.039' %}
 <!doctype html>
 <html class="no-js" lang="{{ session.lang }}" dir="{{ session.locale.language.direction }}">
 
@@ -118,6 +118,8 @@
   <link rel="stylesheet" href="{{ ('main.css?v=' ~ ver) | asset_url }}" />
 
   <link rel="stylesheet" type="text/css" href="{{ 'custom.css?v=1.148' | asset_url }}" />
+  <link rel="stylesheet" type="text/css" href="{{ ('side-cart.css?v=' ~ ver) | asset_url }}" />
+  <link rel="stylesheet" type="text/css" href="{{ ('cart.css?v=' ~ ver) | asset_url }}" />
 
   {% if session.lang == 'ar' %}
     <link rel="stylesheet" href="{{ 'main.rtl.css?v=1.25' | asset_url }}">
@@ -261,9 +263,12 @@
 <script src="{{ 'slide-menu.ie.js?v=1.06' | asset_url }}"></script>
 
 <script type="text/javascript" src="{{ ('main.js?v=' ~ ver) | asset_url }}" defer></script>
+<script type="text/javascript" src="{{ ('side-cart.js?v=' ~ ver) | asset_url }}" defer></script>
 <script type="text/javascript" src="{{ ('bundle-offers.js?v=' ~ ver) | asset_url }}" defer></script>
 
 {% vitrin_body %}
+
+{% include 'components/side-cart.jinja' %}
 
 {% if session.template not in ['product_details', 'cart_page', 'page_details'] and safeget(store, "settings.checkout.is_loyalty_enabled", False) %}
 

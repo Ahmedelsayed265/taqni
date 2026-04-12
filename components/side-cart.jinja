@@ -1,0 +1,514 @@
+{# Side Cart (سلة تسوق جانبية) - RTL + Bootstrap 5 Offcanvas #}
+{% set side_cart_products_list = safeget(settings, 'side_cart_side_products_list') %}
+<aside class="offcanvas offcanvas-end block-side-cart"
+       id="side-cart"
+       tabindex="-1"
+       aria-labelledby="side-cart-title"
+       data-empty="{{ _('Cart is empty') | e }}"
+       data-recommended-category-id="{{ settings.side_cart_recommended_category_id | default('') }}"
+       data-recommended-title="{{ _('You might also like') | e }}"
+       data-remove-label="{{ _('Remove') | e }}"
+       data-free-shipping-applied="{{ _('Free shipping applied') | e }}"
+       data-free-shipping-between="{{ _('Free shipping applies for cart total between %(min)s and %(max)s') | e }}"
+       data-free-shipping-add-total="{{ _('Add products with total of %(total)s to get free shipping') | e }}"
+       data-total-label="{{ _('Total') | e }}"
+       data-coupon-applied="{{ _('Coupon applied') | e }}"
+       data-update-quantity-error="{{ _('Failed to update quantity') | e }}"
+       data-reviews-enabled="{{ 'true' if store.settings.products.reviews_enabled else 'false' }}">
+
+  <div class="offcanvas-header block-side-cart-header">
+    <h5 class="offcanvas-title" id="side-cart-title">{{ _('Cart Contents') }}</h5>
+    <button type="button"
+            class="btn-close side-cart-close"
+            onclick="typeof window.closeSideCart === 'function' && window.closeSideCart()"
+            aria-label="{{ _('Close') }}"></button>
+  </div>
+
+  <div class="offcanvas-body block-side-cart-body">
+    <div class="loading-cart d-none" aria-hidden="true">
+      <span class="loader-cart" aria-hidden="true"></span>
+    </div>
+
+    <div class="cart-list">
+      <div class="empty-cart-box" id="additional-cart">
+        <div class="empty-cart-message d-flex flex-column align-items-center justify-content-center py-5">
+          <span class="empty-cart-icon icon-shopping_cart_black_36dp-1-1 theme-title-primary" aria-hidden="true">
+            <span class="">
+            
+<svg width="151" height="150" viewBox="0 0 151 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M88.0833 93.75L110.104 115.625M110.104 115.625L132.125 137.5M110.104 115.625L88.0833 137.5M110.104 115.625L132.125 93.75" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M44.0417 46.875V43.75C44.0417 26.4911 58.1261 12.5 75.5001 12.5C92.874 12.5 106.958 26.4911 106.958 43.75V46.875" stroke="#404040" stroke-width="2.5"/>
+<path d="M128.303 78.125L131.006 62.0973C132.196 55.0394 132.791 51.5104 130.959 49.1927C129.126 46.875 125.741 46.875 118.97 46.875H32.0295C25.259 46.875 21.8738 46.875 20.0413 49.1927C18.2088 51.5104 18.8039 55.0394 19.9941 62.0973L27.3112 105.488C29.8915 120.79 31.1817 128.44 36.2909 132.97C41.4001 137.5 48.7393 137.5 63.4177 137.5H69.2083" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M28.3125 109.375L69.2083 109.375" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+            </span>
+          </span>
+          <h2 class="mt-empty">{{ _('Cart is empty') }}</h2>
+          <div class="mt-shopping mt-3">
+            <a href="/" class="btn btn-outline-primary btn-lg btn-block">
+              {{ _('continue shopping') }}
+            </a>
+          </div>
+        </div>
+      </div>
+         <div class="cart-discount-rule-wrapper free-shipping-rule-section mt-2 mb-4 d-none" id="side-cart-free-shipping">
+        <div class="free-shipping-message-text free-shipping-rule-message"></div>
+        <div class="free-shipping-progress-container d-none">
+          <div class="free-shipping-value free-shipping-value-right">
+            <span class="free-shipping-current-subtotal"></span>
+          </div>
+          <div class="free-shipping-track">
+            <div class="free-shipping-track-bg"></div>
+            <div class="free-shipping-track-fill free-shipping-rule-progress" style="width: 0%"></div>
+          </div>
+          <div class="free-shipping-value free-shipping-value-left">
+            <span class="free-shipping-min-total"></span>
+          </div>
+        </div>
+        <div class="free-shipping-read-more free-shipping-rule-read-more d-none">
+          <a data-toggle="modal" data-target="#searchCitiesModal" href="#">{{ _("Read More") }}</a>
+        </div>
+      </div>
+
+      <ul class="item-inside-cart side-cart-items list-unstyled mb-0 d-none"></ul>
+ 
+
+      <div class="side-cart-recommended d-none" id="side-cart-recommended"
+           data-default-product-image="{{ ('product-img.svg' | asset_url) | e }}"
+           data-spinner-url="{{ ('spinner.gif' | asset_url) | e }}">
+        <div class="mb-1">
+          <div class="titles">
+            <h2 class="section-title side-cart-recommended-title" style="margin-bottom: 10px; text-align: start; font-size: 16px;"></h2>
+          </div>
+          <div class="products-slider-wrapper" style="position: relative;">
+            <div class="loading-spinner side-cart-recommended-loading" style="text-align: center; padding: 10px;">{{ _('Loading...') }}</div>
+            <div class="products-slider s-slider side-cart-recommended-slider cart-category-products-slider" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+  
+
+      {% if side_cart_products_list and side_cart_products_list.id %}
+<div id="side-cart-custom-category-products" class="category-products " style="margin-top: 10px; margin-bottom: 10px;">
+    <div class="mb-1">
+    <div class="titles">
+        <h2 class="section-title" style="margin-bottom: 10px; text-align: start; font-size: 16px;">{{ safeget(settings, 'side_cart_cart_name') or _("recommended products") }}</h2>
+        </div>
+        <div class="products-slider-wrapper" style="position: relative;">
+            <div class="loading-spinner" style="text-align: center; padding: 10px;">{{ _("Loading...") }}</div>
+            <div class="products-slider s-slider cart-category-products-slider" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+      {% endif %}
+    </div>
+
+    <div class="footer-side-cart d-none">
+      <div class="cart-sidebar-wrapper">
+        <div class="cart-sidebar-card order-summary-card mb-4">
+          <h4 class="cart-sidebar-title">{{ _("Order Summary") }}</h4>
+          <div class="cart-totals-div" id="cart-side-totals" role="status" aria-live="polite" aria-atomic="true"></div>
+
+          <div class="cart-checkout-section mt-3">
+            <div class="coupon-card mb-3">
+              <h4 class="cart-sidebar-title">{{ _("Discount Code") }}</h4>
+              <div class="coupon-form">
+                <form class="side-cart-coupon-form-inner" onsubmit="event.preventDefault(); if(typeof sendSideCartCoupon === 'function') sendSideCartCoupon();">
+                  <div class="form-group mb-0">
+                    <div class="coupon-capsule">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="coupon-icon-svg">
+                        <path d="M7.69171 19.6161C8.28274 19.6161 8.57825 19.6161 8.84747 19.716C8.88486 19.7298 8.92172 19.7451 8.95797 19.7617C9.21897 19.8815 9.42793 20.0904 9.84585 20.5083C10.8078 21.4702 11.2887 21.9512 11.8805 21.9955C11.96 22.0015 12.04 22.0015 12.1195 21.9955C12.7113 21.9512 13.1923 21.4702 14.1541 20.5083C14.5721 20.0904 14.781 19.8815 15.042 19.7617C15.0783 19.7451 15.1151 19.7298 15.1525 19.716C15.4218 19.6161 15.7173 19.6161 16.3083 19.6161H16.4173C17.9252 19.6161 18.6792 19.6161 19.1476 19.1476C19.6161 18.6792 19.6161 17.9252 19.6161 16.4173V16.3083C19.6161 15.7173 19.6161 15.4218 19.716 15.1525C19.7298 15.1151 19.7451 15.0783 19.7617 15.042C19.8815 14.781 20.0904 14.5721 20.5083 14.1541C21.4702 13.1923 21.9512 12.7113 21.9955 12.1195C22.0015 12.04 22.0015 11.96 21.9955 11.8805C21.9512 11.2887 21.4702 10.8078 20.5083 9.84585C20.0904 9.42793 19.8815 9.21897 19.7617 8.95797C19.7451 8.92172 19.7298 8.88486 19.716 8.84747C19.6161 8.57825 19.6161 8.28274 19.6161 7.69171V7.58269C19.6161 6.07479 19.6161 5.32083 19.1476 4.85239C18.6792 4.38394 17.9252 4.38394 16.4173 4.38394H16.3083C15.7173 4.38394 15.4218 4.38394 15.1525 4.28405C15.1151 4.27018 15.0783 4.25491 15.042 4.23828C14.781 4.11855 14.5721 3.90959 14.1541 3.49167C13.1923 2.52977 12.7113 2.04882 12.1195 2.00447C12.04 1.99851 11.96 1.99851 11.8805 2.00447C11.2887 2.04882 10.8078 2.52977 9.84585 3.49167C9.42793 3.90959 9.21897 4.11855 8.95797 4.23828C8.92172 4.25491 8.88486 4.27018 8.84747 4.28405C8.57825 4.38394 8.28274 4.38394 7.69171 4.38394H7.58269C6.07479 4.38394 5.32083 4.38394 4.85239 4.85239C4.38394 5.32083 4.38394 6.07479 4.38394 7.58269V7.69171C4.38394 8.28274 4.38394 8.57825 4.28405 8.84747C4.27018 8.88486 4.25491 8.92172 4.23828 8.95797C4.11855 9.21897 3.90959 9.42793 3.49167 9.84585C2.52977 10.8078 2.04882 11.2887 2.00447 11.8805C1.99851 11.96 1.99851 12.04 2.00447 12.1195C2.04882 12.7113 2.52977 13.1923 3.49167 14.1541C3.90959 14.5721 4.11855 14.781 4.23828 15.042C4.25491 15.0783 4.27018 15.1151 4.28405 15.1525C4.38394 15.4218 4.38394 15.7173 4.38394 16.3083V16.4173C4.38394 17.9252 4.38394 18.6792 4.85239 19.1476C5.32083 19.6161 6.07479 19.6161 7.58269 19.6161H7.69171Z" stroke="#8E8E93" stroke-width="1.5"/>
+                        <path d="M15 9L9 15" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 15H14.9892M9.01076 9H9" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <input type="text" class="form-control send-coupon side-cart-coupon-input" placeholder="{{ _('Add discount coupon') | e }}" autocomplete="off">
+                      <button type="submit" class="btn coupon-activate-btn side-cart-coupon-apply" aria-label="{{ _('Apply discount coupon') }}">
+                        <img class="send-coupon-progress side-cart-coupon-spinner d-none" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15" alt="">
+                        <span class="side-cart-coupon-apply-text">{{ _('Activate') }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+                <div class="side-cart-coupon-applied d-none message-coupon alert alert-primary mt-2" role="alert">
+                  <span class="side-cart-coupon-code"></span>
+                  <button type="button" class="btn btn-link btn-sm p-0 side-cart-coupon-remove" onclick="if(typeof deleteSideCartCoupon === 'function') deleteSideCartCoupon();" aria-label="{{ _('Remove coupon') }}">
+                    <span class="icon-trash-alt" aria-hidden="true"></span>
+                    <img class="delete-coupon-progress d-none" src="{{ 'spinner.gif' | asset_url }}" width="14" height="14" alt="">
+                  </button>
+                </div>
+                <div class="message-coupon side-cart-message-coupon d-none small"></div>
+              </div>
+            </div>
+
+            <a href="/checkout" class="btn btn-primary btn-lg btn-block cart-checkout-btn btn-side-cart-checkout mb-2">{{ _('Proceed to checkout') }}</a>
+            <div class="mt-2">
+              <a href="{{ url_for('cart_page') }}" class="btn btn-block continue-btn btn-side-cart-view-cart">{{ _('View cart') }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+{% if side_cart_products_list and side_cart_products_list.id %}
+{% set _cart_svg_options_icon = '<svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_982_5238)"><g clip-path="url(#clip1_982_5238)"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.06467 1.72682C5.06467 1.40194 4.8013 1.13858 4.47643 1.13858C4.15156 1.13858 3.88819 1.40194 3.88819 1.72682V3.8837H1.73131C1.40643 3.8837 1.14307 4.14706 1.14307 4.47193C1.14307 4.79681 1.40643 5.06017 1.73131 5.06017H3.88819V7.21703C3.88819 7.5419 4.15156 7.80525 4.47643 7.80525C4.8013 7.80525 5.06467 7.5419 5.06467 7.21703V5.06017H7.22151C7.54638 5.06017 7.80974 4.79681 7.80974 4.47193C7.80974 4.14706 7.54638 3.8837 7.22151 3.8837H5.06467V1.72682Z" fill="#050505"/><path d="M3.88777 3.88371V4.16942H4.17348V3.88371H3.88777ZM3.88777 5.06018H4.17348V4.77446H3.88777V5.06018ZM5.06425 5.06018V4.77446H4.77853V5.06018H5.06425ZM5.06425 3.88371H4.77853V4.16942H5.06425V3.88371ZM4.47601 1.4243C4.64308 1.4243 4.77853 1.55974 4.77853 1.72683H5.34996C5.34996 1.24415 4.95868 0.852875 4.47601 0.852875V1.4243ZM4.17348 1.72683C4.17348 1.55974 4.30893 1.4243 4.47601 1.4243V0.852875C3.99333 0.852875 3.60205 1.24415 3.60205 1.72683H4.17348ZM4.17348 3.88371V1.72683H3.60205V3.88371H4.17348ZM1.73089 4.16942H3.88777V3.59799H1.73089V4.16942ZM1.42836 4.47194C1.42836 4.30486 1.5638 4.16942 1.73089 4.16942V3.59799C1.24821 3.59799 0.856934 3.98927 0.856934 4.47194H1.42836ZM1.73089 4.77446C1.5638 4.77446 1.42836 4.63902 1.42836 4.47194H0.856934C0.856934 4.95461 1.24821 5.34589 1.73089 5.34589V4.77446ZM3.88777 4.77446H1.73089V5.34589H3.88777V4.77446ZM4.17348 7.21703V5.06018H3.60205V7.21703H4.17348ZM4.47601 7.51955C4.30893 7.51955 4.17348 7.38411 4.17348 7.21703H3.60205C3.60205 7.6997 3.99333 8.09098 4.47601 8.09098V7.51955ZM4.77853 7.21703C4.77853 7.38411 4.64308 7.51955 4.47601 7.51955V8.09098C4.95868 8.09098 5.34996 7.6997 5.34996 7.21703H4.77853ZM4.77853 5.06018V7.21703H5.34996V5.06018H4.77853ZM7.22109 4.77446H5.06425V5.34589H7.22109V4.77446ZM7.52361 4.47194C7.52361 4.63902 7.38817 4.77446 7.22109 4.77446V5.34589C7.70376 5.34589 8.09504 4.95461 8.09504 4.47194H7.52361ZM7.22109 4.16942C7.38817 4.16942 7.52361 4.30486 7.52361 4.47194H8.09504C8.09504 3.98927 7.70376 3.59799 7.22109 3.59799V4.16942ZM5.06425 4.16942H7.22109V3.59799H5.06425V4.16942ZM4.77853 1.72683V3.88371H5.34996V1.72683H4.77853Z" fill="#050505"/><path d="M21.714 1.82431H12.5712C11.6875 1.82431 10.9712 2.54065 10.9712 3.42431V12.5672C10.9712 13.4508 11.6875 14.1672 12.5712 14.1672H21.714C22.5977 14.1672 23.314 13.4508 23.314 12.5672V3.42431C23.314 2.54065 22.5977 1.82431 21.714 1.82431Z" fill="#FFF4FA" stroke="#050505" stroke-width="1.37143"/><path d="M17.1427 6.39572H10.2855C9.40189 6.39572 8.68555 7.11207 8.68555 7.99572V14.8529C8.68555 15.7365 9.40189 16.4529 10.2855 16.4529H17.1427C18.0263 16.4529 18.7427 15.7365 18.7427 14.8529V7.99572C18.7427 7.11207 18.0263 6.39572 17.1427 6.39572Z" fill="#FFF4FA" stroke="#050505" stroke-width="1.37143"/><path d="M12.5713 10.9672H7.9999C7.11625 10.9672 6.3999 11.6835 6.3999 12.5672V17.1386C6.3999 18.0222 7.11625 18.7386 7.9999 18.7386H12.5713C13.455 18.7386 14.1713 18.0222 14.1713 17.1386V12.5672C14.1713 11.6835 13.455 10.9672 12.5713 10.9672Z" fill="#FFF4FA" stroke="#050505" stroke-width="1.37143"/></g></g><defs><clipPath id="clip0_982_5238"><rect width="24" height="19.42" fill="white"/></clipPath><clipPath id="clip1_982_5238"><rect width="24" height="19.4286" fill="white" transform="translate(0 -0.00427246)"/></clipPath></defs></svg>' %}
+{% set _cart_svg_add_icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 18H21M17 22L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7.5V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 22C7.71999 21.9999 6.57085 21.9917 5.76809 21.2752C4.95603 20.5505 4.75097 19.3264 4.34085 16.8781L3.17786 9.93557C2.98869 8.8063 2.89411 8.24167 3.18537 7.87083C3.47662 7.5 4.01468 7.5 5.09079 7.5H18.9092C19.9853 7.5 20.5234 7.5 20.8146 7.87083C21.1059 8.24167 21.0113 8.8063 20.8221 9.93557L20.4763 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4.5 17.5H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' %}
+
+<script>
+(function() {
+var CART_CATEGORY_SVG_OPTIONS = {{ _cart_svg_options_icon | tojson }};
+var CART_CATEGORY_SVG_ADD = {{ _cart_svg_add_icon | tojson }};
+
+document.addEventListener('DOMContentLoaded', async function() {
+    const container = document.getElementById('side-cart-custom-category-products');
+    if (!container) return;
+
+    const loader = container.querySelector('.loading-spinner');
+    const selectedCategoryId = "{{ side_cart_products_list.id if side_cart_products_list else '' }}";
+
+    if (!selectedCategoryId || selectedCategoryId === "" || selectedCategoryId === "None") {
+        if (loader) loader.textContent = "{{ _('No category selected') }}";
+        container.style.display = 'none';
+        return;
+    }
+
+    function waitForZid(maxWaitMs) {
+        maxWaitMs = maxWaitMs || 8000;
+        return new Promise(function(resolve) {
+            if (typeof zid !== 'undefined' && zid.products && typeof zid.products.list === 'function') {
+                resolve();
+                return;
+            }
+            var start = Date.now();
+            var t = setInterval(function() {
+                if (typeof zid !== 'undefined' && zid.products && typeof zid.products.list === 'function') {
+                    clearInterval(t);
+                    resolve();
+                    return;
+                }
+                if (Date.now() - start >= maxWaitMs) {
+                    clearInterval(t);
+                    resolve();
+                }
+            }, 200);
+        });
+    }
+
+    async function loadCategoryProducts() {
+        try {
+            if (loader) loader.textContent = "{{ _('Loading...') }}";
+            await waitForZid(8000);
+            if (typeof zid === 'undefined' || !zid.products || typeof zid.products.list !== 'function') {
+                if (loader) loader.textContent = "{{ _('Failed to load products') }}";
+                return;
+            }
+            const categoryId = selectedCategoryId;
+
+            var apiTimeout = 15000;
+            var listPromise = zid.products.list({
+                categories: categoryId,
+                page_size: 50
+            }, { showErrorNotification: false });
+            var timeoutPromise = new Promise(function(_, reject) {
+                setTimeout(function() { reject(new Error('timeout')); }, apiTimeout);
+            });
+            const response = await Promise.race([listPromise, timeoutPromise]);
+            
+            // Check different response structures
+            var products = [];
+            if (response && Array.isArray(response.results)) {
+                products = response.results;
+            } else if (response && Array.isArray(response.products)) {
+                products = response.products;
+            } else if (Array.isArray(response)) {
+                products = response;
+            } else if (response && response.data) {
+                var d = response.data;
+                if (Array.isArray(d.results)) products = d.results;
+                else if (Array.isArray(d.products)) products = d.products;
+                else if (Array.isArray(d)) products = d;
+            }
+            if (!products || products.length === 0) {
+                if (loader) loader.textContent = "{{ _('No products in this category') }}";
+                return;
+            }
+
+            if (loader) loader.remove();
+            
+            // Get or create slick slider container
+            const sliderWrapper = container.querySelector('.products-slider-wrapper');
+            let productsSlider = container.querySelector('.cart-category-products-slider');
+            
+            if (!productsSlider) {
+                productsSlider = document.createElement('div');
+                productsSlider.className = 'products-slider s-slider cart-category-products-slider';
+                if (sliderWrapper) {
+                    sliderWrapper.appendChild(productsSlider);
+                } else {
+                    container.appendChild(productsSlider);
+                }
+            }
+            
+            // Clear existing content
+            productsSlider.innerHTML = '';
+            productsSlider.style.display = 'block';
+
+            const defaultImage = {{ image_url(("product-img.svg" | asset_url), w=235, q=100, f="auto") | tojson }};
+            const spinnerUrl = {{ ("spinner.gif" | asset_url) | tojson }};
+            const uBellUrl = {{ ("u_bell.svg" | asset_url) | tojson }};
+            const wishlistEnabled = {{ 'true' if store.settings.products.wishlist_enabled else 'false' }};
+            const reviewsEnabled = {{ 'true' if store.settings.products.reviews_enabled else 'false' }};
+            const addToFavoritesLabel = {{ _("Add to favorites") | tojson }};
+            const addToCartLabel = {{ _("Add to cart") | tojson }};
+            const qtyLabel = {{ _("Quantity") | tojson }};
+            const increaseQtyLabel = {{ _("Increase quantity") | tojson }};
+            const decreaseQtyLabel = {{ _("Decrease quantity") | tojson }};
+            const notifyWhenAvailableText = {{ _("Notify me when available") | tojson }};
+
+            function buildRatingHtml(ratingObj) {
+              if (!reviewsEnabled) return '';
+              ratingObj = ratingObj || {};
+              const totalCount = ratingObj.total_count || 0;
+              const avg = ratingObj.average || 0;
+              const ratingRounded = Math.ceil((avg * 2)) / 2;
+              let stars = '';
+              if (totalCount > 0) {
+                for (let n = 1; n <= 5; n++) {
+                  if (n <= ratingRounded) {
+                    stars += '<span class="icon-star1"></span>';
+                  } else if (n <= ratingRounded + 0.5) {
+                    stars += '<span class="icon-half-star"></span>';
+                  } else {
+                    stars += '<span class="icon-star1 deactive"></span>';
+                  }
+                }
+              }
+              return '' +
+                '<div class="outlit-product-card__rating">' +
+                  '<span class="product-card-rating-count">(' + totalCount + ')</span>' +
+                  (totalCount > 0 ? 
+                  '<div class="d-inline-flex product-card-rating" data-rating="' + avg + '">' +
+                    stars +
+                  '</div>' : '') +
+                  '<span class="outlit-product-card__rating-value">' + (avg ? avg.toFixed(1) : '0.0') + '</span>' +
+                '</div>';
+            }
+
+            products.forEach(product => {
+                const productImages = Array.isArray(product.images) ? product.images : [];
+                const mainImgObj = product.main_image && product.main_image.image ? product.main_image.image : null;
+                const firstImgObj = productImages[0] && productImages[0].image ? productImages[0].image : null;
+                const mainImg = (mainImgObj && (mainImgObj.small || mainImgObj.medium || mainImgObj.large)) ||
+                    (firstImgObj && (firstImgObj.small || firstImgObj.medium || firstImgObj.large)) ||
+                    defaultImage;
+                const width = (mainImgObj && mainImgObj.width) || 235;
+                const height = (mainImgObj && mainImgObj.height) || 235;
+
+                const badge = product.badge || null;
+                const badgeBody = (badge && badge.body && (badge.body.ar || badge.body.en)) || '';
+                const badgeIcon = (badge && badge.icon && badge.icon.code) || '';
+
+                const productName = (product.name || '');
+                const productSlug = (product.slug || '').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\\/g, '\\\\');
+                const productId = String(product.id || '');
+
+                const badgeBodyEscaped = (badgeBody || '').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const badgeIconEscaped = (badgeIcon || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+                const formattedPrice = product.formatted_sale_price || product.formatted_price || '';
+                const hasSalePrice = !!product.formatted_sale_price;
+                const discountPercentage = product.discount_percentage || '';
+
+                const hasOptions = product.has_options || product.has_fields || product.product_class === 'dynamic_bundle' ||
+                    (product.options && product.options.length > 0) ||
+                    (product.variants && product.variants.length > 0);
+                const outOfStock = !product.is_infinite && product.quantity <= 0;
+
+                const ratingHtml = buildRatingHtml(product.rating || {});
+
+                const article = document.createElement('article');
+                article.className = 'prod-col outlit-product-card product-item position-relative' + (outOfStock ? ' outlit-product-card--out-of-stock' : '');
+                article.setAttribute('itemscope', '');
+                article.setAttribute('itemtype', 'https://schema.org/Product');
+
+                let wishlistHtml = '';
+                if (wishlistEnabled) {
+                    wishlistHtml =
+                        '<div class="outlit-product-card__wishlist">' +
+                            '<span zid-visible-customer="true">' +
+                                '<button type="button" zid-visible-wishlist="' + productId + '" class="outlit-product-card__wishlist-btn icon-heart-mask filled" onclick="addToWishlist(this, \'' + productId + '\')" aria-label="' + addToFavoritesLabel + '"></button>' +
+                                '<button type="button" zid-hidden-wishlist="' + productId + '" class="outlit-product-card__wishlist-btn icon-heart-mask" onclick="addToWishlist(this, \'' + productId + '\')" aria-label="' + addToFavoritesLabel + '"></button>' +
+                            '</span>' +
+                            '<a zid-visible-guest="true" class="outlit-product-card__wishlist-btn icon-heart-mask" href="/auth/login?redirect_to={{ session.url.path }}" onclick="event.preventDefault(); handleLoginAction(\'\', false); return false;" aria-label="' + addToFavoritesLabel + '"></a>' +
+                            '<img class="loader d-none" src="' + spinnerUrl + '" width="20" height="20" alt="" aria-hidden="true">' +
+                        '</div>';
+                }
+
+                let priceHtml = '';
+                if (hasSalePrice) {
+                    priceHtml =
+                        '<div class="outlit-product-card__price-wrap">' +
+                            '<div class="outlit-product-card__price-row">' +
+                                (discountPercentage ? '<span class="outlit-product-card__discount">-' + discountPercentage + '%</span>' : '') +
+                                '<span class="outlit-product-card__price outlit-product-card__price--old">' + (product.formatted_price || '') + '</span>' +
+                                '<span class="outlit-product-card__price outlit-product-card__price--current ">' + formattedPrice + '</span>' +
+                            '</div>' +
+                        '</div>';
+                } else {
+                    priceHtml =
+                        '<div class="outlit-product-card__price-wrap">' +
+                            '<span class="outlit-product-card__price outlit-product-card__price--current ">' + formattedPrice + '</span>' +
+                        '</div>';
+                }
+
+                let categoryHtml = '';
+                if (Array.isArray(product.categories) && product.categories.length > 0) {
+                    const lastCat = product.categories[product.categories.length - 1];
+                    const catName = (lastCat && lastCat.name) ? (typeof lastCat.name === 'string' ? lastCat.name : (lastCat.name.ar || lastCat.name.en || '')) : '';
+                    if (catName && lastCat.id && lastCat.slug) {
+                        categoryHtml =
+                            '<p class="outlit-product-card__category">' +
+                                '<a href="/categories/' + lastCat.id + '/' + (lastCat.slug || '') + '">' + catName + '</a>' +
+                            '</p>';
+                    }
+                } else if (product.category && product.category.name) {
+                    categoryHtml = '<p class="outlit-product-card__category">' + product.category.name + '</p>';
+                }
+
+                let addCartHtml = '';
+                if (product.is_infinite || product.quantity > 0) {
+                    if (hasOptions || product.has_fields || product.product_class === 'dynamic_bundle') {
+                        addCartHtml =
+                            '<a href="/products/' + productSlug + '" class="outlit-product-card__add-cart-btn" aria-label="' + addToCartLabel + '">' +
+                                '<span class="outlit-product-card__add-cart-icon" aria-hidden="true">' +
+                                    CART_CATEGORY_SVG_OPTIONS +
+                                '</span>' +
+                            '</a>';
+                    } else {
+                        addCartHtml =
+                            '<div class="outlit-product-card__add-cart-wrap" data-product-id="' + productId + '">' +
+                                '<button type="button" class="outlit-product-card__add-cart-btn outlit-product-card__add-cart-btn--ajax" onclick="event.preventDefault(); event.stopPropagation(); productCartAddToCart(this, \'' + productId + '\')" aria-label="' + addToCartLabel + '">' +
+                                    '<span class="outlit-product-card__add-cart-progress add-to-cart-progress outlit-product-card__add-cart-points d-none" aria-hidden="true">' +
+                                        '<span></span><span></span><span></span>' +
+                                    '</span>' +
+                                    '<span class="outlit-product-card__add-cart-icon" aria-hidden="true">' +
+                                        CART_CATEGORY_SVG_ADD +
+                                    '</span>' +
+                                '</button>' +
+                                '<div class="outlit-product-card__quantity-wrap d-none" role="group" aria-label="' + qtyLabel + '">' +
+                                    '<button type="button" class="outlit-product-card__qty-btn outlit-product-card__qty-plus" aria-label="' + increaseQtyLabel + '">+</button>' +
+                                    '<span class="outlit-product-card__qty-num" data-qty>1</span>' +
+                                    '<button type="button" class="outlit-product-card__qty-btn outlit-product-card__qty-minus" aria-label="' + decreaseQtyLabel + '">−</button>' +
+                                    '<button type="button" class="outlit-product-card__qty-remove" onclick="event.preventDefault(); event.stopPropagation(); productCardRemoveFromCart(this)" aria-label="{{ _('Remove from cart') }}">' +
+                                        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/><path d="M10 11v6M14 11v6"/></svg>' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>';
+                    }
+                } else {
+                    addCartHtml =
+                        '<div class="outlit-product-card__out-of-stock-cta">' +
+                            '<a class="btn btn-primary btn-product-card-out-of-stock" href="/products/' + productSlug + '">' +
+                                '<img src="' + uBellUrl + '" alt="" width="18" height="18" class="d-inline" aria-hidden="true">' +
+                                '<span>' + notifyWhenAvailableText + '</span>' +
+                            '</a>' +
+                        '</div>';
+                }
+
+                article.innerHTML =
+                    '<div class="outlit-product-card__img-wrap" style="height: var(--outlit-card-img-height, 280px);">' +
+                        '<a href="/products/' + productSlug + '" class="outlit-product-card__img-link" aria-label="' + productName.replace(/"/g, '&quot;') + '">' +
+                            '<div class="outlit-product-card__img-inner">' +
+                                '<img id="product-card-img-' + productId + '"' +
+                                     ' class="outlit-product-card__img"' +
+                                     ' src="' + mainImg + '"' +
+                                     ' width="' + width + '"' +
+                                     ' height="' + height + '"' +
+                                     ' loading="lazy" decoding="async"' +
+                                     ' alt="' + productName.replace(/"/g, '&quot;') + '">' +
+                            '</div>' +
+                        '</a>' +
+                        (badge ? (
+                            '<div class="badge-name badge-name-product-card">' +
+                                (badgeIconEscaped ? '<span class="badge-icon ' + badgeIconEscaped + '"></span>' : '') +
+                                (badgeBodyEscaped ? '<span class="badge-text">' + badgeBodyEscaped + '</span>' : '') +
+                            '</div>'
+                        ) : '') +
+                        wishlistHtml +
+                        '<span class="product-card-bundle-offer" data-bundle-offer-product-id="' + productId + '" aria-hidden="true"></span>' +
+                        '<div class="outlit-product-card__row outlit-product-card__row--rating-cart">' +
+                            (ratingHtml || '') +
+                            addCartHtml +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="outlit-product-card__body">' +
+                        categoryHtml +
+                        '<h3 class="outlit-product-card__title">' +
+                            '<a href="/products/' + productSlug + '">' + productName + '</a>' +
+                        '</h3>' +
+                        priceHtml +
+                    '</div>';
+
+                productsSlider.appendChild(article);
+            });
+            
+            // Initialize bundle offers if available
+            if (typeof window.initBundleOffers === 'function') {
+                window.initBundleOffers();
+            }
+            
+            // Initialize Slick Carousel
+            if (typeof $ !== 'undefined' && $.fn.slick) {
+                const $slider = $(productsSlider);
+                
+                // Destroy existing slider if any
+                if ($slider.hasClass('slick-initialized')) {
+                    $slider.slick('unslick');
+                }
+                
+                const arrowNextClass = window.appDirection === 'ltr' ? 'icon-keyboard_arrow_right' : 'icon-keyboard_arrow_left';
+                const arrowPrevClass = window.appDirection === 'ltr' ? 'icon-keyboard_arrow_left' : 'icon-keyboard_arrow_right';
+                const screenWidth = window.screen.width;
+                const editingMode = {{ 'true' if store.editing_mode else 'false' }};
+                const slidesCount = products.length;
+                
+                if (screenWidth >= 0 || editingMode) {
+                    $slider.slick({
+                        slidesToShow: 1.5,
+                        slidesToScroll: 1,
+                        infinite: false,
+                        autoplay: false,
+                        arrows:false,
+                        dots: false,
+                        rtl: !(window.appDirection === 'ltr'),
+                        nextArrow: '<button class="slick-next slick-arrow" aria-label="Next" type="button"><span class="' + arrowNextClass + '"></span></button>',
+                        prevArrow: '<button class="slick-prev slick-arrow" aria-label="Previous" type="button"><span class="' + arrowPrevClass + '"></span></button>',
+                        responsive: [
+                           {
+            breakpoint: 380,
+            settings: {
+                slidesToShow: 1.5,
+                slidesToScroll: 1
+            }
+        }              ]
+                    });
+                }
+            }
+
+        } catch (err) {
+            if (loader) {
+                loader.textContent = err && err.message === 'timeout'
+                    ? "{{ _('Failed to load products') }}"
+                    : "{{ _('Failed to load products') }}";
+            }
+        }
+    }
+
+    loadCategoryProducts();
+});
+})();
+</script>
+{% endif %}

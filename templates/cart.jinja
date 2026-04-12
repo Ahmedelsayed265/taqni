@@ -1,446 +1,1535 @@
 {% extends "layout.jinja" %}
 
-
-
 {% block header %} {% include 'header.jinja' %} {% endblock %}
 
 
 {% block top_links %}
-    <link rel="stylesheet" type="text/css" href="{{ 'toastr.min.css' | asset_url }}" />
-    <link rel="stylesheet" type="text/css" href="{{ ('cart.css?v=' ~ ver) | asset_url }}" />
+<link rel="stylesheet" type="text/css" href="{{ 'toastr.min.css' | asset_url }}" />
+<link rel="stylesheet" type="text/css" href="{{ ('cart.css?v=24') | asset_url }}" />
 {% endblock %}
 
 {% block main_content %}
 
-    <section class="breadcrumb-section">
-        <nav aria-label="breadcrumb">
-        
-            <ol class="breadcrumb">
+<section class="breadcrumb-section">
+    <nav aria-label="{{ _('Breadcrumb') }}">
+        <ol class="breadcrumb">
             <div class="container d-flex flex-wrap">
-                 <li class="breadcrumb-item active " aria-current="page">{{ _("Cart") }}</li>
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/">{{ _("Home") }}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{ _("Cart") }}
+                </li>
             </div>
-        
-            </ol>
-    
-        </nav>
-    </section>
+        </ol>
+    </nav>
+</section>
 
-
-    <div class="modal" id="searchCitiesModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal" id="searchCitiesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-body" style="padding: 10px 20px 20px">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+            <div class="modal-body" style="padding: 10px 20px 20px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ _('Close') }}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
 
-              <h5 class="text-center py-3 mb-0 text-color-primary">
-                {{ _("Enjoy free shipping for the cities") }}
-              </h5>
+                <h5 class="text-center py-3 mb-0 text-color-primary">
+                    {{ _("Enjoy free shipping for the cities") }}
+                </h5>
 
-              <div class="p-2 d-lg-flex align-items-center bd-highlight search-input lg-search-div flex-grow-1">
-                <div class="form-group" style="position: relative; margin: 0px">
-                    <span class="icon-search search-input-icon" style="z-index: 1"></span>
-                    <div class="autocomplete" style="position: relative">
-                        <input type="text" data-cat-id="" class="form-control cities-search-input pl-5" placeholder="{{ _("Search") }}">
+                <div class="p-2 d-lg-flex align-items-center bd-highlight search-input lg-search-div flex-grow-1">
+                    <div class="form-group" style="position: relative; margin: 0px">
+                        <span class="icon-search search-input-icon" style="z-index: 1"></span>
+                        <div class="autocomplete" style="position: relative">
+                            <input type="text" data-cat-id="" class="form-control cities-search-input pl-5"
+                                placeholder="{{ _(" Search") }}">
+                        </div>
                     </div>
                 </div>
+
+                <div>
+                    <p class="cities-result lead">
+                        {% for city in safeget(cart, "free_shipping_rule.shipping_cities_condition", []) %}
+                        {{ city.name }}
+                        {% if not loop.last %} {{ _(",") }} {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" style="width: 120px">{{
+                        _("Cancel") }}</button>
+                </div>
             </div>
-
-              <div>
-                <p class="cities-result lead">
-                  {% for city in safeget(cart, "free_shipping_rule.shipping_cities_condition", []) %}
-                    {{ city.name }}
-                    {% if not loop.last %} {{ _(",") }} {% endif %}
-                  {% endfor %}
-                </p>
-              </div>
-
-              <div class="d-flex justify-content-center mt-3">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" style="width: 120px">{{ _("Cancel") }}</button>
-              </div>
-          </div>
         </div>
-      </div>
     </div>
+</div>
 
-    <div class="container mb-5">
-        <div class="cart-view">
-            <div class="row cart-products-with-totals {% if cart.products_count <= 0 %}d-none{% endif %}">
-                <div class="col-12 col-lg-8">
-                    <div class="section-cart-products">
-                        <h2 class="section-title ">{{ _("Products") }}</h2>
-                        <div class="header-wrapper">
-                            <div class="section-cart-products-row d-flex">
-                                <div class="section-cart-products-col-1"></div>
-                                <div class="section-cart-products-col-2 flex-grow-1">{{ _("Product") }}</div>
-                                <div class="section-cart-products-col-3">{{ _("Quantity") }}</div>
-                                <div class="section-cart-products-col-4">{{ _("Price") }}</div>
-                            </div>
-                        </div>
+<div class="container mb-5">
+    {% if cart.free_shipping_rule and cart.free_shipping_rule.code %}
+    {% set status = cart.free_shipping_rule.subtotal_condition.status | default('') %}
+    {% set condition = cart.free_shipping_rule.subtotal_condition %}
+    {% set progress = (condition.products_subtotal_percentage_from_min | default(0, true)) | int %}
+    <div class="cart-discount-rule-wrapper free-shipping-rule-section mt-2 mb-4 d-block">
+        <div class="free-shipping-message-text free-shipping-rule-message">
+            {% if status == 'min_not_reached' %}
+            {{ _("Add products with total of %(total)s to get free shipping") | format(
+            total=condition.remaining
+            | default(condition.remaining_to_min_total_formatted)
+            | default(condition.remaining_to_min_total)
+            | default("0")
+            ) }}
+            {% elif status == 'max_exceed' or status == 'max_exceeded' %}
+            {{ _("Free shipping applies for cart total between %(min)s and %(max)s") |
+            format(min=condition.min_total_formatted | default(condition.min_string), max=condition.max_total_formatted
+            | default(condition.max_string)) }}
+            {% elif status == 'applied' %}
+            {{ _("Free shipping applied") }}
+            {% endif %}
+        </div>
 
-                        <div class="template_for_cart_products_list">
-                            {% include 'vitrin:cart/products_list.jinja' %}
-                        </div>
+        <div
+            class="free-shipping-progress-container {% if status == 'min_not_reached' or status == 'max_exceeded' or status == 'max_exceed' %}d-flex{% else %}d-none{% endif %}">
+            <div class="free-shipping-value free-shipping-value-right">
 
-                        <div class="cart-gift-card" data-gift-removed-success="{{ _('Gift card removed successfully') }}" data-gift-added-success="{{ _('Send Successfully') }}" style="display: {% if cart.gift_card_details and cart.gift_card_details | length > 0 %}block{% else %}none{% endif %};">
-                            <div class="d-flex align-items-start">
-                                <span class="gift-card-icon-wrapper">
-                                    <span class="icon-gift gift-icon-fallback"></span>
-                                    <img src="{% if cart.gift_card_details and cart.gift_card_details.card_design %}{{ cart.gift_card_details.card_design }}{% endif %}" class="gift-card-image {% if not cart.gift_card_details or not cart.gift_card_details.card_design %}d-none{% endif %}" alt="Gift card design" />
-                                </span>
-                                <div class="gift-card-content flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <p class="mb-0 gift-title">{{ _('Gift') }}</p>
-                                        <p class="mb-0 gift-price-label">{{ _('Free') }}</p>
+                <span class="free-shipping-current-subtotal">{{ condition.products_subtotal_formatted |
+                    default(condition.products_subtotal) }}</span>
+            </div>
+            <div class="free-shipping-track">
+                <div class="free-shipping-track-bg"></div>
+                <div class="free-shipping-track-fill free-shipping-rule-progress"
+                    style="width: {% if status == 'max_exceeded' or status == 'max_exceed' %}100%{% else %}{{ [progress, 100] | min | int }}%{% endif %}">
+                </div>
+
+            </div>
+            <div class="free-shipping-value free-shipping-value-left">
+                <span class="free-shipping-min-total">{{ condition.min_total_formatted | default(condition.min_string)
+                    }}</span>
+            </div>
+        </div>
+
+        <div
+            class="free-shipping-read-more free-shipping-rule-read-more {% if status == 'min_not_reached' %}d-block{% else %}d-none{% endif %}">
+            <a data-toggle="modal" data-target="#searchCitiesModal" href="#">{{ _("Read More") }}</a>
+        </div>
+    </div>
+    {% endif %}
+    <div class="cart-view">
+        <div class="row cart-products-with-totals {% if cart.products_count <= 0 %}d-none{% endif %}">
+            <div class="col-12 col-lg-8" style="padding: 0;">
+                <div class="cart-header-main d-flex justify-content-start gap-5 align-items-center mb-3">
+                    <h1 class="cart-main-title mb-0">
+                        {{ _("My shopping bag") }}
+                    </h1>
+                    {% if cart.products_count > 0 %}
+                    <span class="cart-products-count text-muted">
+                        ({{ cart.products_count }} {{ _("products") }})
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="section-cart-products">
+                    <div class="template_for_cart_products_list">
+                        {% include 'vitrin:cart/products_list.jinja' %}
+                    </div>
+
+                    <div class="cart-gift-card" data-gift-removed-success="{{ _('Gift card removed successfully') }}"
+                        data-gift-added-success="{{ _('Send Successfully') }}"
+                        style="display: {% if cart.gift_card_details and cart.gift_card_details | length > 0 %}block{% else %}none{% endif %};">
+                        <div class="d-flex align-items-start">
+                            <span class="gift-card-icon-wrapper">
+                                <span class="icon-gift gift-icon-fallback"></span>
+                                <img src="{% if cart.gift_card_details and cart.gift_card_details.card_design %}{{ cart.gift_card_details.card_design }}{% endif %}"
+                                    class="gift-card-image {% if not cart.gift_card_details or not cart.gift_card_details.card_design %}d-none{% endif %}"
+                                    alt="{{ _('Gift card design') }}" loading="lazy" decoding="async" />
+                            </span>
+                            <div class="gift-card-content flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <p class="mb-0 gift-title">{{ _('Gift') }}</p>
+                                    <p class="mb-0 gift-price-label">{{ _('Free') }}</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-start gift-card-details-row">
+                                    <div class="gift-card-info">
+                                        <p class="mb-0 gift-sender-recipient">
+                                            <span class="sender-label">{{ _("Sender") }}:</span> <span
+                                                class="sender-name">{{cart.gift_card_details.sender_name if
+                                                cart.gift_card_details else ''}}</span>;
+                                            <span class="recipient-label">{{ _("Recipient") }}:</span> <span
+                                                class="receiver-name">{{cart.gift_card_details.receiver_name if
+                                                cart.gift_card_details else ''}}</span>
+                                        </p>
+                                        <p class="mb-0 message-info"
+                                            style="display: {% if cart.gift_card_details and cart.gift_card_details.gift_message and cart.gift_card_details.gift_message | length > 0 %}block{% else %}none{% endif %};">
+                                            <span class="gift-message">{{ cart.gift_card_details.gift_message if
+                                                cart.gift_card_details else '' }}</span>
+                                        </p>
+                                        <p class="mb-0 media-link-info"
+                                            style="display: {% if cart.gift_card_details and cart.gift_card_details.media_link and cart.gift_card_details.media_link | length > 0 %}block{% else %}none{% endif %};">
+                                            <span class="gift-media-link">{{ cart.gift_card_details.media_link if
+                                                cart.gift_card_details else '' }}</span>
+                                        </p>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-start gift-card-details-row">
-                                        <div class="gift-card-info">
-                                            <p class="mb-0 gift-sender-recipient">
-                                                <span class="sender-label">{{ _("Sender") }}:</span> <span class="sender-name">{{cart.gift_card_details.sender_name if cart.gift_card_details else ''}}</span>;
-                                                <span class="recipient-label">{{ _("Recipient") }}:</span> <span class="receiver-name">{{cart.gift_card_details.receiver_name if cart.gift_card_details else ''}}</span>
-                                            </p>
-                                            <p class="mb-0 message-info" style="display: {% if cart.gift_card_details and cart.gift_card_details.gift_message and cart.gift_card_details.gift_message | length > 0 %}block{% else %}none{% endif %};">
-                                                <span class="gift-message">{{ cart.gift_card_details.gift_message if cart.gift_card_details else '' }}</span>
-                                            </p>
-                                            <p class="mb-0 media-link-info" style="display: {% if cart.gift_card_details and cart.gift_card_details.media_link and cart.gift_card_details.media_link | length > 0 %}block{% else %}none{% endif %};">
-                                                <span class="gift-media-link">{{ cart.gift_card_details.media_link if cart.gift_card_details else '' }}</span>
-                                            </p>
-                                        </div>
-                                        <div class="gift-card-actions">
-                                            <button type="button" class="btn btn-sm btn-link gift-card-edit-btn" onclick="editGiftCard()" title="{{ _('Edit') }}">
-                                                <img src="{{ 'edit-icon.svg' | asset_url }}" alt="Edit" class="gift-card-edit-icon" />
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-link gift-card-delete-btn" onclick="deleteGiftCard()" title="{{ _('Delete') }}">
-                                                <span class="icon-trash-alt"></span>
-                                                <img class="delete-gift-progress d-none" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"/>
-                                            </button>
-                                        </div>
+                                    <div class="gift-card-actions">
+                                        <button type="button" class="btn btn-sm btn-link gift-card-edit-btn"
+                                            onclick="editGiftCard()" title="{{ _('Edit') }}">
+                                            <img src="{{ 'edit-icon.svg' | asset_url }}" alt="{{ _('Edit') }}"
+                                                class="gift-card-edit-icon" loading="lazy" decoding="async" />
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-link gift-card-delete-btn"
+                                            onclick="deleteGiftCard()" title="{{ _('Delete') }}">
+                                            <span class="icon-trash-alt"></span>
+                                            <img class="delete-gift-progress d-none"
+                                                src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"
+                                                loading="lazy" decoding="async" />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
+
                 </div>
-                <div class="col-12 col-lg-4">
+            </div>
+            <div class="col-12 col-lg-4 cart-sidebar-column">
+                <div class="cart-sidebar-wrapper">
 
-                    <h2 class="section-title ">{{ _("Total summary") }}</h2>
-                    <div class="header-wrapper">
-                        <div class="section-cart-products-row section-cart-totals-row  d-flex">
-                            <div class="flex-grow-1">{{ _("name") }}</div>
-                            <div class="flex-shrink-0" style="width: 30%">{{ _("value") }}</div>
-                        </div>
-                    </div>
-                    <div>{% include "components/cart_loyalty_points_widget.jinja" %}</div>
 
-                    <div class="cart-totals-div">
-                        {% for cartTotal in cart.totals %}
-                            <div class="cart-product-row-wrapper cart-totals-row-wrapper">
+                    <div class="cart-sidebar-card order-summary-card mb-4">
+                        <h4 class="cart-sidebar-title">{{ _("Order Summary") }}</h4>
+                        <div class="cart-totals-div" role="status" aria-live="polite" aria-atomic="true">
+                            {% for cartTotal in cart.totals %}
+                            <div class="cart-totals-row-wrapper" data-total-row="{{ cartTotal.code }}">
                                 <div class="flex-grow-1">
                                     {{ cartTotal.title }}
-                                    {% if cartTotal.code == 'total' and store.settings.general.tax_settings.tax_percentage_formatted %}&nbsp;<small>{{ _('Includes TAX %(percentage)s') | format(percentage=store.settings.general.tax_settings.tax_percentage_formatted) }}</small>{% endif %}
+                                    {% if cartTotal.code == 'total' and
+                                    store.settings.general.tax_settings.tax_percentage_formatted %}&nbsp;<small>{{
+                                        _('Includes TAX %(percentage)s') |
+                                        format(percentage=store.settings.general.tax_settings.tax_percentage_formatted)
+                                        }}</small>{% endif %}
                                 </div>
-                                <div class="flex-shrink-0" style="width: 30%; {% if cartTotal.code == 'total' %} font-weight: bold; color: var( --primary-color); {% endif %}">
-                                    {{ cartTotal.value_string }}
-                                </div>
+                                <div class="flex-shrink-0 cart-total-value {% if cartTotal.code == 'total' %}cart-total-final{% endif %}"
+                                    data-total="{{ cartTotal.code }}">{{ cartTotal.value_string }}</div>
                             </div>
-                        {% endfor %}
-                    </div>
-
-                    <div> 
-                    {% include 'vitrin:cart/payment_widgets.jinja' %}</div>
-
-
-                    <div class="coupon-form mt-5">
-                        <form>
-                            <div class="form-group">
-                                <h4>{{ _("Discount coupon") }}</h4>
-                                <div class="d-flex">
-                                    <input class="form-control send-coupon" type="text" placeholder="{{ _("Enter discount coupon") }}" />
-                                    <button type="button" class="btn btn-primary" onclick="sendCoupon()">
-                                        <img class="send-coupon-progress d-none" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"/>
-                                    {{ _("Send") }}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-
-
-                        {% if cart.coupon.code %}
-                            <div class="message-coupon alert alert-primary" role="alert">
-                                <span>{{ cart.coupon.code }}</span>&nbsp;
-                                <a onclick="deleteCoupon()" style="color: inherit; cursor: pointer">
-                                    <span class="icon-trash-alt"></span>
-                                    <img class="delete-coupon-progress d-none" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"/>
-                                </a>
-                            </div>
-                        {% endif %}
-
-                    </div>
-
-
-
-                    {% if cart.free_shipping_rule and cart.free_shipping_rule.code %}
-                        {% set status = cart.free_shipping_rule.subtotal_condition.status | default('') %}
-                        {% set subtotal_condition = cart.free_shipping_rule.subtotal_condition %}
-                        <div class="cart-discount-rule-wrapper free-shipping-rule-section mt-5 d-block">
-                            <div class="d-flex align-items-center">
-                            <div class="message flex-grow-1 free-shipping-rule-message">
-                                {% if status == 'min_not_reached' %}
-                                    {{ _("Add products with total of %s to get free shipping") | format(subtotal_condition.remaining | default("0")) }}
-                                {% elif status == 'max_exceed' %}
-                                    {{ _("Free shipping applied for cart total between %min and %max") | format(min=subtotal_condition.min_string | default("0"), max=subtotal_condition.max_string | default("0")) }}
-                                {% elif status == 'applied' %}
-                                    {{  _("Free shipping applied") }}
-                                {% endif %}
-                            </div>
-
-                            <div class="text-muted mr-1 flex-shrink-0 free-shipping-rule-read-more 
-                                {% if status == 'min_not_reached' %}d-inline-block{% else %}d-none{% endif %}">
-                                <a data-toggle="modal" data-target="#searchCitiesModal" href="#">
-                                <small>{{ _("Read More") }}</small>
-                                </a>
-                            </div>
-
-                            <div class="discount-progress flex-shrink-0">
-                                <span class="free-shipping-rule-done 
-                                    {% if status == 'applied' %}d-inline-block{% else %}d-none{% endif %}">
-                                <span style="font-size: 28px" class="icon-done text-color-primary"></span>
-                                </span>
-                            </div>
-                            </div>
-
-                            <div class="{% if status == 'min_not_reached' %}d-block{% else %}d-none{% endif %} discount-progress-linear">
-                            <div class="progress-bar free-shipping-rule-progress" style="width: {{ subtotal_condition.products_subtotal_percentage_from_min | default(0) }}%">
-                                {% if status == 'applied' %}
-                                <span>{{ _("Free Shipping") }}</span>
-                                {% else %}
-                                <span>{{ subtotal_condition.products_subtotal_percentage_from_min | default(0) }}%</span>
-                                {% endif %}
-                            </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                    {% endif %}
 
+                        <div class="cart-checkout-section mt-3">
+                            <div class="coupon-card mb-3">
+                                <h4 class="cart-sidebar-title">{{ _("Discount Code") }}</h4>
+                                <div class="coupon-form">
+                                    <form>
+                                        <div class="form-group mb-0">
+                                            <div class="coupon-capsule">
 
-                    <div>
-                        <div class="mt-5">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M7.69171 19.6161C8.28274 19.6161 8.57825 19.6161 8.84747 19.716C8.88486 19.7298 8.92172 19.7451 8.95797 19.7617C9.21897 19.8815 9.42793 20.0904 9.84585 20.5083C10.8078 21.4702 11.2887 21.9512 11.8805 21.9955C11.96 22.0015 12.04 22.0015 12.1195 21.9955C12.7113 21.9512 13.1923 21.4702 14.1541 20.5083C14.5721 20.0904 14.781 19.8815 15.042 19.7617C15.0783 19.7451 15.1151 19.7298 15.1525 19.716C15.4218 19.6161 15.7173 19.6161 16.3083 19.6161H16.4173C17.9252 19.6161 18.6792 19.6161 19.1476 19.1476C19.6161 18.6792 19.6161 17.9252 19.6161 16.4173V16.3083C19.6161 15.7173 19.6161 15.4218 19.716 15.1525C19.7298 15.1151 19.7451 15.0783 19.7617 15.042C19.8815 14.781 20.0904 14.5721 20.5083 14.1541C21.4702 13.1923 21.9512 12.7113 21.9955 12.1195C22.0015 12.04 22.0015 11.96 21.9955 11.8805C21.9512 11.2887 21.4702 10.8078 20.5083 9.84585C20.0904 9.42793 19.8815 9.21897 19.7617 8.95797C19.7451 8.92172 19.7298 8.88486 19.716 8.84747C19.6161 8.57825 19.6161 8.28274 19.6161 7.69171V7.58269C19.6161 6.07479 19.6161 5.32083 19.1476 4.85239C18.6792 4.38394 17.9252 4.38394 16.4173 4.38394H16.3083C15.7173 4.38394 15.4218 4.38394 15.1525 4.28405C15.1151 4.27018 15.0783 4.25491 15.042 4.23828C14.781 4.11855 14.5721 3.90959 14.1541 3.49167C13.1923 2.52977 12.7113 2.04882 12.1195 2.00447C12.04 1.99851 11.96 1.99851 11.8805 2.00447C11.2887 2.04882 10.8078 2.52977 9.84585 3.49167C9.42793 3.90959 9.21897 4.11855 8.95797 4.23828C8.92172 4.25491 8.88486 4.27018 8.84747 4.28405C8.57825 4.38394 8.28274 4.38394 7.69171 4.38394H7.58269C6.07479 4.38394 5.32083 4.38394 4.85239 4.85239C4.38394 5.32083 4.38394 6.07479 4.38394 7.58269V7.69171C4.38394 8.28274 4.38394 8.57825 4.28405 8.84747C4.27018 8.88486 4.25491 8.92172 4.23828 8.95797C4.11855 9.21897 3.90959 9.42793 3.49167 9.84585C2.52977 10.8078 2.04882 11.2887 2.00447 11.8805C1.99851 11.96 1.99851 12.04 2.00447 12.1195C2.04882 12.7113 2.52977 13.1923 3.49167 14.1541C3.90959 14.5721 4.11855 14.781 4.23828 15.042C4.25491 15.0783 4.27018 15.1151 4.28405 15.1525C4.38394 15.4218 4.38394 15.7173 4.38394 16.3083V16.4173C4.38394 17.9252 4.38394 18.6792 4.85239 19.1476C5.32083 19.6161 6.07479 19.6161 7.58269 19.6161H7.69171Z"
+                                                        stroke="#8E8E93" stroke-width="1.5" />
+                                                    <path d="M15 9L9 15" stroke="#8E8E93" stroke-width="1.5"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M15 15H14.9892M9.01076 9H9" stroke="#8E8E93"
+                                                        stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
 
+                                                <input class="form-control send-coupon" type="text" placeholder="{{ _("Add discount coupon") }}" />
+                                                <button type="button" class="btn coupon-activate-btn" data-apply-coupon
+                                                    aria-label="{{ _("Apply discount coupon") }}">
+                                                    <img class="send-coupon-progress d-none"
+                                                        src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"
+                                                        loading="lazy" decoding="async" />
+                                                    {{ _("Activate") }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    {% if cart.coupon.code %}
+                                    <div class="message-coupon alert alert-primary mt-2" role="alert">
+                                        <span>{{ cart.coupon.code }}</span>&nbsp;
+                                        <a href="#" role="button" data-delete-coupon
+                                            aria-label="{{ _('Remove coupon') }}"
+                                            style="color: inherit; cursor: pointer">
+                                            <span class="icon-trash-alt"></span>
+                                            <img class="delete-coupon-progress d-none"
+                                                src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"
+                                                loading="lazy" decoding="async" />
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
                             {% if store.settings.general.availability.closed_now %}
-                                <a href="#"
-                                class="btn btn-lg btn-block btn-disabled"
-                                >
-                                    {{ _("Complete Order") }}
-                                </a>
+                            <a href="#" class="btn btn-lg btn-block btn-disabled">
+                                {{ _("Complete Purchase") }}
+                            </a>
                             {% else %}
                             {% if session.is_guest %}
-                                <a href="/auth/login?redirect_to=/checkout"
-                                class="btn btn-primary btn-lg btn-block"
-                                onclick="event.preventDefault(); handleLoginAction('/checkout'); return false;"
-                                >
-                                    {{ _("Complete Order") }}
-                                </a>
+                            <a href="/auth/login?redirect_to=/checkout"
+                                class="btn btn-primary btn-lg btn-block cart-checkout-btn"
+                                onclick="event.preventDefault(); handleLoginAction('/checkout'); return false;">
+                                {{ _("Complete Purchase") }}
+                            </a>
                             {% else %}
-                                <a href="/checkout"
-                                class="btn btn-primary btn-lg btn-block"
-                                >
-                                    {{ _("Complete Order") }}
-                                </a>
+                            <a href="/checkout" class="btn btn-primary btn-lg btn-block cart-checkout-btn">
+                                {{ _("Complete Purchase") }}
+                            </a>
                             {% endif %}
                             <div style="margin-top: 1rem">
-                              {% include 'vitrin:checkout/apple-pay-quick-checkout.jinja' %}
+                                {% include 'vitrin:checkout/apple-pay-quick-checkout.jinja' %}
                             </div>
+
                             {% endif %}
-                    
-                        </div>
 
-                        {% if store.settings.checkout.gift_order_settings.is_gift_order_enabled == '1' %}
-                          <div class="card border-0 mt-3 text-body">
-                            <button id="gift-btn" class="btn btn-lg btn-block btn-outline-primary gift-card-toggle-btn d-flex align-items-center justify-content-between {% if cart.gift_card_details and cart.gift_card_details | length > 0 %}gift-added{% else %}gift-send{% endif %}" onclick="handleGiftCardClick()">
-                              <span class="icon-gift" style="font-size: 24px;"></span>
-                              <span class="flex-grow-1 text-left ml-3">{{ _("Make it a gift") }}</span>
-                              <span  class="gift-edit-link {% if cart.gift_card_details and cart.gift_card_details | length > 0 %}d-inline{% else %}d-none{% endif %}">{{ _("Edit details") }}</span>
-                            </button>
-                          </div>
-                          {% include 'vitrin:cart/gift-card.jinja' %}
-                        {% endif %}
+                            {% if store.settings.checkout.gift_order_settings.is_gift_order_enabled == '1' %}
+                            <div class="mt-2">
+                                <button id="gift-btn" type="button"
+                                    class="btn btn-lg btn-block gift-card-toggle-btn gift-pill-btn d-flex align-items-center justify-content-between {% if cart.gift_card_details and cart.gift_card_details | length > 0 %}gift-added{% else %}gift-send{% endif %}"
+                                    onclick="handleGiftCardClick()">
+                                    <span class="gift-back-icon">
 
-                        <div class="mt-3">
-                            <a href="/" class="btn btn-outline-primary btn-lg btn-block">
-                                {{ _("continue shopping") }}
-                            </a>
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M15 6.00015C15 6.00015 9.00001 10.4191 9 12.0002C8.99999 13.5813 15 18.0002 15 18.0002"
+                                                stroke="#001529" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+
+                                    </span>
+                                    <span class="flex-grow-1 text-center mx-2">{{ _("Send as a gift") }}</span>
+                                    <span class="gift-icon-wrapper">
+                                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M31.51 22.0487L31.5044 22.0381C31.2125 21.4756 30.6356 21.1581 29.9994 21.2106L26.4506 21.5012V10.3637H27.1863C27.3931 10.3637 27.5613 10.1956 27.5613 9.98873V6.88998C27.5613 6.24248 27.0344 5.7156 26.3869 5.7156H25.2925V4.80873C25.2925 4.0556 24.8844 3.40623 24.1725 3.0281C23.4794 2.65998 22.6769 2.64748 21.9706 2.99373L19.4206 4.24435C18.9488 3.84185 18.2675 3.58873 17.5112 3.58873C16.755 3.58873 16.0731 3.84185 15.6019 4.24435L13.0519 2.99373C12.3456 2.64748 11.5431 2.65998 10.85 3.0281C10.1381 3.40623 9.73 4.0556 9.73 4.80873V5.7156H8.63562C7.98812 5.7156 7.46125 6.24248 7.46125 6.88998V9.98873C7.46125 10.1956 7.62937 10.3637 7.83625 10.3637H8.57187V19.0775L6.05937 19.7256V17.7706C6.05937 17.5637 5.89125 17.3956 5.68437 17.3956H0.6875C0.480625 17.3956 0.3125 17.5637 0.3125 17.7706V28.8819C0.3125 29.0887 0.480625 29.2569 0.6875 29.2569H5.6825C5.88937 29.2569 6.0575 29.0887 6.0575 28.8819V27.4512L7.52563 27.03C8.805 26.6631 12.4669 26.635 13.5863 27.2219L14.785 27.85C15.4487 28.1981 16.0756 28.4056 16.8156 28.5219L17.4931 28.6287C18.74 28.825 19.8638 28.6912 21.0294 28.2087L30.7281 24.1925C31.14 24.0219 31.4381 23.7106 31.5906 23.2919C31.7431 22.8737 31.715 22.4437 31.51 22.0487ZM5.3075 28.5075H1.0625V18.1462H2.16875V24.5075C2.16875 24.7144 2.33687 24.8825 2.54375 24.8825C2.75063 24.8825 2.91875 24.7144 2.91875 24.5075V18.1462H5.30688V28.5075H5.3075ZM25.7 21.5631L21.9231 21.8725C22.0056 21.5181 21.9788 21.1512 21.8419 20.7912C21.6419 20.265 21.2569 19.885 20.7281 19.6919L19.13 19.1081V11.535L19.8725 13.1206C19.935 13.2544 20.0688 13.3369 20.2119 13.3369C20.2381 13.3369 20.2644 13.3344 20.2906 13.3287C20.4613 13.2919 20.5844 13.1425 20.5869 12.9675L20.6162 10.9581L22.3713 11.9375C22.5219 12.0212 22.71 11.9919 22.8281 11.8662C22.9456 11.74 22.9625 11.55 22.8687 11.4056L22.1912 10.3644H25.7006V21.5631H25.7ZM15.8494 7.09623C16.16 7.29935 16.5331 7.44623 16.9431 7.51748L15.1587 11.3281L15.1438 10.3194C15.1419 10.1875 15.0706 10.0662 14.9563 9.99998C14.8419 9.93435 14.7013 9.9331 14.5863 9.99748L13.6062 10.5444L15.8494 7.09623ZM19.1706 7.09623L21.4137 10.5437L20.4338 9.99685C20.3188 9.93248 20.1781 9.93373 20.0637 9.99935C19.9494 10.0656 19.8781 10.1869 19.8762 10.3187L19.8612 11.3275L18.0769 7.51685C18.4869 7.44623 18.86 7.29935 19.1706 7.09623ZM18.23 9.61373H16.7894L17.5094 8.0756L18.23 9.61373ZM18.38 10.3637V18.8337L16.6406 18.1981V10.3637H18.38ZM26.8106 6.8906V9.61435H21.7031L20.1906 7.28935L21.97 8.16185C22.3119 8.32935 22.6756 8.4131 23.0387 8.4131C23.4269 8.4131 23.8137 8.3181 24.1712 8.12748C24.845 7.76935 25.2463 7.16873 25.2875 6.46623H26.3856C26.6206 6.4656 26.8106 6.65623 26.8106 6.8906ZM22.3 3.66748C22.7875 3.4281 23.3419 3.43685 23.8194 3.6906C24.285 3.9381 24.5419 4.3356 24.5419 4.80935V6.34685C24.5419 6.8206 24.2856 7.2181 23.82 7.4656C23.3419 7.71935 22.7881 7.7281 22.3006 7.48873L19.9025 6.31248C20.02 6.08498 20.0856 5.83748 20.0856 5.57748C20.0856 5.31748 20.02 5.06998 19.9025 4.84248L22.3 3.66748ZM17.51 4.33873C18.4994 4.33873 19.3356 4.90623 19.3356 5.57748C19.3356 6.24873 18.4994 6.81623 17.51 6.81623C16.5206 6.81623 15.6844 6.24873 15.6844 5.57748C15.6844 4.90623 16.5206 4.33873 17.51 4.33873ZM10.4781 4.80873C10.4781 4.33498 10.7344 3.93748 11.2 3.68998C11.6781 3.43623 12.2319 3.42748 12.7194 3.66685L15.1169 4.84248C14.9994 5.06998 14.9338 5.31748 14.9338 5.57748C14.9338 5.83748 14.9994 6.08498 15.1169 6.31248L12.7194 7.4881C12.2319 7.72748 11.6775 7.71873 11.2 7.46498C10.7344 7.21748 10.4781 6.8206 10.4781 6.34685V4.80873ZM8.20938 6.8906C8.20938 6.65623 8.4 6.46623 8.63375 6.46623H9.7325C9.77375 7.16873 10.175 7.76935 10.8488 8.12748C11.2069 8.31748 11.5938 8.4131 11.9819 8.4131C12.345 8.4131 12.7094 8.32935 13.0506 8.16185L14.83 7.28935L13.3175 9.61435H8.21V6.8906H8.20938ZM9.32 10.3637H12.8294L12.1519 11.405C12.0581 11.5494 12.0744 11.7394 12.1925 11.8656C12.31 11.9912 12.4987 12.0212 12.6494 11.9369L14.4044 10.9581L14.4338 12.9675C14.4362 13.1419 14.5594 13.2919 14.73 13.3287C14.7562 13.3344 14.7825 13.3369 14.8088 13.3369C14.9519 13.3369 15.0856 13.2544 15.1481 13.1206L15.8906 11.535V17.9244L15.7794 17.8837C14.8319 17.5375 13.96 17.6869 13.3056 17.8562L9.32063 18.8844V10.3637H9.32ZM30.8862 23.035C30.8056 23.2569 30.66 23.4087 30.4419 23.4994L20.7431 27.5156C19.71 27.9431 18.7144 28.0619 17.61 27.8881L16.9325 27.7812C16.2675 27.6769 15.7294 27.4987 15.1331 27.1862L13.9344 26.5581C13.2119 26.1794 11.7119 26.0187 10.2712 26.0187C9.095 26.0187 7.95813 26.1262 7.31875 26.3094L6.0575 26.6712V20.5006L13.4925 18.5825C14.3194 18.3694 14.9263 18.3712 15.5219 18.5887L20.4713 20.3962C20.7938 20.5137 21.0194 20.7362 21.1413 21.0575C21.2631 21.3787 21.2425 21.695 21.08 21.9975L21.015 22.1187C20.7794 22.5569 20.3106 22.7837 19.8206 22.6975L14.0569 21.6806C13.8531 21.6444 13.6581 21.7806 13.6225 21.985C13.5869 22.1894 13.7225 22.3837 13.9269 22.4194L19.6906 23.4362C20.4344 23.5669 21.1494 23.2637 21.5656 22.655L30.0613 21.9594C30.3962 21.9325 30.6869 22.0912 30.8394 22.3844L30.845 22.395C30.9531 22.6037 30.9669 22.8137 30.8862 23.035Z"
+                                                fill="#231F20" />
+                                        </svg>
+                                    </span>
+                                    <span
+                                        class="gift-edit-link {% if cart.gift_card_details and cart.gift_card_details | length > 0 %}d-inline{% else %}d-none{% endif %}">{{
+                                        _("Edit details") }}</span>
+                                </button>
+                            </div>
+                            {% include 'vitrin:cart/gift-card.jinja' %}
+                            {% endif %}
+
+                            <div class="mt-2">
+                                <a href="/" class="btn btn-block continue-btn">
+                                    {{ _("continue shopping") }}
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-
-
+                    <div class="cart-sidebar-card earned-points-card">
+                        <h4 class="cart-sidebar-title d-flex align-items-center">
+                            <span>{{ _("Earned Points") }}</span>
+                            <span class="icon-star ml-2" style="font-size: 16px;"></span>
+                        </h4>
+                        <div class="earned-points-content">
+                            <p class="earned-points-description">
+                                {{ _("Congratulations, you earned %(points)s points. Please log in to view and benefit from your points") | format(points=cart.total_value | default(0)) }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-            <div class="cart-empty pt-5 pbb-5 {% if cart.products_count > 0 %}d-none{% endif %}">
-                <div class="d-flex flex-column align-items-center">
-                    <span class="icon-shopping_cart_black_36dp-1-1 theme-title-primary" style="font-size: 90px">
-                        <span class="path1"></span><span class="path2"></span>
-                    </span>
-                    <h2 class="mt-3">{{ _("Cart is empty") }}</h2>
-                    <div class="mt-3">
-                        <a href="/" class="btn btn-outline-primary btn-lg btn-block">
-                            {{ _("continue shopping") }}
-                        </a>
-                    </div>
+        </div>
+        <div class="cart-empty pt-5 pbb-5 {% if cart.products_count > 0 %}d-none{% endif %}">
+            <div class="d-flex flex-column align-items-center mt-svg">
+
+                <svg width="151" height="150" viewBox="0 0 151 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M88.0833 93.75L110.104 115.625M110.104 115.625L132.125 137.5M110.104 115.625L88.0833 137.5M110.104 115.625L132.125 93.75"
+                        stroke="#404040" stroke-width="2.5" stroke-linecap="round" />
+                    <path
+                        d="M44.0417 46.875V43.75C44.0417 26.4911 58.1261 12.5 75.5001 12.5C92.874 12.5 106.958 26.4911 106.958 43.75V46.875"
+                        stroke="#404040" stroke-width="2.5" />
+                    <path
+                        d="M128.303 78.125L131.006 62.0973C132.196 55.0394 132.791 51.5104 130.959 49.1927C129.126 46.875 125.741 46.875 118.97 46.875H32.0295C25.259 46.875 21.8738 46.875 20.0413 49.1927C18.2088 51.5104 18.8039 55.0394 19.9941 62.0973L27.3112 105.488C29.8915 120.79 31.1817 128.44 36.2909 132.97C41.4001 137.5 48.7393 137.5 63.4177 137.5H69.2083"
+                        stroke="#404040" stroke-width="2.5" stroke-linecap="round" />
+                    <path d="M28.3125 109.375L69.2083 109.375" stroke="#404040" stroke-width="2.5"
+                        stroke-linecap="round" />
+                </svg>
+
+                <h2 class="mt-empty">{{ _("Cart is empty") }}</h2>
+                <div class="mt-shopping">
+                    <a href="/" class="btn btn-outline-primary btn-lg btn-block">
+                        {{ _("continue shopping") }}
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
+{% if settings.cart_category_products_list and settings.cart_category_products_list.id %}
+<div id="cart-custom-category-products" class="category-products container "
+    style="margin-top: 10px; margin-bottom: 10px;">
+    <div class="mb-1">
+        <div class="titles">
+            <h2 class="section-title" style="margin-bottom: 10px; text-align: start;">{{settings.cart_name or _("recommended products")}}</h2>
+        </div>
+        <div class="products-slider-wrapper" style="position: relative;">
+            <div class="loading-spinner" style="text-align: center; padding: 10px;">{{ _("Loading...") }}</div>
+            <div class="swiper cart-category-products-slider" style="display: none;">
+                <div class="swiper-wrapper"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% set _cart_svg_options_icon = '<svg width="24" height="20" viewBox="0 0 24 20" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_1128_113)">
+        <g clip-path="url(#clip1_1128_113)">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M5.06467 1.72682C5.06467 1.40194 4.8013 1.13858 4.47643 1.13858C4.15156 1.13858 3.88819 1.40194 3.88819 1.72682V3.8837H1.73131C1.40643 3.8837 1.14307 4.14706 1.14307 4.47193C1.14307 4.79681 1.40643 5.06017 1.73131 5.06017H3.88819V7.21703C3.88819 7.5419 4.15156 7.80525 4.47643 7.80525C4.8013 7.80525 5.06467 7.5419 5.06467 7.21703V5.06017H7.22151C7.54638 5.06017 7.80974 4.79681 7.80974 4.47193C7.80974 4.14706 7.54638 3.8837 7.22151 3.8837H5.06467V1.72682Z"
+                fill="#050505" />
+            <path
+                d="M3.88777 3.88371V4.16942H4.17348V3.88371H3.88777ZM3.88777 5.06018H4.17348V4.77446H3.88777V5.06018ZM5.06425 5.06018V4.77446H4.77853V5.06018H5.06425ZM5.06425 3.88371H4.77853V4.16942H5.06425V3.88371ZM4.47601 1.4243C4.64308 1.4243 4.77853 1.55974 4.77853 1.72683H5.34996C5.34996 1.24415 4.95868 0.852875 4.47601 0.852875V1.4243ZM4.17348 1.72683C4.17348 1.55974 4.30893 1.4243 4.47601 1.4243V0.852875C3.99333 0.852875 3.60205 1.24415 3.60205 1.72683H4.17348ZM4.17348 3.88371V1.72683H3.60205V3.88371H4.17348ZM1.73089 4.16942H3.88777V3.59799H1.73089V4.16942ZM1.42836 4.47194C1.42836 4.30486 1.5638 4.16942 1.73089 4.16942V3.59799C1.24821 3.59799 0.856934 3.98927 0.856934 4.47194H1.42836ZM1.73089 4.77446C1.5638 4.77446 1.42836 4.63902 1.42836 4.47194H0.856934C0.856934 4.95461 1.24821 5.34589 1.73089 5.34589V4.77446ZM3.88777 4.77446H1.73089V5.34589H3.88777V4.77446ZM4.17348 7.21703V5.06018H3.60205V7.21703H4.17348ZM4.47601 7.51955C4.30893 7.51955 4.17348 7.38411 4.17348 7.21703H3.60205C3.60205 7.6997 3.99333 8.09098 4.47601 8.09098V7.51955ZM4.77853 7.21703C4.77853 7.38411 4.64308 7.51955 4.47601 7.51955V8.09098C4.95868 8.09098 5.34996 7.6997 5.34996 7.21703H4.77853ZM4.77853 5.06018V7.21703H5.34996V5.06018H4.77853ZM7.22109 4.77446H5.06425V5.34589H7.22109V4.77446ZM7.52361 4.47194C7.52361 4.63902 7.38817 4.77446 7.22109 4.77446V5.34589C7.70376 5.34589 8.09504 4.95461 8.09504 4.47194H7.52361ZM7.22109 4.16942C7.38817 4.16942 7.52361 4.30486 7.52361 4.47194H8.09504C8.09504 3.98927 7.70376 3.59799 7.22109 3.59799V4.16942ZM5.06425 4.16942H7.22109V3.59799H5.06425V4.16942ZM4.77853 1.72683V3.88371H5.34996V1.72683H4.77853Z"
+                fill="#050505" />
+            <path
+                d="M21.714 1.82431H12.5712C11.6875 1.82431 10.9712 2.54065 10.9712 3.42431V12.5672C10.9712 13.4508 11.6875 14.1672 12.5712 14.1672H21.714C22.5977 14.1672 23.314 13.4508 23.314 12.5672V3.42431C23.314 2.54065 22.5977 1.82431 21.714 1.82431Z"
+                fill="#FFF4FA" stroke="#050505" stroke-width="1.37143" />
+            <path
+                d="M17.1427 6.39572H10.2855C9.40189 6.39572 8.68555 7.11207 8.68555 7.99572V14.8529C8.68555 15.7365 9.40189 16.4529 10.2855 16.4529H17.1427C18.0263 16.4529 18.7427 15.7365 18.7427 14.8529V7.99572C18.7427 7.11207 18.0263 6.39572 17.1427 6.39572Z"
+                fill="#FFF4FA" stroke="#050505" stroke-width="1.37143" />
+            <path
+                d="M12.5713 10.9672H7.9999C7.11625 10.9672 6.3999 11.6835 6.3999 12.5672V17.1386C6.3999 18.0222 7.11625 18.7386 7.9999 18.7386H12.5713C13.455 18.7386 14.1713 18.0222 14.1713 17.1386V12.5672C14.1713 11.6835 13.455 10.9672 12.5713 10.9672Z"
+                fill="#FFF4FA" stroke="#050505" stroke-width="1.37143" />
+        </g>
+    </g>
+    <defs>
+        <clipPath id="clip0_1128_113">
+            <rect width="24" height="19.42" fill="white" />
+        </clipPath>
+        <clipPath id="clip1_1128_113">
+            <rect width="24" height="19.4286" fill="white" transform="translate(0 -0.00427246)" />
+        </clipPath>
+    </defs>
+</svg>' %}
+{% set _cart_svg_add_icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 18H21M17 22L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M7 7.5V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V7.5" stroke="currentColor"
+        stroke-width="1.5" />
+    <path
+        d="M10 22C7.71999 21.9999 6.57085 21.9917 5.76809 21.2752C4.95603 20.5505 4.75097 19.3264 4.34085 16.8781L3.17786 9.93557C2.98869 8.8063 2.89411 8.24167 3.18537 7.87083C3.47662 7.5 4.01468 7.5 5.09079 7.5H18.9092C19.9853 7.5 20.5234 7.5 20.8146 7.87083C21.1059 8.24167 21.0113 8.8063 20.8221 9.93557L20.4763 12"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M4.5 17.5H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+</svg>' %}
 
+<script>
+    (function () {
+        var CART_CATEGORY_SVG_OPTIONS = {{ _cart_svg_options_icon | tojson
+    }};
+    var CART_CATEGORY_SVG_ADD = {{ _cart_svg_add_icon | tojson }};
+
+    const container = document.getElementById('cart-custom-category-products');
+    const selectedCategoryId = {{ (settings.cart_category_products_list.id if settings.cart_category_products_list.id else settings.cart_category_products_list) | tojson }};
+
+    function waitForZid(maxWaitMs) {
+        maxWaitMs = maxWaitMs || 8000;
+        return new Promise(function (resolve) {
+            if (typeof zid !== 'undefined' && zid.products && typeof zid.products.list === 'function') {
+                resolve();
+                return;
+            }
+            var start = Date.now();
+            var t = setInterval(function () {
+                if (typeof zid !== 'undefined' && zid.products && typeof zid.products.list === 'function') {
+                    clearInterval(t);
+                    resolve();
+                } else if (Date.now() - start >= maxWaitMs) {
+                    clearInterval(t);
+                    resolve();
+                }
+            }, 250);
+        });
+    }
+
+    async function loadCategoryProducts() {
+        if (!container) return;
+        const loader = container.querySelector('.loading-spinner');
+        try {
+            console.log('Cart: loadCategoryProducts started. Category:', selectedCategoryId);
+            if (!selectedCategoryId || selectedCategoryId === "" || selectedCategoryId === "None" || (typeof selectedCategoryId === 'object' && Object.keys(selectedCategoryId).length === 0)) {
+                console.warn('Cart: No valid category ID found.', selectedCategoryId);
+                container.style.display = 'none';
+                return;
+            }
+            if (loader) loader.textContent = "{{ _('Loading...') }}";
+
+            // Wait for zid object
+            let zidApi = null;
+            for (let i = 0; i < 40; i++) {
+                var z = window.zid || (typeof zid !== 'undefined' ? zid : null);
+                if (z && z.products && typeof z.products.list === 'function') {
+                    zidApi = z; break;
+                }
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            if (!zidApi) {
+                console.error('Cart: zid API not available.');
+                if (loader) loader.textContent = "{{ _('Failed to load products') }}";
+                return;
+            }
+
+            const fetchP = async (id) => {
+                try {
+                    return await zidApi.products.list({ categories: id, page_size: 20 }, { showErrorNotification: false });
+                } catch (e) { return null; }
+            };
+
+            var categoryId = selectedCategoryId;
+            if (categoryId && typeof categoryId === 'object' && categoryId.id) categoryId = categoryId.id;
+
+            let response = await Promise.race([
+                fetchP(categoryId),
+                new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 15000))
+            ]).catch(() => null);
+
+            if (!response) {
+                if (loader) loader.textContent = "{{ _('Failed to load products') }}";
+                return;
+            }
+
+            var products = [];
+            if (response && response.status === 'success' && response.data) {
+                var d = response.data;
+                if (d.products) {
+                    products = d.products.results || d.products.data || (Array.isArray(d.products) ? d.products : []);
+                } else {
+                    products = d.results || d.data || (Array.isArray(d) ? d : []);
+                }
+            } else if (response && Array.isArray(response.results)) {
+                products = response.results;
+            } else if (response && Array.isArray(response.products)) {
+                products = response.products;
+            } else if (Array.isArray(response)) {
+                products = response;
+            } else if (response && response.data) {
+                if (Array.isArray(response.data.results)) products = response.data.results;
+                else if (Array.isArray(response.data.products)) products = response.data.products;
+                else if (Array.isArray(response.data)) products = response.data;
+            }
+
+            // Final fallback if still empty and we haven't tried array ID
+            if ((!products || products.length === 0) && !Array.isArray(categoryId)) {
+                console.log('Cart: Products empty with string ID, trying array ID...');
+                response = await fetchP([categoryId]);
+                if (response && response.status === 'success' && response.data) {
+                    var d = response.data;
+                    products = (d.products ? (d.products.results || d.products.data || d.products) : (d.results || d.data || d)) || [];
+                }
+            }
+
+            console.log('Cart: Processed products count:', products ? (Array.isArray(products) ? products.length : 'NaN') : 0);
+            if (!Array.isArray(products) || products.length === 0) {
+                if (loader) loader.textContent = "{{ _('No products in this category') }}";
+                return;
+            }
+
+            if (loader) loader.remove();
+
+            const sliderWrapper = container.querySelector('.products-slider-wrapper');
+            let productsSlider = container.querySelector('.cart-category-products-slider');
+
+            if (!productsSlider) {
+                console.error('Cart: slider element not found');
+                return;
+            }
+
+            let swiperWrapper = productsSlider.querySelector('.swiper-wrapper');
+            if (!swiperWrapper) {
+                swiperWrapper = document.createElement('div');
+                swiperWrapper.className = 'swiper-wrapper';
+                productsSlider.appendChild(swiperWrapper);
+            }
+
+            swiperWrapper.innerHTML = '';
+            productsSlider.style.display = 'block';
+            console.log('Cart: Building product cards HTML...');
+
+            const defaultImage = {{ image_url(("product-img.svg" | asset_url), w = 235, q = 100, f = "auto") | tojson
+        }};
+    const spinnerUrl = {{ ("spinner.gif" | asset_url) | tojson }};
+    const uBellUrl = {{ ("u_bell.svg" | asset_url) | tojson }};
+    const wishlistEnabled = {{ 'true' if store.settings.products.wishlist_enabled else 'false' }};
+    const reviewsEnabled = {{ 'true' if store.settings.products.reviews_enabled else 'false' }};
+    const addToFavoritesLabel = {{ _("Add to favorites") | tojson }};
+    const addToCartLabel = {{ _("Add to cart") | tojson }};
+    const qtyLabel = {{ _("Quantity") | tojson }};
+    const increaseQtyLabel = {{ _("Increase quantity") | tojson }};
+    const decreaseQtyLabel = {{ _("Decrease quantity") | tojson }};
+    const notifyWhenAvailableText = {{ _("Notify me when available") | tojson }};
+
+    function buildRatingHtml(ratingObj) {
+        if (!reviewsEnabled) return '';
+        ratingObj = ratingObj || {};
+        const totalCount = ratingObj.total_count || 0;
+        const avg = ratingObj.average || 0;
+        const ratingRounded = Math.ceil((avg * 2)) / 2;
+        let stars = '';
+        if (totalCount > 0) {
+            for (let n = 1; n <= 5; n++) {
+                if (n <= ratingRounded) {
+                    stars += '<span class="icon-star1"></span>';
+                } else if (n <= ratingRounded + 0.5) {
+                    stars += '<span class="icon-half-star"></span>';
+                } else {
+                    stars += '<span class="icon-star1 deactive"></span>';
+                }
+            }
+        }
+        return '' +
+            '<div class="outlit-product-card__rating">' +
+                '<span class="product-card-rating-count">(' + totalCount + ')</span>' +
+                (totalCount > 0 ? 
+                '<div class="d-inline-flex product-card-rating" data-rating="' + avg + '">' +
+                    stars +
+                '</div>' : '') +
+                '<span class="outlit-product-card__rating-value">' + (avg ? avg.toFixed(1) : '0.0') + '</span>' +
+            '</div>';
+    }
+
+    products.forEach(product => {
+        const productImages = Array.isArray(product.images) ? product.images : [];
+        const mainImgObj = product.main_image && product.main_image.image ? product.main_image.image : null;
+        const firstImgObj = productImages[0] && productImages[0].image ? productImages[0].image : null;
+        const mainImg = (mainImgObj && (mainImgObj.small || mainImgObj.medium || mainImgObj.large)) ||
+            (firstImgObj && (firstImgObj.small || firstImgObj.medium || firstImgObj.large)) ||
+            defaultImage;
+        const width = (mainImgObj && mainImgObj.width) || 235;
+        const height = (mainImgObj && mainImgObj.height) || 235;
+
+        const badge = product.badge || null;
+        const badgeBody = (badge && badge.body && (badge.body.ar || badge.body.en)) || '';
+        const badgeIcon = (badge && badge.icon && badge.icon.code) || '';
+
+        const productName = (product.name || '');
+        const productSlug = (product.slug || '').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\\/g, '\\\\');
+        const productId = String(product.id || '');
+
+        const badgeBodyEscaped = (badgeBody || '').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const badgeIconEscaped = (badgeIcon || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+        const formattedPrice = product.formatted_sale_price || product.formatted_price || '';
+        const hasSalePrice = !!product.formatted_sale_price;
+        const discountPercentage = product.discount_percentage || '';
+
+        const hasOptions = product.has_options || product.has_fields || product.product_class === 'dynamic_bundle' ||
+            (product.options && product.options.length > 0) ||
+            (product.variants && product.variants.length > 0);
+        const outOfStock = !product.is_infinite && product.quantity <= 0;
+
+        const ratingHtml = buildRatingHtml(product.rating || {});
+
+
+        let wishlistHtml = '';
+        if (wishlistEnabled) {
+            wishlistHtml =
+                '<div class="outlit-product-card__wishlist">' +
+                '<span zid-visible-customer="true">' +
+                '<button type="button" zid-visible-wishlist="' + productId + '" class="outlit-product-card__wishlist-btn icon-heart-mask filled" onclick="addToWishlist(this, \'' + productId + '\')" aria-label="' + addToFavoritesLabel + '"></button>' +
+                '<button type="button" zid-hidden-wishlist="' + productId + '" class="outlit-product-card__wishlist-btn icon-heart-mask" onclick="addToWishlist(this, \'' + productId + '\')" aria-label="' + addToFavoritesLabel + '"></button>' +
+                '</span>' +
+                '<a zid-visible-guest="true" class="outlit-product-card__wishlist-btn icon-heart-mask" href="/auth/login?redirect_to={{ session.url.path }}" onclick="event.preventDefault(); handleLoginAction(\'\', false); return false;" aria-label="' + addToFavoritesLabel + '"></a>' +
+                '<img class="loader d-none" src="' + spinnerUrl + '" width="20" height="20" alt="" aria-hidden="true">' +
+                '</div>';
+        }
+
+        let priceHtml = '';
+        if (hasSalePrice) {
+            priceHtml =
+                '<div class="outlit-product-card__price-wrap">' +
+                '<div class="outlit-product-card__price-row">' +
+                (discountPercentage ? '<span class="outlit-product-card__discount">-' + discountPercentage + '%</span>' : '') +
+                '<span class="outlit-product-card__price outlit-product-card__price--old">' + (product.formatted_price || '') + '</span>' +
+                '<span class="outlit-product-card__price outlit-product-card__price--current ">' + formattedPrice + '</span>' +
+                '</div>' +
+                '</div>';
+        } else {
+            priceHtml =
+                '<div class="outlit-product-card__price-wrap">' +
+                '<span class="outlit-product-card__price outlit-product-card__price--current ">' + formattedPrice + '</span>' +
+                '</div>';
+        }
+
+        let categoryHtml = '';
+        if (Array.isArray(product.categories) && product.categories.length > 0) {
+            const lastCat = product.categories[product.categories.length - 1];
+            const catName = (lastCat && lastCat.name) ? (typeof lastCat.name === 'string' ? lastCat.name : (lastCat.name.ar || lastCat.name.en || '')) : '';
+            if (catName && lastCat.id && lastCat.slug) {
+                categoryHtml =
+                    '<p class="outlit-product-card__category">' +
+                    '<a href="/categories/' + lastCat.id + '/' + (lastCat.slug || '') + '">' + catName + '</a>' +
+                    '</p>';
+            }
+        } else if (product.category && product.category.name) {
+            categoryHtml = '<p class="outlit-product-card__category">' + product.category.name + '</p>';
+        }
+
+        let addCartHtml = '';
+        if (product.is_infinite || product.quantity > 0) {
+            if (hasOptions || product.has_fields || product.product_class === 'dynamic_bundle') {
+                var optionsIconSvg = (CART_CATEGORY_SVG_OPTIONS + '').replace(/clip0_1128_113/g, 'clip0_cart_' + productId).replace(/clip1_1128_113/g, 'clip1_cart_' + productId);
+                addCartHtml =
+                    '<a href="/products/' + productSlug + '" class="outlit-product-card__add-cart-btn" aria-label="' + addToCartLabel + '">' +
+                    '<span class="outlit-product-card__add-cart-icon" aria-hidden="true">' +
+                    optionsIconSvg +
+                    '</span>' +
+                    '</a>';
+            } else {
+                addCartHtml =
+                    '<div class="outlit-product-card__add-cart-wrap" data-product-id="' + productId + '">' +
+                    '<button type="button" class="outlit-product-card__add-cart-btn outlit-product-card__add-cart-btn--ajax" onclick="event.preventDefault(); event.stopPropagation(); productCartAddToCart(this, \'' + productId + '\')" aria-label="' + addToCartLabel + '">' +
+                    '<span class="outlit-product-card__add-cart-progress add-to-cart-progress outlit-product-card__add-cart-points d-none" aria-hidden="true">' +
+                    '<span></span><span></span><span></span>' +
+                    '</span>' +
+                    '<span class="outlit-product-card__add-cart-icon" aria-hidden="true">' +
+                    CART_CATEGORY_SVG_ADD +
+                    '</span>' +
+                    '</button>' +
+                    '<div class="outlit-product-card__quantity-wrap d-none" role="group" aria-label="' + qtyLabel + '">' +
+                    '<button type="button" class="outlit-product-card__qty-btn outlit-product-card__qty-plus" aria-label="' + increaseQtyLabel + '">+</button>' +
+                    '<span class="outlit-product-card__qty-num" data-qty>1</span>' +
+                    '<button type="button" class="outlit-product-card__qty-btn outlit-product-card__qty-minus" aria-label="' + decreaseQtyLabel + '">−</button>' +
+                    '<button type="button" class="outlit-product-card__qty-remove" onclick="event.preventDefault(); event.stopPropagation(); productCardRemoveFromCart(this)" aria-label="{{ _('Remove from cart') }}">' +
+                        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/><path d="M10 11v6M14 11v6"/></svg>' +
+                        '</button>' +
+                        '</div>' +
+                        '</div>';
+            }
+        } else {
+            addCartHtml =
+                '<div class="outlit-product-card__out-of-stock-cta">' +
+                '<a class="btn btn-primary btn-product-card-out-of-stock" href="/products/' + productSlug + '">' +
+                '<img src="' + uBellUrl + '" alt="" width="18" height="18" class="d-inline" aria-hidden="true">' +
+                '<span>' + notifyWhenAvailableText + '</span>' +
+                '</a>' +
+                '</div>';
+        }
+
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+
+        const pItem = document.createElement('article');
+        pItem.className = 'outlit-product-card product-item position-relative' + (outOfStock ? ' outlit-product-card--out-of-stock' : '');
+        pItem.setAttribute('itemscope', '');
+        pItem.setAttribute('itemtype', 'https://schema.org/Product');
+
+        pItem.innerHTML =
+            '<div class="outlit-product-card__img-wrap" style="height: var(--outlit-card-img-height, 280px);">' +
+            '<a href="/products/' + productSlug + '" class="outlit-product-card__img-link" aria-label="' + productName.replace(/"/g, '&quot;') + '">' +
+            '<div class="outlit-product-card__img-inner">' +
+            '<img id="product-card-img-' + productId + '"' +
+            ' class="outlit-product-card__img"' +
+            ' src="' + mainImg + '"' +
+            ' width="' + width + '"' +
+            ' height="' + height + '"' +
+            ' loading="lazy" decoding="async"' +
+            ' alt="' + productName.replace(/"/g, '&quot;') + '">' +
+            '</div>' +
+            '</a>' +
+            (badge ? (
+                '<div class="badge-name badge-name-product-card">' +
+                (badgeIconEscaped ? '<span class="badge-icon ' + badgeIconEscaped + '"></span>' : '') +
+                (badgeBodyEscaped ? '<span class="badge-text">' + badgeBodyEscaped + '</span>' : '') +
+                '</div>'
+            ) : '') +
+            wishlistHtml +
+            '<span class="product-card-bundle-offer" data-bundle-offer-product-id="' + productId + '" aria-hidden="true"></span>' +
+            '<div class="outlit-product-card__row outlit-product-card__row--rating-cart">' +
+            (ratingHtml || '') +
+            addCartHtml +
+            '</div>' +
+            '</div>' +
+            '<div class="outlit-product-card__body">' +
+            categoryHtml +
+            '<h3 class="outlit-product-card__title">' +
+            '<a href="/products/' + productSlug + '">' + productName + '</a>' +
+            '</h3>' +
+            priceHtml +
+            '</div>';
+
+        slide.appendChild(pItem);
+        swiperWrapper.appendChild(slide);
+    });
+
+    // Initialize bundle offers if available
+    if (typeof window.initBundleOffers === 'function') {
+        window.initBundleOffers();
+    }
+
+    // Initialize Swiper
+    if (typeof Swiper !== 'undefined') {
+        new Swiper(productsSlider, {
+            slidesPerView: 2.2,
+            spaceBetween: 10,
+            loop: false,
+            breakpoints: {
+                380: { slidesPerView: 1.5, spaceBetween: 10 },
+                576: { slidesPerView: 1.5, spaceBetween: 12 },
+                768: { slidesPerView: 3.5, spaceBetween: 15 },
+                992: { slidesPerView: 4.5, spaceBetween: 20 },
+                1200: { slidesPerView: 5.5, spaceBetween: 20 }
+            }
+        });
+    }
+
+        } catch (err) {
+        if (loader) {
+            loader.textContent = err && err.message === 'timeout'
+                ? "{{ _('Failed to load products') }}"
+                : "{{ _('Failed to load products') }}";
+        }
+    }
+    }
+
+    loadCategoryProducts();
+}) ();
+</script>
+</div>
+</div>
 {% endblock %}
 
 {% block footer_scripts %}
-    <script type="text/javascript" src="{{ 'toastr.min.js' | asset_url }}" defer></script>
-    <script type="text/javascript" src="{{ ('gift-card.js?=v' ~ ver) | asset_url }}" defer></script>
+<script type="text/javascript" src="{{ 'toastr.min.js' | asset_url }}" defer></script>
+<script type="text/javascript" src="{{ ('gift-card.js?=v' ~ ver) | asset_url }}" defer></script>
 
-    <script>
+<script>
 
-        $( document ).ready(function() {
-            addDeleteProgressImage()
+    function buildCartFromDom() {
+        var products = [];
+        $('.template_for_cart_products_list .cart-product-row-wrapper').each(function () {
+            var $row = $(this);
+            var id = $row.attr('data-cart-product-id');
+            var name = ($row.find('h1 a').first().text() || $row.find('.product-title-row a').text() || $row.find('.cart-product-image-link').first().text() || $row.find('.cart-product-col-details a').first().text() || '').trim();
+            var href = $row.find('.cart-product-image-link, .product-title-row a, h1 a').first().attr('href') || '';
+            if (id) products.push({ id: id, name: name, url: href });
         });
+        return products.length ? { products: products } : null;
+    }
 
-        function addDeleteProgressImage(){
-            $('.cart-product-delete a .prefix', document).addClass('d-none');
-            $('.cart-product-delete a .prefix', document).html('<img class="send-coupon-progress" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15"/>');
+    function runCartOptionsEnhance() {
+        var cartFromDom = buildCartFromDom();
+        if (cartFromDom && cartFromDom.products && cartFromDom.products.length) {
+            enhanceProductDisplay(cartFromDom);
         }
+    }
 
-        $(document).on('click','.cart-product-delete a', function(event) {
-            $('.icon-delete', event.currentTarget).addClass('d-none');
-            $('.prefix',event.currentTarget).removeClass('d-none');
-        });
-
-        $(".cities-search-input").on('keyup', function (e) {
-            const searchVal = e.target.value
-            const mappedCities = cartObj.free_shipping_rule.shipping_cities_condition.map((city) => city.name);
-            let filteredCities = mappedCities.slice(0, 50).join(' ، ');
-            if (searchVal.length > 2) {
-              filteredCities = mappedCities.filter((name) => name.trim().toLowerCase().includes(searchVal.trim().toLowerCase())).join(' ، ');
+    $(document).ready(function () {
+        addDeleteProgressImage();
+        convertQuantityDropdowns();
+        movePriceIntoDetails();
+        var $list = $('.template_for_cart_products_list');
+        if ($list.length) {
+            runCartOptionsEnhance();
+            [100, 300, 600, 1200].forEach(function (ms) {
+                setTimeout(runCartOptionsEnhance, ms);
+            });
+            if (typeof zid !== 'undefined' && zid.cart && zid.cart.get) {
+                zid.cart.get().then(function (r) { if (r && r.cart && r.cart.products && r.cart.products.length) enhanceProductDisplay(r.cart); });
             }
-            if (filteredCities.length) {
-              $(".cities-result").html(filteredCities);
-            } else {
-              $(".cities-result").html('{{ _("No Result Found") }}');
-            }
-        });
-
-        function sendCoupon() {
-            if(!$('.send-coupon-progress').hasClass('d-none'))
-                return;
-
-            $('.send-coupon-progress').removeClass('d-none');
-            zid.cart.applyCoupon({coupon_code: $('.send-coupon').val()}, { showErrorNotification: true })
-                .then(function (response) {
-                    window.zid?.toaster?.showSuccess('{{ _("Send Successfully") }}');
-                    window.location.reload();
-                    $('.send-coupon-progress').addClass('d-none');
-                }).catch(function (err) {
-                    $('.send-coupon-progress').addClass('d-none');
-                })
+            var obs = new MutationObserver(function () { runCartOptionsEnhance(); });
+            try { obs.observe($list[0], { childList: true, subtree: true }); } catch (e) { }
         }
+    });
 
-        function deleteCoupon() {
-            if(!$('.delete-coupon-progress').hasClass('d-none'))
-                return;
+    document.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('[data-apply-coupon]')) { e.preventDefault(); sendCoupon(); return; }
+        var del = e.target.closest('[data-delete-coupon]'); if (del) { e.preventDefault(); deleteCoupon(); }
+        var removeLink = e.target.closest('.cart-product-delete a'); if (removeLink) { e.preventDefault(); if (typeof cartProductRemove === 'function') cartProductRemove(removeLink); }
+    });
 
-            $('.delete-coupon-progress').removeClass('d-none');
+    function addDeleteProgressImage() {
+        $('.cart-product-delete a .prefix', document).addClass('d-none');
+        $('.cart-product-delete a .prefix', document).html('<img class="send-coupon-progress" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15" loading="lazy" decoding="async"/>');
+    }
 
-            zid.cart.removeCoupons({ showErrorNotification: true }).then(function (response) {
-                $('.delete-coupon-progress').addClass('d-none');
-                window.location.reload();
+    $(document).on('click', '.cart-product-delete a', function (event) {
+        $('.icon-delete', event.currentTarget).addClass('d-none');
+        $('.prefix', event.currentTarget).removeClass('d-none');
+    });
+
+    $(".cities-search-input").on('keyup', function (e) {
+        const searchVal = e.target.value
+        const mappedCities = cartObj.free_shipping_rule.shipping_cities_condition.map((city) => city.name);
+        let filteredCities = mappedCities.slice(0, 50).join(' ، ');
+        if (searchVal.length > 2) {
+            filteredCities = mappedCities.filter((name) => name.trim().toLowerCase().includes(searchVal.trim().toLowerCase())).join(' ، ');
+        }
+        if (filteredCities.length) {
+            $(".cities-result").html(filteredCities);
+        } else {
+            $(".cities-result").html('{{ _("No Result Found") }}');
+        }
+    });
+
+    function sendCoupon() {
+        if (!$('.send-coupon-progress').hasClass('d-none'))
+            return;
+
+        $('.send-coupon-progress').removeClass('d-none');
+        zid.cart.applyCoupon({ coupon_code: $('.send-coupon').val() }, { showErrorNotification: true })
+            .then(function (response) {
+                window.zid?.toaster?.showSuccess('{{ _("Send Successfully") }}');
+                $('.send-coupon-progress').addClass('d-none');
+                if (window.cartEngine && response && response.cart) window.cartEngine.update(response.cart);
+                else if (typeof zid !== 'undefined' && zid.cart && zid.cart.get) { zid.cart.get().then(function (r) { if (r && r.cart && window.cartEngine) window.cartEngine.update(r.cart); }); }
+            }).catch(function (err) {
+                $('.send-coupon-progress').addClass('d-none');
             })
-        }
+    }
+
+    function deleteCoupon() {
+        if (!$('.delete-coupon-progress').hasClass('d-none'))
+            return;
+
+        $('.delete-coupon-progress').removeClass('d-none');
+
+        zid.cart.removeCoupons({ showErrorNotification: true }).then(function (response) {
+            $('.delete-coupon-progress').addClass('d-none');
+            if (window.cartEngine && response && response.cart) window.cartEngine.update(response.cart);
+            else if (typeof zid !== 'undefined' && zid.cart && zid.cart.get) { zid.cart.get().then(function (r) { if (r && r.cart && window.cartEngine) window.cartEngine.update(r.cart); }); }
+        })
+    }
 
 
 
-        function cartProductsHtmlChanged(html, cart){
-            if(cart.products_count <= 0){
-                $('.cart-products-with-totals').addClass('d-none');
-                $('.cart-empty').removeClass('d-none');
-                $('.cart-header-total').html('');
+    function convertQuantityDropdowns() {
+        $('.cart-product-quantity-dropdown').each(function () {
+            var $wrapper = $(this);
+            var $select = $wrapper.find('select');
+
+            if ($select.length === 0) return;
+
+            // Check if already converted
+            if ($wrapper.find('.cart-product-quantity-controls').length > 0) {
                 return;
-            }else{
-                $('.cart-products-with-totals').removeClass('d-none');
-                $('.cart-empty').addClass('d-none');
             }
 
+            var currentValue = parseInt($select.val()) || 1;
 
-            $('.template_for_cart_products_list').html(html);
-
-            if(cart &&  cart.totals){
-                var strCartTotlas = '';
-                for(var i = 0; i < cart.totals.length; i++){
-                    var cartTotal = cart.totals[i];
-
-                    var totalStyle = '';
-
-                    if(cartTotal.code === 'total'){
-                        totalStyle = 'font-weight: bold; color: var( --primary-color)';
-                    }
-
-                    var vat_included = '';
-                    if(cartTotal.code === 'total'){
-
-                        var is_cart_total_vat_included = {% if store.settings.general.tax_settings.tax_percentage_formatted %}true{% else %}false{% endif %};
-                        var local_sys_lbl_cart_includes_vat = "{{ _('Includes TAX %(percentage)s') | format(percentage=store.settings.general.tax_settings.tax_percentage_formatted) }}";
-
-                        if(is_cart_total_vat_included){
-                            vat_included = '&nbsp;<small>'+local_sys_lbl_cart_includes_vat+'</small>';
-                        }
-
-                    }
-
-
-                    strCartTotlas += '<div class="cart-product-row-wrapper cart-totals-row-wrapper">' +
-                        '                                <div class="flex-grow-1">'+cartTotal.title+vat_included+'</div>' +
-                        '                                <div class="flex-shrink-0" style="width: 30%; '+totalStyle+'">'+cartTotal.value_string+'</div>' +
-                        '                            </div>'
-                }
-
-                $('.cart-totals-div').html(strCartTotlas);
+            // cart.js (line 27) reads getAttribute from a parent - copy select data attributes to possible parents
+            var dataAttrs = ['data-cart-product-id', 'data-product-id', 'data-share-token', 'data-template'];
+            var $rowWrapper = $select.closest('.cart-product-row-wrapper');
+            if ($rowWrapper.length) {
+                dataAttrs.forEach(function (attr) {
+                    var val = $select.attr(attr);
+                    if (val !== undefined) $rowWrapper.attr(attr, val);
+                });
             }
+            dataAttrs.forEach(function (attr) {
+                var val = $select.attr(attr);
+                if (val !== undefined) $wrapper.attr(attr, val);
+            });
 
-            if(cart.free_shipping_rule){
-                const subtotalCondition = cart.free_shipping_rule.subtotal_condition;
-                $('.free-shipping-rule-section').removeClass('d-none')
-                $('.free-shipping-rule-progress').css('width', `${subtotalCondition.products_subtotal_percentage_from_min}%`)
-                if (subtotalCondition.status === 'applied') {
-                    $('.free-shipping-rule-message').html('{{ _("Free Shipping Applied") }}')
-                    $('.free-shipping-rule-done').removeClass('d-none')
-                    $('.free-shipping-rule-read-more').addClass('d-none')
-                    $('.free-shipping-rule-read-more').removeClass('d-inline-block')
-                    $('.discount-progress-linear').addClass('d-none')
-                    $('.discount-progress-linear').removeClass('d-block')
-                }else {
-                    const remaining = subtotalCondition.remaining_string || subtotalCondition.remaining || '0';
-                    const message = '{{ _("Add products with total of %s to get free shipping") }}'.replace('%s', remaining);
-                    $('.free-shipping-rule-message').html(message)
-                    $('.free-shipping-rule-done').addClass('d-none')
-                    $('.free-shipping-rule-read-more').removeClass('d-none')
-                    $('.discount-progress-linear').removeClass('d-none')
-                    $('.free-shipping-rule-progress').css('width', `${subtotalCondition.products_subtotal_percentage_from_min}%`).html(`${subtotalCondition.products_subtotal_percentage_from_min}%`)
-                }
-            }else{
-                $('.free-shipping-rule-section').addClass('d-none')
-            }
+            // Hide the original select but keep it in DOM (cart.js reads from it)
+            $select.addClass('d-none').attr('aria-hidden', 'true');
 
+            // Create quantity controls and insert before the select
+            var minusLabel = {{ _("Decrease quantity") | tojson
+        }};
+    var plusLabel = {{ _("Increase quantity") | tojson }};
+    var qtyLabel = {{ _("Quantity") | tojson }};
+    var controlsHtml = '<div class="cart-product-quantity-controls">' +
+        '<button type="button" class="cart-quantity-btn cart-quantity-minus" aria-label="' + minusLabel + '">-</button>' +
+        '<input type="number" class="cart-quantity-input" value="' + currentValue + '" min="1" max="100" readonly aria-label="' + qtyLabel + '">' +
+        '<button type="button" class="cart-quantity-btn cart-quantity-plus" aria-label="' + plusLabel + '">+</button>' +
+        '</div>';
 
-            setCartTotalAndBadge(cart);
-            addDeleteProgressImage();
+    $wrapper.prepend(controlsHtml);
+            });
+
+    document.querySelectorAll('.cart-product-delete a').forEach(function (a) {
+        a.removeAttribute('onclick');
+        a.setAttribute('data-remove-product', a.getAttribute('data-cart-product-id') || '');
+    });
+
+    // Handle quantity button clicks - update the real select and trigger its change
+    $(document).off('click', '.cart-quantity-btn').on('click', '.cart-quantity-btn', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var $wrapper = $btn.closest('.cart-product-quantity-dropdown');
+        var $select = $wrapper.find('select');
+        var $input = $wrapper.find('.cart-quantity-input');
+
+        if ($select.length === 0) return;
+
+        var currentValue = parseInt($input.val()) || 1;
+        var newValue = currentValue;
+
+        if ($btn.hasClass('cart-quantity-minus')) {
+            newValue = Math.max(1, currentValue - 1);
+        } else if ($btn.hasClass('cart-quantity-plus')) {
+            newValue = Math.min(100, currentValue + 1);
         }
 
-    </script>
+        if (newValue !== currentValue) {
+            $input.val(newValue);
+            $select.val(newValue);
+            // cart.js uses event.currentTarget (not target) - pass both
+            if (typeof cartProductQuantityChanged === 'function') {
+                var ev = { target: $select[0], currentTarget: $select[0] };
+                cartProductQuantityChanged(ev);
+            } else {
+                $select.trigger('change');
+            }
+        }
+    });
+        }
 
-    <script>
-        window.addEventListener('vitrin:gift:submitted', async () => {
-            
+    function getProductIdsInDom() {
+        var ids = [];
+        document.querySelectorAll('.template_for_cart_products_list .cart-product-row-wrapper[data-cart-product-id]').forEach(function (row) {
+            var id = row.getAttribute('data-cart-product-id');
+            if (id) ids.push(id);
         });
-    </script>
+        return ids;
+    }
+
+    function canPatchProducts(cart) {
+        if (!cart || !cart.products || !cart.products.length) return false;
+        var currentIds = getProductIdsInDom();
+        var newIds = cart.products.map(function (p) { return String(p.id); });
+        if (currentIds.length !== newIds.length) return false;
+        return currentIds.every(function (id) { return newIds.indexOf(id) !== -1; });
+    }
+
+    function CartEngine(initialCart) {
+        this.state = initialCart || {};
+    }
+    CartEngine.prototype.update = function (cart) {
+        this.state = cart || this.state;
+        this.patchProducts();
+        this.patchTotals();
+        this.patchFreeShipping();
+        if (typeof setCartTotalAndBadge === 'function') setCartTotalAndBadge(this.state);
+        addDeleteProgressImage();
+    };
+    CartEngine.prototype.patchProducts = function () {
+        var state = this.state;
+        if (!state.products) return;
+        state.products.forEach(function (product) {
+            var row = document.querySelector('.template_for_cart_products_list [data-cart-product-id="' + product.id + '"]');
+            if (!row) return;
+            var totalEl = row.querySelector('.cart-product-total-price');
+            if (totalEl && product.total_string) totalEl.textContent = product.total_string;
+            var qtyInput = row.querySelector('.cart-product-quantity-input');
+            var qtySelect = row.querySelector('.cart-product-quantity-dropdown select');
+            var qty = parseInt(product.quantity, 10) || 1;
+            if (qtyInput && qtyInput.value !== String(qty)) qtyInput.value = qty;
+            if (qtySelect && qtySelect.value !== String(qty)) qtySelect.value = qty;
+        });
+    };
+    CartEngine.prototype.patchTotals = function () {
+        var state = this.state;
+        if (!state.totals) return;
+        state.totals.forEach(function (t) {
+            var el = document.querySelector('.cart-totals-div [data-total="' + t.code + '"]');
+            if (el) el.textContent = t.value_string;
+        });
+    };
+    CartEngine.prototype.patchFreeShipping = function () {
+        var rule = this.state.free_shipping_rule;
+        if (!rule || !rule.code) {
+            document.querySelectorAll('.free-shipping-rule-section').forEach(function (s) { s.classList.add('d-none'); });
+            return;
+        }
+        var condition = rule.subtotal_condition || {};
+        var status = condition.status;
+        var progress = Math.min(100, Math.max(0, condition.products_subtotal_percentage_from_min || 0));
+        var section = document.querySelector('.free-shipping-rule-section');
+        if (!section) return;
+        section.classList.remove('d-none');
+        var msgEl = section.querySelector('.free-shipping-rule-message');
+        var progressContainer = section.querySelector('.free-shipping-progress-container');
+        var progressFill = section.querySelector('.free-shipping-rule-progress');
+        var truckCircle = section.querySelector('.free-shipping-truck-circle');
+        var doneEl = section.querySelector('.free-shipping-rule-done');
+        var readMore = section.querySelector('.free-shipping-rule-read-more');
+        var currentSub = section.querySelector('.free-shipping-current-subtotal');
+        var minTotal = section.querySelector('.free-shipping-min-total');
+        if (currentSub) currentSub.textContent = condition.products_subtotal_formatted || condition.products_subtotal || '';
+        if (minTotal) minTotal.textContent = condition.min_total_formatted || condition.min_string || '';
+        if (progressFill) progressFill.style.width = progress + '%';
+        if (truckCircle) { truckCircle.style.right = progress + '%'; truckCircle.style.left = 'auto'; }
+        var msgMin = '{{ _("Add products with total of %(total)s to get free shipping") }}'.replace('%(total)s', condition.remaining || condition.remaining_to_min_total_formatted || condition.remaining_to_min_total || '0');
+        var msgMax = '{{ _("Free shipping applies for cart total between %(min)s and %(max)s") }}'.replace('%(min)s', condition.min_total_formatted || condition.min_string || '0').replace('%(max)s', condition.max_total_formatted || condition.max_string || '0');
+        var msgApplied = '{{ _("Free shipping applied") }}';
+        if (msgEl) {
+            if (status === 'min_not_reached') msgEl.textContent = msgMin;
+            else if (status === 'max_exceed' || status === 'max_exceeded') msgEl.textContent = msgMax;
+            else if (status === 'applied') msgEl.textContent = msgApplied;
+        }
+        if (status === 'applied') {
+            if (doneEl) { doneEl.classList.remove('d-none'); doneEl.classList.add('d-flex'); }
+            if (progressContainer) { progressContainer.classList.add('d-none'); progressContainer.classList.remove('d-flex'); }
+            if (readMore) { readMore.classList.add('d-none'); readMore.classList.remove('d-block'); }
+        } else if (status === 'max_exceed' || status === 'max_exceeded') {
+            if (doneEl) { doneEl.classList.add('d-none'); doneEl.classList.remove('d-flex'); }
+            if (progressContainer) { progressContainer.classList.remove('d-none'); progressContainer.classList.add('d-flex'); if (progressFill) progressFill.style.width = '100%'; if (truckCircle) { truckCircle.style.left = '97%'; truckCircle.style.right = 'auto'; } }
+            if (readMore) { readMore.classList.add('d-none'); readMore.classList.remove('d-block'); }
+        } else {
+            if (doneEl) { doneEl.classList.add('d-none'); doneEl.classList.remove('d-flex'); }
+            if (progressContainer) { progressContainer.classList.remove('d-none'); progressContainer.classList.add('d-flex'); }
+            if (readMore) { if (status === 'min_not_reached') { readMore.classList.remove('d-none'); readMore.classList.add('d-block'); } else { readMore.classList.add('d-none'); readMore.classList.remove('d-block'); } }
+        }
+    };
+
+    function cartProductsHtmlChanged(html, cart) {
+        if (cart.products_count <= 0) {
+            $('.cart-products-with-totals').addClass('d-none');
+            $('.cart-empty').removeClass('d-none');
+            if (window.cartEngine) window.cartEngine.state = cart;
+            return;
+        }
+        $('.cart-products-with-totals').removeClass('d-none');
+        $('.cart-empty').addClass('d-none');
+
+        if (!window.cartEngine) window.cartEngine = new CartEngine(cart);
+
+        if (canPatchProducts(cart)) {
+            window.cartEngine.update(cart);
+            enhanceProductDisplay(cart);
+            return;
+        }
+
+        $('.template_for_cart_products_list').html(html);
+        setTimeout(function () {
+            convertQuantityDropdowns();
+            movePriceIntoDetails();
+            window.cartEngine.state = cart;
+            window.cartEngine.patchTotals();
+            window.cartEngine.patchFreeShipping();
+            if (typeof setCartTotalAndBadge === 'function') setCartTotalAndBadge(cart);
+            addDeleteProgressImage();
+            enhanceProductDisplay(cart);
+        }, 100);
+    }
+
+    function movePriceIntoDetails() {
+        $('.cart-product-row-wrapper').each(function () {
+            var $row = $(this);
+            var $details = $row.find('.cart-product-col-details');
+            var $prices = $row.find('.cart-product-prices').first();
+            var $titleRow = $details.find('.product-title-row').first();
+            if ($prices.length && $details.length && $titleRow.length && !$details.find('.cart-product-prices').length) {
+                $prices.insertAfter($titleRow);
+            }
+        });
+    }
+
+    function escapeHtml(s) {
+        if (s == null) return '';
+        var str = String(s);
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var CART_COLOR_MAP = (typeof window !== 'undefined' && window.PRODUCT_COLOR_CODES) ? window.PRODUCT_COLOR_CODES : {
+        'اسود': '#000000', 'ابيض': '#FFFFFF', 'سكري': '#F4F4E4', 'رمادي': '#6D6D6D', 'بني': '#875C39', 'بيج': '#EAD9B9',
+        'لحمي': '#E8B6A0', 'ذهبي': '#D4AF37', 'فضي': '#C9C8C7', 'أحمر': '#D31E1E', 'احمر': '#D31E1E', 'عودي': '#5B0000',
+        'برغندي': '#800020', 'بنك': '#F8BBD0', 'فوشي': '#AF005C', 'بنفسجي': '#7D63AB', 'موف': '#4F294F', 'ليلكي': '#472976',
+        'ازرق': '#0032AB', 'كحلي': '#01015B', 'سماوي': '#94DCF2', 'تيفاني': '#56BAB3', 'عشبي': '#97AF82', 'زيتي': '#254117',
+        'أخضر': '#228B22', 'اخضر': '#228B22', 'برتقالي': '#F1B15B', 'اصفر': '#FFDE21', 'ليموني': '#FFF171', 'كموني': '#C5A02E',
+        'خربزي': '#FFB4A3', 'طوبي': '#C14A09', 'بترولي': '#004d4d', 'زيتوني': '#A0A030', 'وردي': '#D030A0',
+        'كحلاء': '#01015B', 'أسود': '#000000', 'أبيض': '#FFFFFF', 'أزرق': '#0032AB', 'أخضر': '#228B22', 'أصفر': '#FFDE21'
+    };
+
+    function renderOptionsFallback($productRow, productId, parts, $details) {
+        var sizeLabels = ['xxl', 'xxxl', 'xl', 'l', 'm', 's', 'xs'];
+        var sizeLabel = {{ _("Size") | tojson
+    }};
+    var colorLabel = {{ _("Color") | tojson }};
+    var $wr = $('<div class="cart-product-options-wrapper"></div>');
+    var customValues = {};
+    var $customSum = $details.find('.custom-options-summary');
+    if ($customSum.length && $customSum.find('.custom-field-row').length) {
+        $customSum.find('.custom-field-row').each(function () {
+            var $row = $(this);
+            var name = $row.find('.custom-field-name').text().replace(/\s*\*\s*$/, '').trim();
+            var val = $row.find('.custom-field-value').text().trim();
+            if (name) {
+                customValues[val] = true;
+                $wr.append('<div class="cart-product-option-row"><span class="cart-product-option-label">' + escapeHtml(name) + ' :</span><span class="cart-product-option-value"><span class="cart-product-size-badge">' + escapeHtml(val || '-') + '</span></span></div>');
+            }
+        });
+        $customSum.addClass('d-none');
+    }
+    parts.forEach(function (p) {
+        if (customValues[p]) return;
+        var hex = getHexForColorName(p);
+        var isSize = sizeLabels.some(function (s) { return p.toLowerCase() === s; }) || /^\d+$/.test(p);
+        var lbl = isSize ? sizeLabel : (hex ? colorLabel : CATEGORY_FILTER_LABEL);
+        if (lbl === CATEGORY_FILTER_LABEL) return;
+        var valHtml = hex ? '<span class="cart-product-color-swatch" style="background-color:' + escapeHtml(hex) + '" title="' + escapeHtml(p) + '" aria-hidden="true"></span>' : '<span class="cart-product-size-badge">' + escapeHtml(p) + '</span>';
+        $wr.append('<div class="cart-product-option-row"><span class="cart-product-option-label">' + escapeHtml(lbl) + ' :</span><span class="cart-product-option-value">' + valHtml + '</span></div>');
+    });
+    if ($wr.children().length) {
+        var $pr = $details.find('.cart-product-prices').first();
+        if ($pr.length) $pr.after($wr); else $details.append($wr);
+    }
+        }
+
+    function getHexForColorName(name) {
+        if (!name || typeof name !== 'string') return null;
+        var k = name.replace(/\s+/g, ' ').trim().toLowerCase();
+        return CART_COLOR_MAP[k] || CART_COLOR_MAP[name.trim()] || null;
+    }
+
+    function getCustomFieldsList(product) {
+        var out = [];
+        var fields = product.custom_fields || product.custom_user_input_fields || product.custom_data;
+        if (!Array.isArray(fields) || fields.length === 0) return out;
+        fields.forEach(function (f) {
+            var name = (f.name != null) ? String(f.name).trim() : ((f.field_name != null) ? String(f.field_name).trim() : '');
+            var value = (f.value != null) ? String(f.value).trim() : ((f.user_input != null) ? String(f.user_input).trim() : '');
+            if (name) out.push({ name: name, value: value, type: 'default', type_value: '' });
+        });
+        return out;
+    }
+
+    function normalizeUuidForStorage(id) {
+        if (!id || typeof id !== 'string') return id;
+        var s = String(id).replace(/-/g, '');
+        if (s.length === 32) return s.slice(0, 8) + '-' + s.slice(8, 12) + '-' + s.slice(12, 16) + '-' + s.slice(16, 20) + '-' + s.slice(20);
+        return id;
+    }
+    function getCartDisplayKey(variantId) {
+        var k = 'cart_display_' + variantId;
+        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(k)) return k;
+        var k2 = 'cart_display_' + normalizeUuidForStorage(variantId);
+        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(k2)) return k2;
+        return k;
+    }
+
+    function fetchProductBySlugOrId(slugOrId) {
+        if (!slugOrId) return Promise.reject();
+        if (typeof zid !== 'undefined' && zid.products && zid.products.get) {
+            return zid.products.get(slugOrId).then(function (data) {
+                return data.product || data.data || data;
+            });
+        }
+        return fetch('/api/v1/products/' + encodeURIComponent(slugOrId)).then(function (r) { return r.json(); }).then(function (res) {
+            return (res.data && res.data.product) ? res.data.product : (res.product || res.data || res);
+        });
+    }
+
+    function getSelectedAttributesList(product) {
+        var out = [];
+        var attrs = product.attributes || product.option_attributes || product.selected_options;
+        if (!Array.isArray(attrs) || attrs.length === 0) { attrs = []; }
+
+        attrs.forEach(function (attr) {
+            var name = (attr.name != null) ? String(attr.name).trim() : ((attr.slug != null) ? String(attr.slug).trim() : '');
+            if (!name) return;
+
+            var value, type, typeValue;
+            if (attr.value != null || attr.type != null || attr.type_value != null) {
+                value = (attr.value != null) ? String(attr.value).trim() : '';
+                type = (attr.type != null) ? String(attr.type) : 'default';
+                typeValue = (attr.type_value != null) ? String(attr.type_value).trim() : '';
+                out.push({ name: name, value: value, type: type, type_value: typeValue });
+            } else if (attr.data && Array.isArray(attr.data) && attr.data.length > 0) {
+                var selected = attr.data[0];
+                value = (selected.value != null) ? String(selected.value).trim() : '';
+                type = (selected.type != null) ? String(selected.type) : 'default';
+                typeValue = (selected.type_value != null) ? String(selected.type_value).trim() : '';
+                out.push({ name: name, value: value, type: type, type_value: typeValue });
+            }
+        });
+        return out;
+    }
+
+    var CATEGORY_FILTER_LABEL = {{ _("Filter by category") | tojson }};
+
+    function enhanceProductDisplay(cart) {
+        if (!cart || !cart.products) return;
+        var variantDisplayIndex = {};
+        cart.products.forEach(function (product) {
+            var productId = product.id != null ? String(product.id) : '';
+            var $productRow = $('.template_for_cart_products_list .cart-product-row-wrapper[data-cart-product-id="' + productId + '"]');
+            if ($productRow.length === 0) return;
+            var $details = $productRow.find('.cart-product-col-details');
+            if ($details.length === 0) return;
+            if ($details.find('.cart-product-options-wrapper').length > 0) return;
+            var productUrl = product.url || $productRow.find('.cart-product-image-link, .product-title-row a, h1 a').first().attr('href') || '';
+            var slug = productUrl ? (productUrl.split('/products/')[1] || productUrl).split('?')[0].split('#')[0] : '';
+            // Only consume stored display name when this row has no options yet (e.g. added from Quick View / card sheet)
+            var variantId = product.product_id != null ? product.product_id : ($productRow.attr('data-product-id') || product.id);
+            try {
+                var storageKey = getCartDisplayKey(variantId);
+                var raw = typeof sessionStorage !== 'undefined' && sessionStorage.getItem(storageKey);
+                if (raw) {
+                    var arr = [];
+                    try { arr = JSON.parse(raw); } catch (e) { }
+                    if (!Array.isArray(arr)) arr = arr ? [raw] : [];
+                    if (arr.length > 0) {
+                        var idx = variantDisplayIndex[variantId] || 0;
+                        product.name = arr[idx] || arr[0];
+                        variantDisplayIndex[variantId] = idx + 1;
+                        // لا نحذف من sessionStorage حتى تبقى الخيارات بعد تحديث الصفحة/السلة
+                    }
+                }
+            } catch (e) { }
+
+            var $optionsWrapper = $('<div class="cart-product-options-wrapper"></div>');
+            var list = getSelectedAttributesList(product);
+
+            if (list.length > 0) {
+                list.forEach(function (attr) {
+                    var name = attr.name;
+                    if (name === CATEGORY_FILTER_LABEL) return;
+                    var value = attr.value;
+                    var type = attr.type;
+                    var typeValue = attr.type_value || '';
+
+                    var labelHtml = '<span class="cart-product-option-label">' + escapeHtml(name) + ' :</span>';
+                    var valueHtml;
+                    if (type === 'color' && typeValue) {
+                        var hex = typeValue.indexOf('#') === 0 ? typeValue : ('#' + typeValue);
+                        valueHtml = '<span class="cart-product-option-value">' +
+                            '<span class="cart-product-color-swatch" style="background-color:' + escapeHtml(hex) + '" title="' + escapeHtml(value) + '" aria-hidden="true"></span>' +
+                            '</span>';
+                    } else {
+                        valueHtml = '<span class="cart-product-option-value">' +
+                            '<span class="cart-product-size-badge">' + escapeHtml(value || '-') + '</span>' +
+                            '</span>';
+                    }
+                    $optionsWrapper.append('<div class="cart-product-option-row">' + labelHtml + valueHtml + '</div>');
+                });
+            } else if (product.sku) {
+                var sizeMatch = product.sku.match(/-([A-Z0-9]+)$/);
+                if (sizeMatch) {
+                    $optionsWrapper.append(
+                        '<div class="cart-product-option-row">' +
+                        '<span class="cart-product-option-label">{{ _("Sizes") }}:</span>' +
+                        '<span class="cart-product-option-value"><span class="cart-product-size-badge">' + escapeHtml(sizeMatch[1]) + '</span></span>' +
+                        '</div>'
+                    );
+                }
+            }
+
+            if ($optionsWrapper.children().length === 0 && product.name) {
+                var parts = String(product.name).split(/\s*-\s*/).slice(1).map(function (s) { return s.trim(); }).filter(Boolean);
+                var productUrl = product.url || $productRow.find('.cart-product-image-link, .product-title-row a, h1 a').first().attr('href') || '';
+                var slug = productUrl ? (productUrl.split('/products/')[1] || productUrl).split('?')[0].split('#')[0] : '';
+                if (parts.length > 0 && slug && typeof zid !== 'undefined' && zid.products && zid.products.get) {
+                    var pid = productId;
+                    var sizeLabel = {{ _("Size") | tojson }};
+                    var colorLabel = {{ _("Color") | tojson }};
+                    var sizeLabels = ['xxl', 'xxxl', 'xl', 'l', 'm', 's', 'xs'];
+                    var currentLang = {{ (session.locale.language.code if session.locale else 'ar') | tojson }};
+                    zid.products.get(slug).then(function (data) {
+                        var pd = data.product || data.data || data;
+                        var valueToLabel = {};
+                        if (pd && pd.options && pd.options.length) {
+                            pd.options.forEach(function (opt) {
+                                var optName = opt.name ? (typeof opt.name === 'object' ? (opt.name[currentLang] || opt.name.ar || opt.name.en || '') : opt.name) : '';
+                                var choices = opt.choices || opt.values || [];
+                                choices.forEach(function (c) {
+                                    var vals = [];
+                                    if (typeof c === 'object') {
+                                        if (c.ar) vals.push(String(c.ar).trim());
+                                        if (c.en) vals.push(String(c.en).trim());
+                                        if (c.value) vals.push(String(c.value).trim());
+                                        if (vals.length === 0) vals.push(String(c[currentLang] || c.name || '').trim());
+                                    } else {
+                                        vals.push(String(c).trim());
+                                    }
+                                    vals.filter(Boolean).forEach(function (v) { valueToLabel[v] = optName; });
+                                });
+                            });
+                        }
+                        var $r = $('.template_for_cart_products_list .cart-product-row-wrapper[data-cart-product-id="' + pid + '"]');
+                        var $det = $r.find('.cart-product-col-details');
+                        if ($det.find('.cart-product-options-wrapper').length > 0) return;
+                        var $wr = $('<div class="cart-product-options-wrapper"></div>');
+                        var $pr = $det.find('.cart-product-prices').first();
+                        var customValues = {};
+                        var $customSum = $det.find('.custom-options-summary');
+                        if ($customSum.length && $customSum.find('.custom-field-row').length) {
+                            $customSum.find('.custom-field-row').each(function () {
+                                var $row = $(this);
+                                var name = $row.find('.custom-field-name').text().replace(/\s*\*\s*$/, '').trim();
+                                var val = $row.find('.custom-field-value').text().trim();
+                                if (name) {
+                                    customValues[val] = true;
+                                    $wr.append('<div class="cart-product-option-row"><span class="cart-product-option-label">' + escapeHtml(name) + ' :</span><span class="cart-product-option-value"><span class="cart-product-size-badge">' + escapeHtml(val || '-') + '</span></span></div>');
+                                }
+                            });
+                            $customSum.addClass('d-none');
+                        }
+                        parts.forEach(function (p) {
+                            if (customValues[p]) return;
+                            var lbl = valueToLabel[p] || (sizeLabels.some(function (s) { return p.toLowerCase() === s; }) || /^\d+$/.test(p) ? sizeLabel : (getHexForColorName(p) ? colorLabel : CATEGORY_FILTER_LABEL));
+                            if (lbl === CATEGORY_FILTER_LABEL) return;
+                            var hex = getHexForColorName(p);
+                            var valHtml = hex ? '<span class="cart-product-color-swatch" style="background-color:' + escapeHtml(hex) + '" title="' + escapeHtml(p) + '" aria-hidden="true"></span>' : '<span class="cart-product-size-badge">' + escapeHtml(p) + '</span>';
+                            $wr.append('<div class="cart-product-option-row"><span class="cart-product-option-label">' + escapeHtml(lbl) + ' :</span><span class="cart-product-option-value">' + valHtml + '</span></div>');
+                        });
+                        if ($wr.children().length) {
+                            if ($pr.length) $pr.after($wr); else $det.append($wr);
+                        }
+                    }).catch(function () {
+                        renderOptionsFallback($productRow, productId, parts, $details);
+                    });
+                    return;
+                }
+    if (parts.length > 0) {
+        renderOptionsFallback($productRow, productId, parts, $details);
+        return;
+    }
+                }
+
+    // No options yet but we have variant id and slug: fetch product and use variant.attributes (لون، مقاس)
+    if ($optionsWrapper.children().length === 0 && (slug || variantId)) {
+        (function (pid, vid, s) {
+            var key = s || vid;
+            if (!key) return;
+            function renderVariantOptions(variant) {
+                if (!variant || !variant.attributes || !variant.attributes.length) return;
+                var vList = getSelectedAttributesList(variant);
+                var $wr = $('<div class="cart-product-options-wrapper"></div>');
+                vList.forEach(function (attr) {
+                    var name = attr.name;
+                    if (name === CATEGORY_FILTER_LABEL) return;
+                    var value = attr.value;
+                    var type = attr.type;
+                    var typeValue = attr.type_value || '';
+                    var labelHtml = '<span class="cart-product-option-label">' + escapeHtml(name) + ' :</span>';
+                    var valueHtml;
+                    var hex = (type === 'color' && typeValue) ? (typeValue.indexOf('#') === 0 ? typeValue : ('#' + typeValue)) : getHexForColorName(value);
+                    if (hex) {
+                        valueHtml = '<span class="cart-product-option-value"><span class="cart-product-color-swatch" style="background-color:' + escapeHtml(hex) + '" title="' + escapeHtml(value || '') + '" aria-hidden="true"></span></span>';
+                    } else {
+                        valueHtml = '<span class="cart-product-option-value"><span class="cart-product-size-badge">' + escapeHtml(value || '-') + '</span></span>';
+                    }
+                    $wr.append('<div class="cart-product-option-row">' + labelHtml + valueHtml + '</div>');
+                });
+                var $r = $('.template_for_cart_products_list .cart-product-row-wrapper[data-cart-product-id="' + pid + '"]');
+                var $det = $r.find('.cart-product-col-details');
+                if ($det.length && $det.find('.cart-product-options-wrapper').length === 0 && $wr.children().length) {
+                    var $pr = $det.find('.cart-product-prices').first();
+                    if ($pr.length) $pr.after($wr); else $det.append($wr);
+                    var $customSum = $det.find('.custom-options-summary');
+                    if ($customSum.length) $customSum.addClass('d-none');
+                }
+            }
+            function tryWith(pd) {
+                if (!pd) return false;
+                var variant = null;
+                if (pd.attributes && pd.attributes.length) variant = pd;
+                else if (pd.selected_variant && pd.selected_variant.attributes && pd.selected_variant.attributes.length) variant = pd.selected_variant;
+                else {
+                    var variants = pd.variants || pd.variations || [];
+                    variant = variants.find(function (v) { return String(v.id) === String(vid); });
+                }
+                if (variant && variant.attributes && variant.attributes.length) {
+                    renderVariantOptions(variant);
+                    return true;
+                }
+                return false;
+            }
+            fetchProductBySlugOrId(key).then(function (pd) {
+                if (tryWith(pd)) return;
+                if (s && String(vid) !== String(s)) fetchProductBySlugOrId(vid).then(tryWith).catch(function () { });
+            }).catch(function () { });
+        })(productId, variantId, slug);
+    }
+
+    var $customSummary = $details.find('.custom-options-summary');
+    var addedFromDom = false;
+    if ($customSummary.length && $customSummary.find('.custom-field-row').length) {
+        $customSummary.find('.custom-field-row').each(function () {
+            var $row = $(this);
+            var name = $row.find('.custom-field-name').text().replace(/\s*\*\s*$/, '').trim();
+            var val = $row.find('.custom-field-value').text().trim();
+            if (name) {
+                addedFromDom = true;
+                $optionsWrapper.append(
+                    '<div class="cart-product-option-row">' +
+                    '<span class="cart-product-option-label">' + escapeHtml(name) + ' :</span>' +
+                    '<span class="cart-product-option-value"><span class="cart-product-size-badge">' + escapeHtml(val || '-') + '</span></span>' +
+                    '</div>'
+                );
+            }
+        });
+    }
+    if (!addedFromDom && product.has_fields) {
+        getCustomFieldsList(product).forEach(function (f) {
+            $optionsWrapper.append(
+                '<div class="cart-product-option-row">' +
+                '<span class="cart-product-option-label">' + escapeHtml(f.name) + ' :</span>' +
+                '<span class="cart-product-option-value"><span class="cart-product-size-badge">' + escapeHtml(f.value || '-') + '</span></span>' +
+                '</div>'
+            );
+        });
+    }
+
+    if ($optionsWrapper.children().length) {
+        var $prices = $details.find('.cart-product-prices').first();
+        if ($prices.length) $prices.after($optionsWrapper); else $details.append($optionsWrapper);
+        if ($customSummary.length) $customSummary.addClass('d-none');
+    }
+            });
+
+    /* Totals: CartEngine.patchTotals() */
+
+    if (cart.free_shipping_rule) {
+        var condition = cart.free_shipping_rule.subtotal_condition;
+        var status = condition.status;
+        var progress = condition.products_subtotal_percentage_from_min || 0;
+        if (progress > 100) progress = 100;
+        if (progress < 0) progress = 0;
+
+        $('.free-shipping-rule-section').removeClass('d-none');
+        $('.free-shipping-rule-progress').css('width', progress + '%');
+        $('.free-shipping-truck-circle').css({ right: progress + '%', left: 'auto' });
+        $('.free-shipping-current-subtotal').text(condition.products_subtotal_formatted || condition.products_subtotal || '');
+        $('.free-shipping-min-total').text(condition.min_total_formatted || condition.min_string || '');
+
+        if (status === 'min_not_reached') {
+            var msg = '{{ _("Add products with total of %(total)s to get free shipping") }}'.replace('%(total)s', condition.remaining || condition.remaining_to_min_total_formatted || condition.remaining_to_min_total || '0');
+            $('.free-shipping-rule-message').text(msg);
+        } else if (status === 'max_exceed' || status === 'max_exceeded') {
+            var msg = '{{ _("Free shipping applies for cart total between %(min)s and %(max)s") }}'.replace('%(min)s', condition.min_total_formatted || condition.min_string || '0').replace('%(max)s', condition.max_total_formatted || condition.max_string || '0');
+            $('.free-shipping-rule-message').text(msg);
+        } else if (status === 'applied') {
+            $('.free-shipping-rule-message').text('{{ _("Free shipping applied") }}');
+        }
+
+        if (status === 'applied') {
+            $('.free-shipping-rule-done').removeClass('d-none').addClass('d-flex');
+            $('.free-shipping-progress-container').addClass('d-none').removeClass('d-flex');
+            $('.free-shipping-rule-read-more').addClass('d-none').removeClass('d-block');
+        } else if (status === 'max_exceed' || status === 'max_exceeded') {
+            $('.free-shipping-rule-done').addClass('d-none').removeClass('d-flex');
+            $('.free-shipping-progress-container').removeClass('d-none').addClass('d-flex');
+            $('.free-shipping-rule-progress').css('width', '100%');
+            $('.free-shipping-truck-circle').css({ left: '97%', right: 'auto' });
+            $('.free-shipping-rule-read-more').addClass('d-none').removeClass('d-block');
+        } else {
+            $('.free-shipping-rule-done').addClass('d-none').removeClass('d-flex');
+            $('.free-shipping-progress-container').removeClass('d-none').addClass('d-flex');
+            if (status === 'min_not_reached') {
+                $('.free-shipping-rule-read-more').removeClass('d-none').addClass('d-block');
+            } else {
+                $('.free-shipping-rule-read-more').addClass('d-none').removeClass('d-block');
+            }
+        }
+    } else {
+        $('.free-shipping-rule-section').addClass('d-none');
+    }
+
+        }
+
+</script>
 
 {% endblock %}
 
