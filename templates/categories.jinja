@@ -9,12 +9,29 @@
 
 {% block main_content %}
 
+    {% macro category_tile(cat) %}
+        {% if cat and cat.cover_image %}
+            <div class="all-cat-col">
+                <a class="card-categories-wrapper category-tile"
+                   href="{{ url_for('category_details', category_id=cat.id or 'a', slug=cat.slug or cat.id) }}"
+                   aria-label="{{ cat.name }}">
+                    <div class="card-categories">
+                        <div class="ratio21_9">
+                            <img class="categories-image" src="{{ cat.cover_image }}" alt="{{ cat.img_alt_text or cat.name }}">
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endif %}
+    {% endmacro %}
+
     <section class="breadcrumb-section">
-        <nav aria-label="breadcrumb">
+        <nav aria-label="{{ _('Breadcrumb') }}">
         
             <ol class="breadcrumb">
             <div class="container d-flex flex-wrap">
-                <li class="breadcrumb-item active " aria-current="page">"All categories" </li>
+                <li class="breadcrumb-item" aria-current="page"><a href="/">{{ _("Home") }}</a></li>
+                <li class="breadcrumb-item active " aria-current="page">{{ _("All categories") }}</li>
             </div>
         
             </ol>
@@ -25,59 +42,19 @@
     <div class="container mb-5">
         <div class="row categories-row">
             {% for category in categories %}
-                <div class="col col-lg-4 all-cat-col">
+                {{ category_tile(category) }}
 
-                    <div class="card-categories-wrapper">
-                        <div class="card-categories ">
-                            <div class="box-1-1 ratio21_9">
-                                <div class="content">
-                                    {% if category.cover_image %}
-                                        <img class="categories-image" src="{{category.cover_image}}" alt="{{category.img_alt_text}}">
-                                    {% else %}
-                                        <div style="background-color: #cccccc; height: 100%; width: 100%"></div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                {% if category.sub_categories and (category.sub_categories | length > 0) %}
+                    {% for sub_category in category.sub_categories %}
+                        {{ category_tile(sub_category) }}
 
-                        <div id="accordion" class="category-second-card">
-                            <div class="card-content">
-                                <div class="card-header-category" id="heading{{ loop.index0 }}">
-
-                                    <a href="{{ url_for("category_details", category_id=category.id or "a", slug=category.slug or category.id)  }}"
-                                       class="btn btn-link-categories d-flex align-items-center d-flex justify-content-between">
-                                        <span>{{category.name}}</span>
-                                    </a>
-                                </div>
-                                {% if category.sub_categories | length > 0 %}
-                                    <div >
-                                        <div class="card-body"  style="padding: 10px 8px">
-                                            {% for sub_category in category.sub_categories %}
-                                                <p class="categories-title">
-                                                    <a style="color: inherit" href="{{ url_for("category_details", category_id=sub_category.id, slug=sub_category.slug or sub_category.id) }}">
-                                                        {{ sub_category.name }}
-                                                    </a>
-                                                </p>
-                                                {% if sub_category.sub_categories | length > 0 %}
-                                                    <ul class="categories-subTitle">
-                                                        {% for subTwo_category in sub_category.sub_categories %}
-                                                            <li>
-                                                                <a href="{{ url_for("category_details", category_id=subTwo_category.id, slug=subTwo_category.slug or subTwo_category.id) }}">
-                                                                    {{ subTwo_category.name }}
-                                                                </a>
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                        {% if sub_category.sub_categories and (sub_category.sub_categories | length > 0) %}
+                            {% for subTwo_category in sub_category.sub_categories %}
+                                {{ category_tile(subTwo_category) }}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -88,12 +65,30 @@
     <script src="{{ 'masonry.pkgd.min.js' | asset_url }}" defer></script>
     <script>
 
-        // Initial resize in window.load as the content in each item may contain images
-        document.addEventListener("DOMContentLoaded", function(){
-            var container = document.querySelector('.categories-row');
-            var msnry = new Masonry(container, {
-                itemSelector: '.all-cat-col'
+        document.addEventListener("DOMContentLoaded", function () {
+            var rowEl = document.querySelector('.categories-row');
+            if (!rowEl || typeof Masonry === 'undefined') return;
+
+            var msnry = new Masonry(rowEl, {
+                itemSelector: '.all-cat-col',
+                percentPosition: true
             });
+
+            var scheduleLayout = function () {
+                if (!msnry) return;
+                requestAnimationFrame(function () { msnry.layout(); });
+            };
+
+            // Re-layout after images load (prevents big gaps)
+            var imgs = rowEl.querySelectorAll('img.categories-image');
+            imgs.forEach(function (img) {
+                if (img.complete) return;
+                img.addEventListener('load', scheduleLayout, { once: true });
+                img.addEventListener('error', scheduleLayout, { once: true });
+            });
+
+            // Also layout after full page load just in case
+            window.addEventListener('load', scheduleLayout, { once: true });
         });
 
 

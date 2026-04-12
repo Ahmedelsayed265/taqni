@@ -1370,20 +1370,8 @@ ul.main-nav > li ul.sub-menu-lists > li > a {
   }
 }
 /* breadCrumb-twig */
-.breadcrumb-section {
-  background-color: var(--secondary-color);
-}
 
-.breadcrumb-item a {
-  color: var(--primary-color);
-  font-size: 1.167rem;
-  font-weight: var(--font-weight-sizeOne);
-}
-.breadcrumb-item {
-  color: var(--secondary-color-alt4);
-  font-size: 1.167rem;
-  font-weight: var(--font-weight-sizeOne);
-}
+
 /* breadCrumb-subTitle-detail-twig */
 .subTitle-detail {
   margin-top: -15px;
