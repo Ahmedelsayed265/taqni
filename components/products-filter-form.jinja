@@ -12,27 +12,25 @@
             <div class="row">
                 <div class="col">
                     <label>{{ _("From") }}</label>
-                    <input name="price_min" type="number" class="form-control" placeholder="{{ session.currency.code }}">
+                    <input id="price_min" name="price_min" type="number" class="form-control products-filter-price-input" placeholder="{{ session.currency.code }}" min="0" max="100000">
                 </div>
                 <div class="col">
                     <label>{{ _("To") }}</label>
-                    <input name="price_max" type="number" class="form-control" placeholder="{{ session.currency.code }}">
+                    <input id="price_max" name="price_max" type="number" class="form-control products-filter-price-input" placeholder="{{ session.currency.code }}" min="0" max="100000">
                 </div>
             </div>
 
         </div>
 
-        <div style="margin:30px 10px">
-            <div ref="slider-range" class="ui-widget-bar mt-3">
-
-            </div>
+        <div style="margin:10px 10px">
+            <div id="slider-range" class="ui-widget-bar mt-3" data-slider-min="0" data-slider-max="100000"></div>
         </div>
 
         <div class="d-block filter-block-width mt-3">
                 <span>
                     <label id="products-list-filter-form-checkbox-on-sale"
                            class="btn btn-sale-price">
-                        <span class="checkbox-container checkbox-container-small">
+                        <span class="checkbox-container-fluid checkbox-container-fluid-small">
                             <input class="custom-checkbox-input"
                                    type="checkbox"
                                    name="on_sale"

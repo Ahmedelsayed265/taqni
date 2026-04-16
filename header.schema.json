@@ -218,6 +218,167 @@
           ]
         }
       ]
+    },
+    {
+      "id": "shop_mega_menu",
+      "icon": "font_awesome",
+      "name": {
+        "ar": "القائمة الكبيرة للمتجر (Shop)",
+        "en": "Shop Mega Menu"
+      },
+      "settings": [
+        {
+          "id": "display_shop",
+          "type": "checkbox",
+          "label": {
+            "ar": "إظهار قائمة Shop",
+            "en": "Display Shop Menu"
+          },
+          "default": true
+        },
+        {
+          "id": "shop_label",
+          "type": "text",
+          "label": {
+            "ar": "عنوان القائمة",
+            "en": "Menu Label"
+          },
+          "default": "Shop"
+        },
+        {
+          "id": "shop_url",
+          "type": "url",
+          "label": {
+            "ar": "رابط القائمة",
+            "en": "Menu Link"
+          },
+          "default": "/products"
+        },
+        {
+          "id": "links1",
+          "type": "list",
+          "label": {
+            "ar": "روابط 1",
+            "en": "Links 1"
+          },
+          "max_items": 6,
+          "settings": [
+            {
+              "id": "text",
+              "type": "text",
+              "label": {
+                "ar": "النص",
+                "en": "Text"
+              }
+            },
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "URL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "links2",
+          "type": "list",
+          "label": {
+            "ar": "روابط 2",
+            "en": "Links 2"
+          },
+          "max_items": 6,
+          "settings": [
+            {
+              "id": "text",
+              "type": "text",
+              "label": {
+                "ar": "النص",
+                "en": "Text"
+              }
+            },
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "URL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "links3",
+          "type": "list",
+          "label": {
+            "ar": "روابط 3",
+            "en": "Links 3"
+          },
+          "max_items": 6,
+          "settings": [
+            {
+              "id": "text",
+              "type": "text",
+              "label": {
+                "ar": "النص",
+                "en": "Text"
+              }
+            },
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "URL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "promo_items",
+          "type": "list",
+          "label": {
+            "ar": "العناصر الترويجية",
+            "en": "Promo Items"
+          },
+          "max_items": 3,
+          "settings": [
+            {
+              "id": "image",
+              "type": "image",
+              "label": {
+                "ar": "الصورة",
+                "en": "Image"
+              }
+            },
+            {
+              "id": "title",
+              "type": "text",
+              "label": {
+                "ar": "العنوان",
+                "en": "Title"
+              }
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "label": {
+                "ar": "العنوان الفرعي (مثال: خصم 50%)",
+                "en": "Subtitle (e.g. 50% off)"
+              }
+            },
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "Link"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

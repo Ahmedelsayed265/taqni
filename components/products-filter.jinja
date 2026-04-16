@@ -1,24 +1,19 @@
 <div class="d-flex align-items-center justify-content-between products-filter">
-    <div class="d-flex filter-buttons-container">
+    <div class="d-flex filter-buttons-container-fluid">
             <div class="{% if has_products_filtration %}d-sm-inline-block d-xs-inline-block d-md-none{% else %}d-inline-block{% endif %}" >
 
                     <div><label class="filter-result">{{ _("Filter") }}</label></div>
-                    <button id="products-list-filter"
+                    <button id="products-list-filter-collapse"
                             type="button"
                             class="btn btn-filter filter-block-width d-lg-none products-list-filter-sm"
                             data-toggle="collapse"
-                            data-target="#filters-form-collapse-sm"
-                            onclick="toggleProductAttributeMobile()"
-                            
-
-                    >
+                            data-target="#filters-form-collapse-sm">
                         <span>{{ _("Filter") }}</span>
-                        &nbsp;
                         <i class="icon-add filter-icons filters_expanded"></i>
                         <i class="icon-remove filter-icons filters_not_expanded d-none"></i>
                     </button>
 
-                    <button id="products-list-filter"
+                    <button id="products-list-filter-modal"
                             type="button"
                             class="btn btn-filter filter-block-width d-none d-lg-block"
                             data-toggle="modal"
@@ -28,7 +23,6 @@
                         &nbsp;
                         <i class="icon-filter-secondary" aria-hidden="true"></i>
                     </button>
-                    &nbsp;&nbsp;
 
             </div>
 
@@ -38,18 +32,16 @@
                         <button id="products-list-sort"
                                 type="button"
                                 class="btn btn-filter"
-                                data-toggle="dropdown"
                                 aria-haspopup="true"
-                                aria-expanded="false"
-                        >
+                                aria-expanded="false">
                             <span>
-                                {% if session.query_params.get('sort_by') == 'popularity_order' %}
+                                {% if session.url.query_params.get('sort_by') == 'popularity_order' %}
                                     {{ _("Most popular") }}
-                                {% elif session.query_params.get('sort_by') == 'price' and session.query_params.get('order') == 'asc' %}
+                                {% elif session.url.query_params.get('sort_by') == 'price' and session.url.query_params.get('order') == 'asc' %}
                                     {{ _("Low to high") }}
-                                {% elif session.query_params.get('sort_by') == 'price' and session.query_params.get('order') == 'desc' %}
+                                {% elif session.url.query_params.get('sort_by') == 'price' and session.url.query_params.get('order') == 'desc' %}
                                     {{ _("High to low") }}
-                                {% else%}
+                                {% else %}
                                     {{ _("Newest") }}
                                 {% endif %}
                             </span>
@@ -58,20 +50,18 @@
 
                         </button>
                         <div class="dropdown-menu select-dropdown">
-
-                                <a class="dropdown-item" onclick="this.href = this.getAttribute('data-href')" data-href="{{ session.url.include_query_params(sort_by='created_at', order='desc') }}">
+                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='created_at', order='desc') }}">
                                     {{ _("Newest") }}
                                 </a>
-                                <a class="dropdown-item" onclick="this.href = this.getAttribute('data-href')" data-href="{{ session.url.include_query_params(sort_by='popularity_order', order='asc') }}">
+                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='popularity_order', order='asc') }}">
                                     {{ _("Most popular") }}
                                 </a>
-                                <a class="dropdown-item" onclick="this.href = this.getAttribute('data-href')" data-href="{{ session.url.include_query_params(sort_by='price', order='asc') }}">
+                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='price', order='asc') }}">
                                     {{ _("Low to high") }}
                                 </a>
-                                <a class="dropdown-item" onclick="this.href = this.getAttribute('data-href')" data-href="{{ session.url.include_query_params(sort_by='price', order='desc') }}">
+                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='price', order='desc') }}">
                                     {{ _("High to low") }}
                                 </a>
-
                         </div>
                     </div>
                 </div>
@@ -101,18 +91,142 @@
 <div id="filters-form-collapse-sm" class="collapse mt-3">
     {% include 'components/products-filter-form.jinja' %}
 </div>
-<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade filter-modal" id="filterModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body" style="position: relative">
-                <button id="products-list-filter-form-close"
-                        type="button"
-                        class="close btn" data-dismiss="modal" aria-label="Close">
-                    <span class="icon-times2"></span>
-                </button>
-                {% include 'components/products-filter-form.jinja' %}
+        <div class="modal-content filter-modal-content">
+            <div class="modal-body filter-modal-body">
+                <div class="filter-modal-inner">
+                    <div class="filter-modal-header d-flex align-items-center justify-content-between">
+                        <div class="filter-modal-title-wrap">
+                            <span class="filter-modal-title">{{ _("Filter") }}</span>
+                        </div>
+                        <button id="products-list-filter-form-close"
+                                type="button"
+                                class="btn filter-modal-close"
+                                data-dismiss="modal"
+                                aria-label="{{ _('Close') }}">
+                            <span class="icon-times2"></span>
+                        </button>
+                    </div>
+                    <div class="filter-modal-body-content">
+                        {% include 'components/products-filter-form.jinja' %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<script>
+    (function() {
+        function initProductsFilterFormPriceRange() {
+            var forms = document.querySelectorAll('.form-products-filter');
+            if (!forms.length) { return; }
+
+            forms.forEach(function(form) {
+                var fromInput = form.querySelector('#price_min');
+                var toInput = form.querySelector('#price_max');
+                var host = form.querySelector('#slider-range');
+                if (!fromInput || !toInput || !host) { return; }
+
+                if (host.dataset.enhanced === 'true') { return; }
+                host.dataset.enhanced = 'true';
+
+                var wrapper = document.createElement('div');
+                wrapper.className = 'price-range-slider-wrapper';
+
+                var track = document.createElement('div');
+                track.className = 'price-range-track';
+                wrapper.appendChild(track);
+
+                var minVal = parseInt(fromInput.min || '0', 10);
+                var maxVal = parseInt(toInput.max || '100000', 10);
+
+                var currentMin = parseInt(fromInput.value || minVal, 10);
+                if (isNaN(currentMin)) { currentMin = minVal; }
+                currentMin = Math.max(minVal, Math.min(maxVal, currentMin));
+
+                var currentMax = parseInt(toInput.value || maxVal, 10);
+                if (isNaN(currentMax)) { currentMax = maxVal; }
+                currentMax = Math.max(minVal, Math.min(maxVal, currentMax));
+                if (currentMin > currentMax) { currentMin = currentMax; }
+
+                var sliderMin = document.createElement('input');
+                sliderMin.type = 'range';
+                sliderMin.className = 'price-range-input price-range-input-min';
+                sliderMin.min = String(minVal);
+                sliderMin.max = String(maxVal);
+                sliderMin.step = '1';
+                sliderMin.value = String(currentMin);
+
+                var sliderMax = document.createElement('input');
+                sliderMax.type = 'range';
+                sliderMax.className = 'price-range-input price-range-input-max';
+                sliderMax.min = String(minVal);
+                sliderMax.max = String(maxVal);
+                sliderMax.step = '1';
+                sliderMax.value = String(currentMax);
+
+                wrapper.appendChild(sliderMin);
+                wrapper.appendChild(sliderMax);
+
+                host.innerHTML = '';
+                host.appendChild(wrapper);
+
+                function clamp(v, min, max) {
+                    return Math.max(min, Math.min(max, v));
+                }
+
+                function updateFromSliders(event) {
+                    var minNow = parseInt(sliderMin.value || minVal, 10);
+                    var maxNow = parseInt(sliderMax.value || maxVal, 10);
+                    if (isNaN(minNow)) { minNow = minVal; }
+                    if (isNaN(maxNow)) { maxNow = maxVal; }
+
+                    if (minNow > maxNow) {
+                        if (event && event.target === sliderMin) {
+                            maxNow = minNow;
+                            sliderMax.value = String(maxNow);
+                        } else {
+                            minNow = maxNow;
+                            sliderMin.value = String(minNow);
+                        }
+                    }
+
+                    fromInput.value = String(minNow);
+                    toInput.value = String(maxNow);
+                }
+
+                function updateFromInputs() {
+                    var minNow = parseInt(fromInput.value || minVal, 10);
+                    var maxNow = parseInt(toInput.value || maxVal, 10);
+
+                    if (isNaN(minNow)) { minNow = minVal; }
+                    if (isNaN(maxNow)) { maxNow = maxVal; }
+
+                    minNow = clamp(minNow, minVal, maxVal);
+                    maxNow = clamp(maxNow, minVal, maxVal);
+                    if (minNow > maxNow) { minNow = maxNow; }
+
+                    sliderMin.value = String(minNow);
+                    sliderMax.value = String(maxNow);
+                    fromInput.value = String(minNow);
+                    toInput.value = String(maxNow);
+                }
+
+                sliderMin.addEventListener('input', function(e) { updateFromSliders(e); });
+                sliderMax.addEventListener('input', function(e) { updateFromSliders(e); });
+                fromInput.addEventListener('input', updateFromInputs);
+                toInput.addEventListener('input', updateFromInputs);
+
+                updateFromInputs();
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProductsFilterFormPriceRange);
+        } else {
+            initProductsFilterFormPriceRange();
+        }
+    })();
+</script>

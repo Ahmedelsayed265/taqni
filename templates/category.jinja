@@ -12,16 +12,26 @@
         <nav aria-label="{{ _('Breadcrumb') }}">
 
             <ol class="breadcrumb">
-                <div class="container-fluid d-flex flex-wrap">
+                <div class="container d-flex flex-wrap align-items-center" style="gap: 12px;">
 
                     <li class="breadcrumb-item" aria-current="page"><a href="/">{{ _("Home") }}</a></li>
+                    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0.750047 0.750046C0.750047 0.750046 6.74999 5.16898 6.75 6.75009C6.75001 8.33121 0.75 12.75 0.75 12.75" stroke="#404040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
 
                     {% if category.parent_category.parent_category %}
                         <li class="breadcrumb-item" aria-current="page"><a href="{{ category.parent_category.parent_category.url }}">{{ category.parent_category.parent_category.name }}</a></li>
+                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.750047 0.750046C0.750047 0.750046 6.74999 5.16898 6.75 6.75009C6.75001 8.33121 0.75 12.75 0.75 12.75" stroke="#404040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     {% endif %}
+
 
                     {% if category.parent_category %}
                         <li class="breadcrumb-item" aria-current="page"><a href="{{ category.parent_category.url }}">{{ category.parent_category.name }}</a></li>
+                        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.750047 0.750046C0.750047 0.750046 6.74999 5.16898 6.75 6.75009C6.75001 8.33121 0.75 12.75 0.75 12.75" stroke="#404040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     {% endif %}
 
                     <li class="breadcrumb-item active " aria-current="page">{{ category.name }}</li>
@@ -35,12 +45,12 @@
 
     {% set title=category.name %}{% set description=category.description %}{% include 'components/breadcrumb-subTitle-detail.jinja' %}
     
-    <div class="container-fluid d-flex flex-row">
+    <div class="container d-flex flex-row">
         {% if  products.filters|length > 0 %}
             {% set async=true %} {% include 'vitrin:products/filters.jinja' %}
             
         {% endif %}
-        <div class="products-container-fluid flex-grow-1 pt-4">
+        <div class="products-container flex-grow-1 pt-4">
             <div>
                 {% set count=products.count %}{% set has_products_filtration=(products.filters|length > 0) %}{% include 'components/products-filter.jinja' %}
             </div>

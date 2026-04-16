@@ -21,6 +21,8 @@
     {% set logoUrlMobile = store.settings.branding.mobile_app_logo %}
   {% endif %}
 
+   {% set hide_loader = settings.loading_page_hide_loader %}
+
   <link rel="preload" as="image" href="{{ image_url(logoUrl, h=175, q=100) }}" media="(min-width: 992px)">
 
   {% if logoUrlMobile %}
@@ -225,11 +227,35 @@
       {% if settings.colors_background_color %}
         --body-bg-color: {{ settings.colors_background_color }};
       {% endif %}
+
+      {% if settings.loading_page_background_color %}
+          --loader_background_color: {{ settings.loading_page_background_color }};
+      {% else %}
+          --loader_background_color: #fff;
+      {% endif %}
     {% endif %}
   }
 </style>
 
-{% block top_body %}{% endblock %}
+{% block top_body %}
+  {% if not hide_loader %}
+  <div class="loader-container" id="loader-container">
+    <div class="loader-box">
+      {% set logoUrl = store.settings.branding.logo %}
+      <div class="logo-lodaer-box" style="background-image: url('{{ logoUrl }}')"></div>
+    </div>
+  </div>
+
+   <script>
+      addEventListener("DOMContentLoaded", (event) => {
+        const loader = document.getElementById('loader-container');
+        if (loader) {
+          loader.remove();
+        }
+      });
+    </script>
+  {% endif %}
+{% endblock %}
 
 <div class="app d-flex flex-column visible">
     <div class="header">

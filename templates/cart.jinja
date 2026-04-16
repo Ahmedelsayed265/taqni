@@ -13,10 +13,13 @@
 <section class="breadcrumb-section">
     <nav aria-label="{{ _('Breadcrumb') }}">
         <ol class="breadcrumb">
-            <div class="container d-flex flex-wrap">
+            <div class="container d-flex flex-wrap align-items-center" style="gap: 12px;">
                 <li class="breadcrumb-item" aria-current="page">
                     <a href="/">{{ _("Home") }}</a>
                 </li>
+                <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.750047 0.750046C0.750047 0.750046 6.74999 5.16898 6.75 6.75009C6.75001 8.33121 0.75 12.75 0.75 12.75" stroke="#404040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
                 <li class="breadcrumb-item active" aria-current="page">
                     {{ _("Cart") }}
                 </li>
@@ -322,13 +325,15 @@
                         </div>
                     </div>
 
-                    <div class="cart-sidebar-card earned-points-card">
-                        <h4 class="cart-sidebar-title d-flex align-items-center">
+                    <div class="cart-sidebar-card earned-points-card" style="border: 1px solid #f0f0f0; background: #fff;">
+                        <h4 class="cart-sidebar-title d-flex align-items-center mb-2">
                             <span>{{ _("Earned Points") }}</span>
-                            <span class="icon-star ml-2" style="font-size: 16px;"></span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="ml-2">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                            </svg>
                         </h4>
                         <div class="earned-points-content">
-                            <p class="earned-points-description">
+                            <p class="earned-points-description" style="font-size: 13px; color: #888; margin: 0;">
                                 {{ _("Congratulations, you earned %(points)s points. Please log in to view and benefit from your points") | format(points=cart.total_value | default(0)) }}
                             </p>
                         </div>
@@ -1532,6 +1537,5 @@
 </script>
 
 {% endblock %}
-
 
 {% block footer %} {% include 'footer.jinja' %} {% endblock %}

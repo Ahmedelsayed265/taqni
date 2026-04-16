@@ -29,13 +29,14 @@
         <nav aria-label="{{ _('Breadcrumb') }}">
         
             <ol class="breadcrumb">
-            <div class="container d-flex flex-wrap">
-                <li class="breadcrumb-item" aria-current="page"><a href="/">{{ _("Home") }}</a></li>
-                <li class="breadcrumb-item active " aria-current="page">{{ _("All categories") }}</li>
-            </div>
-        
+                <div class="container d-flex flex-wrap align-items-center" style="gap: 12px;">
+                    <li class="breadcrumb-item" aria-current="page"><a href="/">{{ _("Home") }}</a></li>
+                    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0.750047 0.750046C0.750047 0.750046 6.74999 5.16898 6.75 6.75009C6.75001 8.33121 0.75 12.75 0.75 12.75" stroke="#404040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <li class="breadcrumb-item active " aria-current="page">{{ _("All categories") }}</li>
+                </div>
             </ol>
-    
         </nav>
     </section>
 

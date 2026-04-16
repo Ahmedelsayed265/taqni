@@ -449,8 +449,7 @@
           }
         }
       ]
-    }
-,
+    },
     {
       "id": "side_menu",
       "icon": "fa fa-bars",
@@ -519,6 +518,58 @@
             "en": "Privacy Text"
           },
           "default": "Your Privacy Choices"
+        }
+      ]
+    },
+    {
+      "id": "loading_page",
+      "name": {
+        "ar": "صفحة التحميل",
+        "en": "Loading page"
+      },
+      "icon": "fa fa-cog",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "hide_loader",
+          "label": {
+            "ar": "اخفاء صفحة التحميل",
+            "en": "Hide loader"
+          }
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": {
+            "ar": "لون الخلفية",
+            "en": "Background color"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cart",
+      "icon": "font_awesome",
+      "name": {
+        "ar": "منتجات السلة",
+        "en": "cart products"
+      },
+      "settings": [
+        {
+          "id": "name",
+          "type": "text",
+          "label": {
+            "ar": "عنوان المنتجات بالسلة",
+            "en": "cart products title"
+          }
+        },
+        {
+          "id": "category_products_list",
+          "type": "category_products",
+          "label": {
+            "ar": "اختر التصنيف",
+            "en": "Select category"
+          }
         }
       ]
     }

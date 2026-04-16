@@ -20,6 +20,13 @@
         <!-- Right Side: Navigation & Contacts -->
         <div class="side-menu__main">
             <ul class="side-menu__nav">
+                {% if settings.shop_mega_menu_display_shop %}
+                    <li class="side-menu__nav-item">
+                        <a href="{{ settings.shop_mega_menu_shop_url or '#' }}" class="side-menu__nav-link">
+                            {{ settings.shop_mega_menu_shop_label or 'Shop' }}
+                        </a>
+                    </li>
+                {% endif %}
                 {% for menu in store.settings.menus.main_menu.items %}
                     <li class="side-menu__nav-item">
                         <a href="{{ menu.url | localized_url if menu.resource_type != 'url' else menu.url }}" class="side-menu__nav-link">

@@ -599,13 +599,12 @@
 
             {% if (product.related_products | length) >  0 %}
                 <section class="mt-5 mb-5">
-                    <div class="container d-flex align-items-center">
+                    <div class="container">
                         <div class="section-title">
                             <div class="">{{ _("You may also like") }}</div>
                         </div>
-                    </div>
 
-                            <div class="swiper mySwiper-24" style="position: relative">
+                        <div class="swiper mySwiper-24" style="position: relative">
 
                                 <div id="related-products" class="swiper-wrapper">
                                     {% for rProduct in product.related_products %}
@@ -615,7 +614,8 @@
                                     {% endfor %}
                                 </div>
 
-                            </div>
+                        </div>
+                    </div>
 
                 </section>
 
