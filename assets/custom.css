@@ -1,3 +1,8 @@
+body,
+html {
+  overflow-x: hidden !important;
+}
+
 .header-logo,
 .header-cart {
   width: 20%;
@@ -3189,6 +3194,7 @@ Premium Design */ .offer-banner-section {
     border: none;
     outline: none;
     max-width: 30%;
+    background: none;
   }
 
   & button {
