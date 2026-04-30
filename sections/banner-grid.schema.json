@@ -63,6 +63,30 @@
           "type": "color",
           "id": "subtitle_color",
           "label": { "ar": "لون العنوان الفرعي", "en": "Subtitle Color" }
+        },
+        {
+          "type": "color",
+          "id": "btn_bg_color",
+          "label": { "ar": "لون خلفية الزر", "en": "Button Background Color" },
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "btn_text_color",
+          "label": { "ar": "لون نص الزر", "en": "Button Text Color" },
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg_hover_color",
+          "label": { "ar": "لون خلفية الزر عند التمرير", "en": "Button Hover Background Color" },
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "btn_text_hover_color",
+          "label": { "ar": "لون نص الزر عند التمرير", "en": "Button Hover Text Color" },
+          "default": "#fff"
         }
       ]
     }

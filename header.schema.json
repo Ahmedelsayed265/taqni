@@ -379,6 +379,95 @@
           ]
         }
       ]
+    },
+    {
+      "id": "search_mega_menu",
+      "icon": "font_awesome",
+      "name": {
+        "ar": "القائمة الكبيرة للبحث",
+        "en": "Search Mega Menu"
+      },
+      "settings": [
+        {
+          "id": "trending_label",
+          "type": "text",
+          "label": {
+            "ar": "عنوان البحث الشائع",
+            "en": "Trending Search Label"
+          },
+          "default": "Trending search"
+        },
+        {
+          "id": "trending_links",
+          "type": "list",
+          "label": {
+            "ar": "روابط البحث الشائع",
+            "en": "Trending Search Links"
+          },
+          "max_items": 5,
+          "settings": [
+            {
+              "id": "text",
+              "type": "text",
+              "label": {
+                "ar": "النص",
+                "en": "Text"
+              }
+            },
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "URL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "promo_items",
+          "type": "list",
+          "label": {
+            "ar": "العناصر الترويجية للبحث",
+            "en": "Search Promo Items"
+          },
+          "max_items": 3,
+          "settings": [
+            {
+              "id": "image",
+              "type": "image",
+              "label": {
+                "ar": "الصورة",
+                "en": "Image"
+              }
+            },
+            {
+              "id": "title",
+              "type": "text",
+              "label": {
+                "ar": "العنوان",
+                "en": "Title"
+              }
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "label": {
+                "ar": "العنوان الفرعي (مثال: خصم 50%)",
+                "en": "Subtitle (e.g. 50% off)"
+              }
+            },
+            {
+              "id": "url",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "Link"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

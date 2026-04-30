@@ -1,3 +1,86 @@
+<div id="search-mega-menu-overlay" class="search-mega-menu-overlay">
+    <div class="search-overlay-header">
+        <div class="container">
+            <div class="search-input-wrapper">
+                <div class="d-flex align-items-center flex-grow-1">
+                    <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 15px;">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75006 0C4.36528 0 5.72205e-05 4.36522 5.72205e-05 9.75C5.72205e-05 15.1348 4.36528 19.5 9.75006 19.5C12.1727 19.5 14.3867 18.6138 16.0919 17.1514L20.2198 21.2803C20.5127 21.5732 20.9874 21.5732 21.2803 21.2803C21.5732 20.9874 21.5732 20.5126 21.2803 20.2197L17.1524 16.0908C18.6143 14.3858 19.5001 12.1721 19.5001 9.75C19.5001 4.36522 15.1348 0 9.75006 0ZM9.75006 1.5C14.3064 1.5 18.0001 5.19365 18.0001 9.75C18.0001 14.3063 14.3064 18 9.75006 18C5.19371 18 1.50006 14.3063 1.50006 9.75C1.50006 5.19365 5.19371 1.5 9.75006 1.5Z" fill="#999"/>
+                    </svg>
+                    <form action="/search" method="get" class="flex-grow-1">
+                        <input type="text" name="q" placeholder="{{ header_settings.search_placeholder or 'Search for product' }}" id="search-input-main" autocomplete="off">
+                    </form>
+                </div>
+                <button class="close-search-btn" onclick="toggleSearchOverlay()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 6L18 18" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="search-overlay-content">
+        <div class="container">
+            <div class="row">
+                <!-- Trending Section -->
+                <div class="col-lg-6">
+                    <div class="trending-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 style="font-weight: 700; margin: 0; font-size: 16px;">{{ header_settings.trending_label or 'Trending search' }}</h6>
+                            <button class="btn-clear-search" onclick="document.getElementById('search-input-main').value = ''">{{ _('Clear') }}</button>
+                        </div>
+                        <ul class="trending-links-list" style="list-style: none; padding: 0;">
+                            {% if header_settings.trending_links and header_settings.trending_links | length > 0 %}
+                                {% for link in header_settings.trending_links %}
+                                <li style="margin-bottom: 12px;"><a href="{{ link.url or '#' }}" style="color: #666; text-decoration: none; font-size: 15px; transition: color 0.3s;">{{ link.text }}</a></li>
+                                {% endfor %}
+                            {% else %}
+                                <li style="margin-bottom: 12px;"><a href="#" style="color: #666; text-decoration: none; font-size: 15px;">smart watch</a></li>
+                                <li style="margin-bottom: 12px;"><a href="#" style="color: #666; text-decoration: none; font-size: 15px;">headphones</a></li>
+                                <li style="margin-bottom: 12px;"><a href="#" style="color: #666; text-decoration: none; font-size: 15px;">desk lamp</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Promo Items -->
+                <div class="col-lg-6">
+                    <div class="search-promo-wrapper d-flex gap-4" style="gap: 16px;">
+                        {% if header_settings.promo_items and header_settings.promo_items | length > 0 %}
+                            {% for promo in header_settings.promo_items %}
+                            <div class="search-promo-item" style="flex: 1;">
+                                <a href="{{ promo.url or '#' }}" style="text-decoration: none; color: inherit; display: block;">
+                                    <div class="promo-img-box" style="border-radius: 4px; overflow: hidden; margin-bottom: 10px; aspect-ratio: 1/1;">
+                                        <img src="{{ image_url(promo.image, w=300, h=300) }}" alt="{{ promo.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h6 style="font-weight: 600; font-size: 14px; margin: 0 0 4px; color: #333;">{{ promo.title }}</h6>
+                                    <p style="text-decoration: underline; font-size: 12px; font-weight: 600; color: #000; margin: 0;">{{ promo.subtitle }}</p>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="search-promo-item" style="flex: 1;">
+                                <div class="promo-img-box" style="border-radius: 4px; overflow: hidden; margin-bottom: 10px; aspect-ratio: 1/1; background: #f0f0f0;"></div>
+                                <h6 style="font-weight: 600; font-size: 14px; margin: 0 0 4px; color: #333;">Wireless Earbuds</h6>
+                                <p style="text-decoration: underline; font-size: 12px; font-weight: 600; color: #000; margin: 0;">50% off</p>
+                            </div>
+                            <div class="search-promo-item" style="flex: 1;">
+                                <div class="promo-img-box" style="border-radius: 4px; overflow: hidden; margin-bottom: 10px; aspect-ratio: 1/1; background: #f0f0f0;"></div>
+                                <h6 style="font-weight: 600; font-size: 14px; margin: 0 0 4px; color: #333;">Premium Headphones</h6>
+                                <p style="text-decoration: underline; font-size: 12px; font-weight: 600; color: #000; margin: 0;">80% off</p>
+                            </div>
+                            <div class="search-promo-item" style="flex: 1;">
+                                <div class="promo-img-box" style="border-radius: 4px; overflow: hidden; margin-bottom: 10px; aspect-ratio: 1/1; background: #f0f0f0;"></div>
+                                <h6 style="font-weight: 600; font-size: 14px; margin: 0 0 4px; color: #333;">True Wireless Pods</h6>
+                                <p style="text-decoration: underline; font-size: 12px; font-weight: 600; color: #000; margin: 0;">60% off</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="search-header">
     <div class="container">
         <div class="search-header-bar">
@@ -9,26 +92,26 @@
                     </svg>
                 </button>
 
-                {% if not ('hide_search_bar' in header_options) %}
-                <div class="d-lg-none d-flex">
+                {% if not ('hide_search_bar' in header_settings.options) %}
+                <div class="d-lg-none d-flex" onclick="toggleSearchOverlay()" style="cursor: pointer;">
                     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75006 0C4.36528 0 5.72205e-05 4.36522 5.72205e-05 9.75C5.72205e-05 15.1348 4.36528 19.5 9.75006 19.5C12.1727 19.5 14.3867 18.6138 16.0919 17.1514L20.2198 21.2803C20.5127 21.5732 20.9874 21.5732 21.2803 21.2803C21.5732 20.9874 21.5732 20.5126 21.2803 20.2197L17.1524 16.0908C18.6143 14.3858 19.5001 12.1721 19.5001 9.75C19.5001 4.36522 15.1348 0 9.75006 0ZM9.75006 1.5C14.3064 1.5 18.0001 5.19365 18.0001 9.75C18.0001 14.3063 14.3064 18 9.75006 18C5.19371 18 1.50006 14.3063 1.50006 9.75C1.50006 5.19365 5.19371 1.5 9.75006 1.5Z" fill="white"/>
                     </svg>
                 </div>
                 {% endif %}
 
-                {% set menu_settings=settings %}{% include 'components/header-mega-menu.jinja' %}
+                {% set menu_settings=header_settings %}{% include 'components/header-mega-menu.jinja' %}
             </div>
 
             <div class="logo">
                 <a href="/" style="width: auto; height: 100%; display: flex; align-items: center;">
-                    {% if settings.header_logo %}
-                        {% set logoUrl = settings.header_logo %}
+                    {% if header_settings.header_logo %}
+                        {% set logoUrl = header_settings.header_logo %}
                     {% else %}
                         {% set logoUrl = store.logo %}
                     {% endif %}
-                    {% if settings.header_logo_mobile %}
-                        {% set logoUrlMobile = settings.header_logo_mobile %}
+                    {% if header_settings.header_logo_mobile %}
+                        {% set logoUrlMobile = header_settings.header_logo_mobile %}
                     {% elif store.settings.branding.mobile_app_logo %}
                         {% set logoUrlMobile = store.settings.branding.mobile_app_logo %}
                     {% endif %}
@@ -42,8 +125,8 @@
             </div>
 
             <div class="actions">
-                {% if not ('hide_search_bar' in header_options) %}
-                <div class="d-none d-lg-flex">
+                {% if not ('hide_search_bar' in header_settings.options) %}
+                <div class="d-none d-lg-flex" onclick="toggleSearchOverlay()" style="cursor: pointer;">
                     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75006 0C4.36528 0 5.72205e-05 4.36522 5.72205e-05 9.75C5.72205e-05 15.1348 4.36528 19.5 9.75006 19.5C12.1727 19.5 14.3867 18.6138 16.0919 17.1514L20.2198 21.2803C20.5127 21.5732 20.9874 21.5732 21.2803 21.2803C21.5732 20.9874 21.5732 20.5126 21.2803 20.2197L17.1524 16.0908C18.6143 14.3858 19.5001 12.1721 19.5001 9.75C19.5001 4.36522 15.1348 0 9.75006 0ZM9.75006 1.5C14.3064 1.5 18.0001 5.19365 18.0001 9.75C18.0001 14.3063 14.3064 18 9.75006 18C5.19371 18 1.50006 14.3063 1.50006 9.75C1.50006 5.19365 5.19371 1.5 9.75006 1.5Z" fill="white"/>
                     </svg>
@@ -96,6 +179,31 @@
 </div>
 
 <script>
+    function toggleSearchOverlay() {
+        const overlay = document.getElementById('search-mega-menu-overlay');
+        if (overlay) {
+            overlay.classList.toggle('active');
+            if (overlay.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => {
+                    document.getElementById('search-input-main').focus();
+                }, 300);
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const overlay = document.getElementById('search-mega-menu-overlay');
+            if (overlay && overlay.classList.contains('active')) {
+                toggleSearchOverlay();
+            }
+        }
+    });
+
     function openSlidingMenu() {
         if (window.slidingMenu && window.slidingMenu.open) {
             window.slidingMenu.open();

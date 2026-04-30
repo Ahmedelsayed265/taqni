@@ -9,7 +9,7 @@
   if (!$) return;
 
   function getSideCartEl() {
-    return document.getElementById('side-cart');
+    return document.getElementById('side-cart-modern');
   }
 
   var rtlMode = $('body').hasClass('rtl') || document.documentElement.getAttribute('dir') === 'rtl';
@@ -62,13 +62,20 @@
 
     var priceBlock = '';
     if (hasDiscount && priceStr) {
-      priceBlock = '<div class="price"><span class="price-discount">' + priceStr + '</span> <del class="old">' + compareStr + '</del></div>';
+      priceBlock = '<div class="price"><span class="product-price">' + priceStr + '</span> <del class="old">' + compareStr + '</del></div>';
     } else {
       priceBlock = '<div class="price"><span class="product-price">' + priceStr + '</span></div>';
     }
 
     var removeLabel = getDataLabel('remove-label', rtlMode ? 'حذف' : 'Remove');
     var safeCartItemId = (cartItemId || id).replace(/'/g, "\\'");
+    
+    // Quantity controls with conditional trash icon
+    var minusContent = qty > 1 
+      ? '&minus;' 
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>';
+    var minusClass = qty > 1 ? 'button-minus' : 'button-remove';
+
     var itemHtml =
       '<li id="cartitem_' + id.replace(/"/g, '') + '" data-cart-item-id="' + (cartItemId || '') + '">' +
         '<div class="flex-product-box">' +
@@ -76,14 +83,15 @@
             '<a href="' + url + '"><img src="' + (imgSrc || '') + '" alt="' + name + '" loading="lazy" onerror="this.style.display=\'none\'"></a>' +
           '</div>' +
           '<div class="product-info-box">' +
-            '<button type="button" class="remove" onclick="return window.removeItemFromSideCart(\'' + safeCartItemId + '\', this)" aria-label="' + removeLabel + '">' + removeLabel + '</button>' +
             '<h4 class="title-product-m"><a href="' + url + '">' + name + '</a></h4>' +
+            '<div class="product-variant-info">' + (product.variant_name || '') + '</div>' +
             '<div class="price-old-new">' + priceBlock + '</div>' +
             '<div class="block-p-qty">' +
-              '<button type="button" class="button-minus btn-number" data-type="minus" data-field="quantity_' + safeCartItemId + '" aria-label="-">−</button>' +
-              '<input type="number" class="input-number" name="quantity_' + safeCartItemId + '" value="' + qty + '" min="1" max="999" readonly onchange="window.updateMiniCartProduct(\'' + safeCartItemId + '\', this.value)">' +
-              '<button type="button" class="button-plus btn-number" data-type="plus" data-field="quantity_' + safeCartItemId + '" aria-label="+">+</button>' +
+              '<button type="button" class="btn-number ' + minusClass + '" data-type="minus" data-field="quantity_' + safeCartItemId + '" aria-label="' + removeLabel + '">' + minusContent + '</button>' +
+              '<div class="input-number" data-field="quantity_' + safeCartItemId + '">' + qty + '</div>' +
+              '<button type="button" class="btn-number button-plus" data-type="plus" data-field="quantity_' + safeCartItemId + '" aria-label="+">+</button>' +
             '</div>' +
+            '<input type="hidden" name="quantity_' + safeCartItemId + '" value="' + qty + '">' +
           '</div>' +
         '</div>' +
       '</li>';
@@ -363,8 +371,10 @@
 
     var rule = cart.free_shipping_rule;
     var cond = rule && rule.subtotal_condition ? rule.subtotal_condition : null;
+    var count = cart.cart_items_quantity ?? cart.products_count ?? 0;
     var hasRule = rule && (rule.code || cond);
-    if (!hasRule || !cond) {
+    
+    if (!hasRule || !cond || count <= 0) {
       wrap.classList.add('d-none');
       return;
     }
@@ -379,87 +389,22 @@
       'remaining_to_min_total', 'remainingToMinTotal'
     ]) || '0';
 
-    var minTotal = getCondVal(cond, [
-      'min_total_formatted', 'minTotalFormatted', 'min_string', 'minString'
-    ]);
-
-    var maxTotal = getCondVal(cond, [
-      'max_total_formatted', 'maxTotalFormatted', 'max_string', 'maxString'
-    ]);
-
-    var productsSubtotal = getCondVal(cond, [
-      'products_subtotal_formatted', 'productsSubtotalFormatted',
-      'products_subtotal', 'productsSubtotal'
-    ]);
-
-    /* لا نعرض البلوك لو مفيش شرط شحن مجاني فعّال أو مفيش قيم للعرض */
-    var hasMessage = status === 'applied' ||
-      (status === 'min_not_reached' && (remaining !== '0' || minTotal)) ||
-      ((status === 'max_exceed' || status === 'max_exceeded') && (minTotal || maxTotal));
-    if (!hasMessage && status === 'min_not_reached' && !minTotal && remaining === '0') {
-      wrap.classList.add('d-none');
-      return;
-    }
-
     var msgEl = wrap.querySelector('.free-shipping-rule-message');
-    var progressContainer = wrap.querySelector('.free-shipping-progress-container');
     var bar = wrap.querySelector('.free-shipping-rule-progress');
-    var currentSubtotalEl = wrap.querySelector('.free-shipping-current-subtotal');
-    var minTotalEl = wrap.querySelector('.free-shipping-min-total');
-    var readMoreEl = wrap.querySelector('.free-shipping-rule-read-more');
 
-    if (currentSubtotalEl) currentSubtotalEl.textContent = productsSubtotal;
-    if (minTotalEl) minTotalEl.textContent = minTotal;
-
-    if (bar) {
-      var width = (status === 'max_exceeded' || status === 'max_exceed') ? 100 : pct;
-      bar.style.width = width + '%';
-    }
-
-    if (progressContainer) {
-      if (status === 'min_not_reached' || status === 'max_exceeded' || status === 'max_exceed') {
-        progressContainer.classList.remove('d-none');
-        progressContainer.classList.add('d-flex');
-      } else {
-        progressContainer.classList.add('d-none');
-        progressContainer.classList.remove('d-flex');
-      }
-    }
-
-    if (readMoreEl) {
-      if (status === 'min_not_reached') {
-        readMoreEl.classList.remove('d-none');
-      } else {
-        readMoreEl.classList.add('d-none');
-      }
-    }
+    if (bar) bar.style.width = pct + '%';
 
     if (msgEl) {
+      var readMore = wrap.querySelector('.free-shipping-rule-read-more');
       if (status === 'min_not_reached') {
-        var addTotalTpl = getDataLabel(
-          'free-shipping-add-total',
-          rtlMode ? 'أضف منتجات بإجمالي %(total)s للحصول على شحن مجاني' : 'Add products with total of %(total)s to get free shipping'
-        );
-        msgEl.textContent = addTotalTpl.replace('%(total)s', remaining);
-      } else if (status === 'max_exceed' || status === 'max_exceeded') {
-        var betweenTpl = getDataLabel(
-          'free-shipping-between',
-          rtlMode
-            ? 'ينطبق الشحن المجاني على إجمالي سلة بين %(min)s و %(max)s'
-            : 'Free shipping applies for cart total between %(min)s and %(max)s'
-        );
-        msgEl.textContent = betweenTpl.replace('%(min)s', minTotal).replace('%(max)s', maxTotal);
+        var addTotalMsg = getDataLabel('free-shipping-add-total', rtlMode ? 'أضف منتجات بقيمة %(total)s للحصول على شحن مجاني' : 'Add products with total of %(total)s to get free shipping');
+        msgEl.innerHTML = addTotalMsg.replace('%(total)s', '<strong>' + remaining + '</strong>');
+        if (readMore) readMore.classList.remove('d-none');
       } else if (status === 'applied') {
-        var appliedTpl = getDataLabel(
-          'free-shipping-applied',
-          rtlMode ? 'حصلت على شحن مجاني' : 'Free shipping applied'
-        );
-        msgEl.textContent = appliedTpl;
-      } else {
-        msgEl.textContent = '';
+        msgEl.innerHTML = '<strong>' + getDataLabel('free-shipping-applied', rtlMode ? 'تهانينا! حصلت على شحن مجاني' : 'Congratulations! Free shipping applied') + '</strong>';
+        if (readMore) readMore.classList.add('d-none');
       }
     }
-
     wrap.classList.remove('d-none');
   }
 
@@ -493,15 +438,22 @@
     var sideCartEl = getSideCartEl();
     if (!sideCartEl) return;
     var emptyBox = sideCartEl.querySelector('#additional-cart');
-    var emptyMsg = sideCartEl.querySelector('.empty-cart-message .empty-cart-text');
     var listEl = sideCartEl.querySelector('.side-cart-items');
     var footer = sideCartEl.querySelector('.footer-side-cart');
     var loading = sideCartEl.querySelector('.loading-cart');
+    var countTitle = sideCartEl.querySelector('.side-cart-count-title');
 
     var count = cart.cart_items_quantity ?? cart.products_count ?? 0;
     var isEmpty = !count || count <= 0;
 
-    if (emptyMsg) emptyMsg.textContent = getEmptyText();
+    if (countTitle) countTitle.textContent = count;
+    
+    // Update global header badges
+    var globalBadges = document.querySelectorAll('.cart-badge');
+    globalBadges.forEach(function(b) {
+      b.textContent = count;
+      b.classList.toggle('d-none', count <= 0);
+    });
     if (emptyBox) emptyBox.classList.toggle('d-none', !isEmpty);
     if (listEl) {
       listEl.classList.toggle('d-none', isEmpty);
@@ -521,14 +473,26 @@
       var type = btn.data('type');
       var field = btn.data('field');
       var input = sideCartEl && sideCartEl.querySelector('input[name="' + field + '"]');
+      var display = sideCartEl && sideCartEl.querySelector('.input-number[data-field="' + field + '"]');
       if (!input) return;
       var val = parseInt(input.value, 10) || 1;
-      if (type === 'plus') val = Math.min(999, val + 1);
-      else val = Math.max(1, val - 1);
-      input.value = val;
+      
       var cartItemId = (field + '').replace('quantity_', '');
-      if (window.updateMiniCartProduct) window.updateMiniCartProduct(cartItemId, val);
+
+      if (btn.hasClass('button-plus')) {
+        val = Math.min(999, val + 1);
+        if (window.updateMiniCartProduct) window.updateMiniCartProduct(cartItemId, val);
+      } else {
+        if (val > 1) {
+          val = val - 1;
+          if (window.updateMiniCartProduct) window.updateMiniCartProduct(cartItemId, val);
+        } else {
+          if (window.removeItemFromSideCart) window.removeItemFromSideCart(cartItemId, btn[0]);
+        }
+      }
     });
+    
+    if (isEmpty) loadSideCartRecommended();
   }
 
   window.renderSideCart = renderSideCart;

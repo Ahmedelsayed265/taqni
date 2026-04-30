@@ -1,27 +1,39 @@
 {# Side Cart (سلة تسوق جانبية) - RTL + Bootstrap 5 Offcanvas #}
-{% set side_cart_products_list = safeget(settings, 'side_cart_side_products_list') %}
+{% set side_cart_recommended_list = safeget(settings, 'side_cart_recommended_list') %}
 <aside class="offcanvas offcanvas-end block-side-cart"
-       id="side-cart"
+       id="side-cart-modern"
        tabindex="-1"
        aria-labelledby="side-cart-title"
        data-empty="{{ _('Cart is empty') | e }}"
-       data-recommended-category-id="{{ settings.side_cart_recommended_category_id | default('') }}"
-       data-recommended-title="{{ _('You might also like') | e }}"
+       data-recommended-title="{{ settings.side_cart_cart_name or _('You might also like') | e }}"
        data-remove-label="{{ _('Remove') | e }}"
        data-free-shipping-applied="{{ _('Free shipping applied') | e }}"
        data-free-shipping-between="{{ _('Free shipping applies for cart total between %(min)s and %(max)s') | e }}"
-       data-free-shipping-add-total="{{ _('Add products with total of %(total)s to get free shipping') | e }}"
+       data-free-shipping-add-total="{{ _('Would you like free shipping?') }} {{ _('Add valuable products') }} %(total)s"
        data-total-label="{{ _('Total') | e }}"
        data-coupon-applied="{{ _('Coupon applied') | e }}"
        data-update-quantity-error="{{ _('Failed to update quantity') | e }}"
        data-reviews-enabled="{{ 'true' if store.settings.products.reviews_enabled else 'false' }}">
 
   <div class="offcanvas-header block-side-cart-header">
-    <h5 class="offcanvas-title" id="side-cart-title">{{ _('Cart Contents') }}</h5>
+    <div class="side-cart-header-left">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.08223 20.2577L4.56921 17.4958C5.14478 14.2315 5.43257 12.5994 6.57223 11.633C7.71189 10.6667 9.34898 10.6667 12.6232 10.6667H19.3769C22.6511 10.6667 24.2882 10.6667 25.4279 11.633C26.5675 12.5994 26.8553 14.2315 27.4309 17.4958L27.9179 20.2577C28.7143 24.7748 29.1125 27.0333 27.8863 28.5167C26.66 30 24.3946 30 19.8639 30H12.1362C7.60545 30 5.34009 30 4.11381 28.5167C2.88754 27.0333 3.28577 24.7748 4.08223 20.2577Z" stroke="#050505" stroke-width="1.5"/>
+        <path d="M10 10.6667L10.2238 7.98158C10.4741 4.97742 12.9854 2.66667 16 2.66667C19.0146 2.66667 21.5259 4.97742 21.7762 7.98158L22 10.6667" stroke="#050505" stroke-width="1.5"/>
+        <path d="M20 14.6667C19.8266 16.5508 18.0876 18 16 18C13.9124 18 12.1734 16.5508 12 14.6667" stroke="#050505" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h5 class="offcanvas-title" id="side-cart-title">
+      {{ _('shopping bag') }} (<span class="side-cart-count-title">0</span>)
+    </h5>
     <button type="button"
             class="btn-close side-cart-close"
             onclick="typeof window.closeSideCart === 'function' && window.closeSideCart()"
-            aria-label="{{ _('Close') }}"></button>
+            aria-label="{{ _('Close') }}">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 24L8 8M8 24L24 8" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </div>
 
   <div class="offcanvas-body block-side-cart-body">
@@ -30,49 +42,59 @@
     </div>
 
     <div class="cart-list">
-      <div class="empty-cart-box" id="additional-cart">
-        <div class="empty-cart-message d-flex flex-column align-items-center justify-content-center py-5">
-          <span class="empty-cart-icon icon-shopping_cart_black_36dp-1-1 theme-title-primary" aria-hidden="true">
-            <span class="">
-            
-<svg width="151" height="150" viewBox="0 0 151 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M88.0833 93.75L110.104 115.625M110.104 115.625L132.125 137.5M110.104 115.625L88.0833 137.5M110.104 115.625L132.125 93.75" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M44.0417 46.875V43.75C44.0417 26.4911 58.1261 12.5 75.5001 12.5C92.874 12.5 106.958 26.4911 106.958 43.75V46.875" stroke="#404040" stroke-width="2.5"/>
-<path d="M128.303 78.125L131.006 62.0973C132.196 55.0394 132.791 51.5104 130.959 49.1927C129.126 46.875 125.741 46.875 118.97 46.875H32.0295C25.259 46.875 21.8738 46.875 20.0413 49.1927C18.2088 51.5104 18.8039 55.0394 19.9941 62.0973L27.3112 105.488C29.8915 120.79 31.1817 128.44 36.2909 132.97C41.4001 137.5 48.7393 137.5 63.4177 137.5H69.2083" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M28.3125 109.375L69.2083 109.375" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
-</svg>
+        <div id="side-cart-free-shipping" class="free-shipping-rule-section d-none">
+            <div class="free-shipping-header-row d-flex justify-content-between align-items-center">
+                <div class="free-shipping-message-text free-shipping-rule-message"></div>
+                <div class="free-shipping-add-more free-shipping-rule-read-more d-none">
+                    <a href="/categories">{{ _("Add more") }}</a>
+                </div>
+            </div>
+            <div class="free-shipping-track">
+                <div class="free-shipping-track-fill free-shipping-rule-progress">
+                    <div class="free-shipping-truck-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.56088 2.2891C6.93688 2.49185 6.42335 2.92949 6.12235 3.50002H5.09448C4.63041 3.50002 4.24535 3.50001 3.92815 3.53203C3.59415 3.56576 3.29508 3.63795 3.01275 3.80657C2.73041 3.97521 2.52508 4.20433 2.33701 4.48243C2.18399 4.70876 2.02797 4.99022 1.84797 5.3233L1.75588 5.49415L0.897014 7.08916C0.877014 7.12483 0.861281 7.16323 0.850414 7.20363C0.838014 7.24963 0.832481 7.29643 0.833314 7.34276V8.70263C0.833314 9.45776 0.833313 10.0749 0.898881 10.5622C0.967348 11.0714 1.11555 11.513 1.46801 11.8655C1.84475 12.2422 2.32588 12.3875 2.88881 12.4491C3.08908 13.2445 3.80915 13.8334 4.66675 13.8334C5.50595 13.8334 6.21341 13.2696 6.43108 12.5001H9.56908C9.78676 13.2696 10.4942 13.8334 11.3334 13.8334C12.191 13.8334 12.9111 13.2445 13.1113 12.4491C13.6743 12.3875 14.1554 12.2422 14.5321 11.8655C14.9994 11.3982 15.1106 10.7702 15.1478 10.025C15.1615 9.74916 14.9491 9.51443 14.6733 9.50069C14.3975 9.48696 14.1627 9.69936 14.149 9.97516C14.1133 10.6922 14.007 10.9764 13.825 11.1584C13.686 11.2974 13.4873 11.3922 13.0813 11.4452C12.8462 10.7039 12.1525 10.1667 11.3334 10.1667C10.4942 10.1667 9.78671 10.7306 9.56908 11.5001H6.43108C6.21348 10.7306 5.50595 10.1667 4.66675 10.1667C3.84761 10.1667 3.15395 10.7039 2.91888 11.4452C2.51288 11.3922 2.31415 11.2974 2.17515 11.1584C2.03941 11.0227 1.94355 10.8273 1.88995 10.4289C1.83448 10.0161 1.83341 9.46656 1.83341 8.66676V7.83343H4.54495C4.96415 7.83376 5.28855 7.83403 5.56661 7.74369C6.12475 7.56236 6.56235 7.12476 6.74368 6.56661C6.83401 6.28851 6.83381 5.96412 6.83348 5.54493L6.83341 5.46674C6.83341 4.68331 6.83961 4.41018 6.90681 4.20321C7.05521 3.74656 7.41321 3.38853 7.86988 3.24015C8.04928 3.18187 8.27835 3.16947 8.84622 3.1672L14.6667 3.16674C14.9429 3.16674 15.1667 2.94288 15.1667 2.66674C15.1667 2.3906 14.9429 2.16669 14.6667 2.16669H9.04075C8.38608 2.16646 7.93888 2.16628 7.56088 2.2891ZM11.3334 11.1667C11.7937 11.1667 12.1667 11.5398 12.1667 12C12.1667 12.4603 11.7937 12.8334 11.3334 12.8334C10.8732 12.8334 10.5001 12.4603 10.5001 12C10.5001 11.5398 10.8732 11.1667 11.3334 11.1667ZM4.66675 11.1667C5.12701 11.1667 5.50008 11.5398 5.50008 12C5.50008 12.4603 5.12701 12.8334 4.66675 12.8334C4.20648 12.8334 3.83341 12.4603 3.83341 12C3.83341 11.5398 4.20648 11.1667 4.66675 11.1667ZM4.81204 4.50039L5.85048 4.50003C5.83315 4.74808 5.83328 5.03291 5.83341 5.37407L5.83289 5.68761C5.83083 6.04686 5.82189 6.16744 5.79261 6.25759C5.71021 6.51129 5.51128 6.71016 5.25761 6.79263C5.15108 6.82723 5.00201 6.83343 4.46675 6.83343H2.17048L2.62461 5.99008C2.85935 5.55415 3.01841 5.25993 3.16541 5.04259C3.30601 4.83461 3.41308 4.73227 3.52555 4.66509C3.63801 4.59791 3.77881 4.5522 4.02861 4.52697C4.23167 4.50647 4.47912 4.50156 4.81204 4.50039ZM14.6667 4.83336C14.9429 4.83336 15.1667 5.05722 15.1667 5.33336C15.1667 5.6095 14.9429 5.83336 14.6667 5.83336H10.6667C10.3906 5.83336 10.1667 5.6095 10.1667 5.33336C10.1667 5.05722 10.3906 4.83336 10.6667 4.83336H14.6667ZM15.1667 7.33336C15.1667 7.05723 14.9429 6.83336 14.6667 6.83336H12.0001C11.7239 6.83336 11.5001 7.05723 11.5001 7.33336C11.5001 7.60949 11.7239 7.83336 12.0001 7.83336H14.6667C14.9429 7.83336 15.1667 7.60949 15.1667 7.33336Z" fill="white"/>
+                        </svg>
+                    </div>
+                </div>                            
+            </div>
+        </div>
 
-            </span>
-          </span>
-          <h2 class="mt-empty">{{ _('Cart is empty') }}</h2>
-          <div class="mt-shopping mt-3">
-            <a href="/" class="btn btn-outline-primary btn-lg btn-block">
-              {{ _('continue shopping') }}
+      <div class="empty-cart-box d-none" id="additional-cart">
+        <div class="empty-cart-message d-flex flex-column align-items-center justify-content-center py-5">
+          <div class="empty-cart-icon-wrapper mb-4">
+             <svg width="151" height="150" viewBox="0 0 151 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M88.0833 93.75L110.104 115.625M110.104 115.625L132.125 137.5M110.104 115.625L88.0833 137.5M110.104 115.625L132.125 93.75" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M44.0417 46.875V43.75C44.0417 26.4911 58.1261 12.5 75.5001 12.5C92.874 12.5 106.958 26.4911 106.958 43.75V46.875" stroke="#404040" stroke-width="2.5"/>
+                <path d="M128.303 78.125L131.006 62.0973C132.196 55.0394 132.791 51.5104 130.959 49.1927C129.126 46.875 125.741 46.875 118.97 46.875H32.0295C25.259 46.875 21.8738 46.875 20.0413 49.1927C18.2088 51.5104 18.8039 55.0394 19.9941 62.0973L27.3112 105.488C29.8915 120.79 31.1817 128.44 36.2909 132.97C41.4001 137.5 48.7393 137.5 63.4177 137.5H69.2083" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M28.3125 109.375L69.2083 109.375" stroke="#404040" stroke-width="2.5" stroke-linecap="round"/>
+             </svg>
+          </div>
+          <h2 class="mt-empty">{{ _('Your shopping cart is empty') }}</h2>
+          <p style="font-size: 18px; color: #454545; margin-top: 10px;">{{ _("Add some products to your cart to complete your order.") }}</p>
+          
+          <div class="empty-recommended-grid w-100 mt-4" id="empty-recommended-products">
+             {% for item in side_cart_recommended_list %}
+                <div class="recommended-item-card">
+                   <a href="{{ item.link }}" class="recommended-item-link">
+                      <div class="recommended-item-img-wrap">
+                         <img src="{{ item.image }}" alt="{{ item.title }}" loading="lazy">
+                      </div>
+                      <span class="recommended-item-title">{{ item.title }}</span>
+                   </a>
+                </div>
+             {% endfor %}
+          </div>
+
+          <div class="mt-shopping mt-4">
+            <a href="/" class="view-all-products-link">
+              {{ _('View all products') }}
             </a>
           </div>
         </div>
       </div>
-         <div class="cart-discount-rule-wrapper free-shipping-rule-section mt-2 mb-4 d-none" id="side-cart-free-shipping">
-        <div class="free-shipping-message-text free-shipping-rule-message"></div>
-        <div class="free-shipping-progress-container d-none">
-          <div class="free-shipping-value free-shipping-value-right">
-            <span class="free-shipping-current-subtotal"></span>
-          </div>
-          <div class="free-shipping-track">
-            <div class="free-shipping-track-bg"></div>
-            <div class="free-shipping-track-fill free-shipping-rule-progress" style="width: 0%"></div>
-          </div>
-          <div class="free-shipping-value free-shipping-value-left">
-            <span class="free-shipping-min-total"></span>
-          </div>
-        </div>
-        <div class="free-shipping-read-more free-shipping-rule-read-more d-none">
-          <a data-toggle="modal" data-target="#searchCitiesModal" href="#">{{ _("Read More") }}</a>
-        </div>
-      </div>
 
       <ul class="item-inside-cart side-cart-items list-unstyled mb-0 d-none"></ul>
- 
 
       <div class="side-cart-recommended d-none" id="side-cart-recommended"
            data-default-product-image="{{ ('product-img.svg' | asset_url) | e }}"
@@ -88,63 +110,31 @@
         </div>
       </div>
 
-  
-
       {% if side_cart_products_list and side_cart_products_list.id %}
-<div id="side-cart-custom-category-products" class="category-products " style="margin-top: 10px; margin-bottom: 10px;">
-    <div class="mb-1">
-    <div class="titles">
-        <h2 class="section-title" style="margin-bottom: 10px; text-align: start; font-size: 16px;">{{ safeget(settings, 'side_cart_cart_name') or _("recommended products") }}</h2>
+        <div id="side-cart-custom-category-products" class="category-products " style="margin-top: 10px; margin-bottom: 10px;">
+            <div class="mb-1">
+            <div class="titles">
+                <h2 class="section-title" style="margin-bottom: 10px; text-align: start; font-size: 16px;">{{ settings.side_cart_cart_name or _("recommended products") }}</h2>
+                </div>
+                <div class="products-slider-wrapper" style="position: relative;">
+                    <div class="loading-spinner" style="text-align: center; padding: 10px;">{{ _("Loading...") }}</div>
+                    <div class="products-slider s-slider cart-category-products-slider" style="display: none;"></div>
+                </div>
+            </div>
         </div>
-        <div class="products-slider-wrapper" style="position: relative;">
-            <div class="loading-spinner" style="text-align: center; padding: 10px;">{{ _("Loading...") }}</div>
-            <div class="products-slider s-slider cart-category-products-slider" style="display: none;"></div>
-        </div>
-    </div>
-</div>
       {% endif %}
     </div>
 
     <div class="footer-side-cart d-none">
       <div class="cart-sidebar-wrapper">
         <div class="cart-sidebar-card order-summary-card mb-4">
-          <h4 class="cart-sidebar-title">{{ _("Order Summary") }}</h4>
+    
           <div class="cart-totals-div" id="cart-side-totals" role="status" aria-live="polite" aria-atomic="true"></div>
 
-          <div class="cart-checkout-section mt-3">
-            <div class="coupon-card mb-3">
-              <h4 class="cart-sidebar-title">{{ _("Discount Code") }}</h4>
-              <div class="coupon-form">
-                <form class="side-cart-coupon-form-inner" onsubmit="event.preventDefault(); if(typeof sendSideCartCoupon === 'function') sendSideCartCoupon();">
-                  <div class="form-group mb-0">
-                    <div class="coupon-capsule">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="coupon-icon-svg">
-                        <path d="M7.69171 19.6161C8.28274 19.6161 8.57825 19.6161 8.84747 19.716C8.88486 19.7298 8.92172 19.7451 8.95797 19.7617C9.21897 19.8815 9.42793 20.0904 9.84585 20.5083C10.8078 21.4702 11.2887 21.9512 11.8805 21.9955C11.96 22.0015 12.04 22.0015 12.1195 21.9955C12.7113 21.9512 13.1923 21.4702 14.1541 20.5083C14.5721 20.0904 14.781 19.8815 15.042 19.7617C15.0783 19.7451 15.1151 19.7298 15.1525 19.716C15.4218 19.6161 15.7173 19.6161 16.3083 19.6161H16.4173C17.9252 19.6161 18.6792 19.6161 19.1476 19.1476C19.6161 18.6792 19.6161 17.9252 19.6161 16.4173V16.3083C19.6161 15.7173 19.6161 15.4218 19.716 15.1525C19.7298 15.1151 19.7451 15.0783 19.7617 15.042C19.8815 14.781 20.0904 14.5721 20.5083 14.1541C21.4702 13.1923 21.9512 12.7113 21.9955 12.1195C22.0015 12.04 22.0015 11.96 21.9955 11.8805C21.9512 11.2887 21.4702 10.8078 20.5083 9.84585C20.0904 9.42793 19.8815 9.21897 19.7617 8.95797C19.7451 8.92172 19.7298 8.88486 19.716 8.84747C19.6161 8.57825 19.6161 8.28274 19.6161 7.69171V7.58269C19.6161 6.07479 19.6161 5.32083 19.1476 4.85239C18.6792 4.38394 17.9252 4.38394 16.4173 4.38394H16.3083C15.7173 4.38394 15.4218 4.38394 15.1525 4.28405C15.1151 4.27018 15.0783 4.25491 15.042 4.23828C14.781 4.11855 14.5721 3.90959 14.1541 3.49167C13.1923 2.52977 12.7113 2.04882 12.1195 2.00447C12.04 1.99851 11.96 1.99851 11.8805 2.00447C11.2887 2.04882 10.8078 2.52977 9.84585 3.49167C9.42793 3.90959 9.21897 4.11855 8.95797 4.23828C8.92172 4.25491 8.88486 4.27018 8.84747 4.28405C8.57825 4.38394 8.28274 4.38394 7.69171 4.38394H7.58269C6.07479 4.38394 5.32083 4.38394 4.85239 4.85239C4.38394 5.32083 4.38394 6.07479 4.38394 7.58269V7.69171C4.38394 8.28274 4.38394 8.57825 4.28405 8.84747C4.27018 8.88486 4.25491 8.92172 4.23828 8.95797C4.11855 9.21897 3.90959 9.42793 3.49167 9.84585C2.52977 10.8078 2.04882 11.2887 2.00447 11.8805C1.99851 11.96 1.99851 12.04 2.00447 12.1195C2.04882 12.7113 2.52977 13.1923 3.49167 14.1541C3.90959 14.5721 4.11855 14.781 4.23828 15.042C4.25491 15.0783 4.27018 15.1151 4.28405 15.1525C4.38394 15.4218 4.38394 15.7173 4.38394 16.3083V16.4173C4.38394 17.9252 4.38394 18.6792 4.85239 19.1476C5.32083 19.6161 6.07479 19.6161 7.58269 19.6161H7.69171Z" stroke="#8E8E93" stroke-width="1.5"/>
-                        <path d="M15 9L9 15" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M15 15H14.9892M9.01076 9H9" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <input type="text" class="form-control send-coupon side-cart-coupon-input" placeholder="{{ _('Add discount coupon') | e }}" autocomplete="off">
-                      <button type="submit" class="btn coupon-activate-btn side-cart-coupon-apply" aria-label="{{ _('Apply discount coupon') }}">
-                        <img class="send-coupon-progress side-cart-coupon-spinner d-none" src="{{ 'spinner.gif' | asset_url }}" width="15" height="15" alt="">
-                        <span class="side-cart-coupon-apply-text">{{ _('Activate') }}</span>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-                <div class="side-cart-coupon-applied d-none message-coupon alert alert-primary mt-2" role="alert">
-                  <span class="side-cart-coupon-code"></span>
-                  <button type="button" class="btn btn-link btn-sm p-0 side-cart-coupon-remove" onclick="if(typeof deleteSideCartCoupon === 'function') deleteSideCartCoupon();" aria-label="{{ _('Remove coupon') }}">
-                    <span class="icon-trash-alt" aria-hidden="true"></span>
-                    <img class="delete-coupon-progress d-none" src="{{ 'spinner.gif' | asset_url }}" width="14" height="14" alt="">
-                  </button>
-                </div>
-                <div class="message-coupon side-cart-message-coupon d-none small"></div>
-              </div>
-            </div>
-
-            <a href="/checkout" class="btn btn-primary btn-lg btn-block cart-checkout-btn btn-side-cart-checkout mb-2">{{ _('Proceed to checkout') }}</a>
-            <div class="mt-2">
-              <a href="{{ url_for('cart_page') }}" class="btn btn-block continue-btn btn-side-cart-view-cart">{{ _('View cart') }}</a>
+          <div class="cart-checkout-section">
+            <a href="/checkout" class="btn btn-primary btn-lg btn-block btn-side-cart-checkout">{{ _('Proceed to checkout') }}</a>
+            <div class="text-center">
+              <a href="{{ url_for('cart_page') }}" class="btn-side-cart-view-cart">{{ _('View cart') }}</a>
             </div>
           </div>
         </div>
@@ -163,7 +153,10 @@ var CART_CATEGORY_SVG_OPTIONS = {{ _cart_svg_options_icon | tojson }};
 var CART_CATEGORY_SVG_ADD = {{ _cart_svg_add_icon | tojson }};
 
 document.addEventListener('DOMContentLoaded', async function() {
-    const container = document.getElementById('side-cart-custom-category-products');
+    function getSideCartEl() {
+        return document.getElementById('side-cart-modern');
+    }
+    const container = document.getElementById('side-cart-modern-custom-category-products');
     if (!container) return;
 
     const loader = container.querySelector('.loading-spinner');

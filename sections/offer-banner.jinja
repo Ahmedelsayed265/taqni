@@ -1,5 +1,24 @@
 <section class="offer-banner-section" id="{{ sectionId }}" section-id="{{ sectionId }}"
     style="margin-top: 32px; position: relative;">
+    <style>
+        #{{ sectionId }} .marquee-item-text {
+            color: {{ settings.marquee_text_color | default('#fff') }} !important;
+        }
+        #{{ sectionId }} .banner-btn {
+            background-color: {{ settings.btn_bg_color | default('#fff') }} !important;
+            color: {{ settings.btn_text_color | default('#000') }} !important;
+        }
+        #{{ sectionId }} .banner-btn svg path {
+            fill: {{ settings.btn_text_color | default('#000') }} !important;
+        }
+        #{{ sectionId }} .banner-btn:hover {
+            background-color: {{ settings.btn_bg_hover_color | default('#000') }} !important;
+            color: {{ settings.btn_text_hover_color | default('#fff') }} !important;
+        }
+        #{{ sectionId }} .banner-btn:hover svg path {
+            fill: {{ settings.btn_text_hover_color | default('#fff') }} !important;
+        }
+    </style>
     <div class="offer-banner-main">
         <picture>
             {% if settings.bg_image_desktop %}

@@ -173,7 +173,7 @@
                                                 </svg>
                                             </button>
                                             {% if store.settings.products.wishlist_enabled == true %}
-                                            <span class="product-icon-btn add-to-wishlist position-relative product-page-wishlist" data-wishlist-id="{{ product.id }}">
+                                            <span class="product-icon-btn add-to-wishlist position-relative product-page-wishlist" style="background: none !important;" data-wishlist-id="{{ product.id }}">
                                                 {% if not session.is_guest %}
                                                 <a style="display: none;" class="product-icon-btn product-icon-favorite icon-heart-mask filled" zid-visible-wishlist="{{ product.id }}" onclick="addToWishlist(this, '{{ product.id }}')" href="javascript:void(0)" aria-label="{{ _('Add to wishlist') }}"></a>
                                                 <a class="product-icon-btn product-icon-favorite" zid-hidden-wishlist="{{ product.id }}" onclick="addToWishlist(this, '{{ product.id }}')" href="javascript:void(0)" aria-label="{{ _('Add to wishlist') }}">
@@ -384,7 +384,7 @@
                             </div>
                             <section class="product-tabs-section mt-5">
                                 <div class="product-tabs-header">
-                                    <button class="product-tab-btn active" data-tab="description">{{ _("Product Description") }}</button>
+                                    <button class="product-tab-btn active" data-tab="description">{{ _("product description") }}</button>
                                     <button class="product-tab-btn" data-tab="reviews">{{ _("Reviews") }}</button>
                                     <button class="product-tab-btn" data-tab="questions">{{ _("Questions") }}</button>
                                 </div>

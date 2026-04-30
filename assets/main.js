@@ -590,7 +590,7 @@ function displayActivePaymentSessionBar(cart) {
 }
 
 function fetchCart() {
-  var sideCart = document.getElementById('side-cart');
+  var sideCart = document.getElementById('side-cart-modern');
   var loading = sideCart && sideCart.querySelector('.loading-cart');
   if (loading) loading.classList.remove('d-none');
 

@@ -644,5 +644,56 @@ msgstr "تم تطبيق الشحن المجاني"
 msgid "Delivery to:"
 msgstr "التوصيل إلى:"
 
-msgid "Pickup from:"
-msgstr "الاستلام من:"
+msgid "Cart Contents"
+msgstr "محتويات السلة"
+
+msgid "Order Summary"
+msgstr "ملخص الطلب"
+
+msgid "Discount Code"
+msgstr "كود الخصم"
+
+msgid "Add discount coupon"
+msgstr "أضف كود الخصم"
+
+msgid "Activate"
+msgstr "تفعيل"
+
+msgid "Proceed to checkout"
+msgstr "إتمام الشراء"
+
+msgid "View cart"
+msgstr "عرض السلة"
+
+msgid "Remove"
+msgstr "إزالة"
+
+msgid "recommended products"
+msgstr "منتجات مقترحة"
+
+msgid "You might also like"
+msgstr "قد يعجبك أيضاً"
+
+msgid "shopping bag"
+msgstr "حقيبة التسوق"
+
+msgid "Your shopping cart is empty"
+msgstr "سلة التسوق الخاصة بك فارغة"
+
+msgid "Add some products to your cart to complete your order."
+msgstr "أضف بعض المنتجات إلى سلتك لإكمال طلبك."
+
+msgid "View all products"
+msgstr "عرض جميع المنتجات"
+
+msgid "Do you want a free shipping?"
+msgstr "هل ترغب في الحصول على شحن مجاني؟"
+
+msgid "Add products with total of %(total)s"
+msgstr "أضف منتجات بقيمة %(total)s"
+
+msgid "Add more"
+msgstr "أضف المزيد"
+
+msgid "Apply"
+msgstr "تطبيق"

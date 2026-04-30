@@ -44,6 +44,11 @@
       "label": { "ar": "صورة الخلفية", "en": "Background Image" }
     },
     {
+      "type": "text",
+      "id": "title",
+      "label": { "ar": "العنوان الرئيسي", "en": "Main Title" }
+    },
+    {
       "type": "textarea",
       "id": "subtitle",
       "label": { "ar": "العنوان الفرعي", "en": "Subtitle" }
@@ -61,7 +66,32 @@
     {
       "type": "color",
       "id": "text_color",
-      "label": { "ar": "لون النصوص", "en": "Text Color" }
+      "label": { "ar": "لون النصوص", "en": "Text Color" },
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": { "ar": "لون خلفية الزر", "en": "Button Background Color" },
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": { "ar": "لون نص الزر", "en": "Button Text Color" },
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover_color",
+      "label": { "ar": "لون خلفية الزر عند التمرير", "en": "Button Hover Background Color" },
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_hover_color",
+      "label": { "ar": "لون نص الزر عند التمرير", "en": "Button Hover Text Color" },
+      "default": "#fff"
     }
   ]
 }

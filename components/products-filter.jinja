@@ -1,91 +1,171 @@
-<div class="d-flex align-items-center justify-content-between products-filter">
-    <div class="d-flex filter-buttons-container-fluid">
-            <div class="{% if has_products_filtration %}d-sm-inline-block d-xs-inline-block d-md-none{% else %}d-inline-block{% endif %}" >
+<style>
+    .products-filter-modern {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        font-family: inherit;
+    }
 
-                    <div><label class="filter-result">{{ _("Filter") }}</label></div>
-                    <button id="products-list-filter-collapse"
-                            type="button"
-                            class="btn btn-filter filter-block-width d-lg-none products-list-filter-sm"
-                            data-toggle="collapse"
-                            data-target="#filters-form-collapse-sm">
-                        <span>{{ _("Filter") }}</span>
-                        <i class="icon-add filter-icons filters_expanded"></i>
-                        <i class="icon-remove filter-icons filters_not_expanded d-none"></i>
-                    </button>
+    .filter-left-section {
+        display: flex;
+        align-items: center;
+    }
 
-                    <button id="products-list-filter-modal"
-                            type="button"
-                            class="btn btn-filter filter-block-width d-none d-lg-block"
-                            data-toggle="modal"
-                            data-target="#filterModal"
-                    >
-                        <span>{{ _("Filter") }}</span>
-                        &nbsp;
-                        <i class="icon-filter-secondary" aria-hidden="true"></i>
-                    </button>
+    .filter-right-section {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
 
-            </div>
+    .filter-trigger-btn,
+    .sort-trigger-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        color: #333;
+        font-size: 14px;
+        transition: opacity 0.2s;
+    }
 
-                <div class="d-inline-block filter-block-width sort-block-width">
-                    <div class="dropdown d-inline-block">
-                        <div><label class="filter-order">{{ _("Sort by") }}</label></div>
-                        <button id="products-list-sort"
-                                type="button"
-                                class="btn btn-filter"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                            <span>
-                                {% if session.url.query_params.get('sort_by') == 'popularity_order' %}
-                                    {{ _("Most popular") }}
-                                {% elif session.url.query_params.get('sort_by') == 'price' and session.url.query_params.get('order') == 'asc' %}
-                                    {{ _("Low to high") }}
-                                {% elif session.url.query_params.get('sort_by') == 'price' and session.url.query_params.get('order') == 'desc' %}
-                                    {{ _("High to low") }}
-                                {% else %}
-                                    {{ _("Newest") }}
-                                {% endif %}
-                            </span>
-                            &nbsp;
-                            <i class="icon-swap_vert text hide-ie"></i>
+    .filter-trigger-btn:hover,
+    .sort-trigger-btn:hover {
+        opacity: 0.7;
+    }
 
-                        </button>
-                        <div class="dropdown-menu select-dropdown">
-                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='created_at', order='desc') }}">
-                                    {{ _("Newest") }}
-                                </a>
-                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='popularity_order', order='asc') }}">
-                                    {{ _("Most popular") }}
-                                </a>
-                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='price', order='asc') }}">
-                                    {{ _("Low to high") }}
-                                </a>
-                                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='price', order='desc') }}">
-                                    {{ _("High to low") }}
-                                </a>
-                        </div>
-                    </div>
-                </div>
+    .filter-label-text,
+    .sort-label-text {
+        font-weight: 400;
+        color: #444;
+    }
 
+    .filter-icon-svg,
+    .sort-icon-svg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+    }
 
+    .product-count-display {
+        font-size: 14px;
+        color: #666;
+    }
 
-        </div>
+    .product-count-number {
+        font-weight: 600;
+        color: #222;
+        margin-right: 4px;
+    }
 
+    .sort-wrapper-modern .dropdown-menu {
+        margin-top: 10px;
+        border: 1px solid #eee;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        padding: 8px 0;
+        min-width: 180px;
+    }
 
+    .sort-wrapper-modern .dropdown-item {
+        padding: 10px 20px;
+        font-size: 14px;
+        color: #333;
+    }
 
-        <div class="d-none d-lg-inline-block text-color-primary">
+    .sort-wrapper-modern .dropdown-item:hover {
+        background-color: #f8f8f8;
+    }
+
+    @media (max-width: 768px) {
+        .products-filter-modern {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+        }
+
+        .filter-right-section {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
+
+<div class="products-filter-modern">
+    <div class="filter-left-section">
+        <button type="button" class="filter-trigger-btn" {% if has_products_filtration %} data-toggle="collapse"
+            data-target="#filters-form-collapse-sm" {% else %} data-toggle="modal" data-target="#filterModal" {% endif
+            %} aria-label="{{ _('Filter') }}">
+            <span class="filter-label-text">{{ _("Filter") }}</span>
+            <span class="filter-icon-svg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 7H6" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 17H9" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M18 17L21 17" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 7L21 7" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 7C6 6.06812 6 5.60218 6.15224 5.23463C6.35523 4.74458 6.74458 4.35523 7.23463 4.15224C7.60218 4 8.06812 4 9 4C9.93188 4 10.3978 4 10.7654 4.15224C11.2554 4.35523 11.6448 4.74458 11.8478 5.23463C12 5.60218 12 6.06812 12 7C12 7.93188 12 8.39782 11.8478 8.76537C11.6448 9.25542 11.2554 9.64477 10.7654 9.84776C10.3978 10 9.93188 10 9 10C8.06812 10 7.60218 10 7.23463 9.84776C6.74458 9.64477 6.35523 9.25542 6.15224 8.76537C6 8.39782 6 7.93188 6 7Z" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 17C12 16.0681 12 15.6022 12.1522 15.2346C12.3552 14.7446 12.7446 14.3552 13.2346 14.1522C13.6022 14 14.0681 14 15 14C15.9319 14 16.3978 14 16.7654 14.1522C17.2554 14.3552 17.6448 14.7446 17.8478 15.2346C18 15.6022 18 16.0681 18 17C18 17.9319 18 18.3978 17.8478 18.7654C17.6448 19.2554 17.2554 19.6448 16.7654 19.8478C16.3978 20 15.9319 20 15 20C14.0681 20 13.6022 20 13.2346 19.8478C12.7446 19.6448 12.3552 19.2554 12.1522 18.7654C12 18.3978 12 17.9319 12 17Z" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 7L15 7" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 17L18 17" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 17L12 17" stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+        </button>
+    </div>
+
+    <div class="filter-right-section">
+        <div class="product-count-display">
             {% if count > 0 %}
-                <span class="text-line-height d-inline-block">{{ _("Total ") }}&nbsp;</span>
-                <span id="product-filter-count" class="text text-line-height d-inline-block" style="font-weight: bold">{{count}}&nbsp;</span>
-                <span class="text-line-height d-inline-block">
-                            {{ _("products") }}
-                         </span>
+            <span class="product-count-number">{{ count }}</span>
+            <span class="product-count-label">{{ _("products") }}</span>
             {% else %}
-                <span class="text text-line-height d-inline-block"
-                      style="font-weight: bold">{{ _("No products") }}&nbsp;
-                     </span>
+            <span class="product-count-label">{{ _("No products") }}</span>
             {% endif %}
         </div>
 
+        <div class="sort-wrapper-modern dropdown">
+            <button type="button" class="sort-trigger-btn" id="products-list-sort" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <span class="sort-label-text">{{ _("Sort by") }}</span>
+                <span class="sort-icon-svg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 8L19 8.00006" stroke="#050505" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M11 12H16" stroke="#050505" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M11 16H14" stroke="#050505" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M11 4H21" stroke="#050505" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path
+                            d="M5.5 21V3M5.5 21C4.79977 21 3.49153 19.0057 3 18.5M5.5 21C6.20023 21 7.50847 19.0057 8 18.5"
+                            stroke="#050505" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </span>
+            </button>
+            <div class="dropdown-menu select-dropdown dropdown-menu-right">
+                <a class="dropdown-item"
+                    href="{{ session.url.include_query_params(sort_by='created_at', order='desc') }}">
+                    {{ _("Newest") }}
+                </a>
+                <a class="dropdown-item"
+                    href="{{ session.url.include_query_params(sort_by='popularity_order', order='asc') }}">
+                    {{ _("Most popular") }}
+                </a>
+                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='price', order='asc') }}">
+                    {{ _("Low to high") }}
+                </a>
+                <a class="dropdown-item" href="{{ session.url.include_query_params(sort_by='price', order='desc') }}">
+                    {{ _("High to low") }}
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="filters-form-collapse-sm" class="collapse mt-3">
@@ -100,11 +180,8 @@
                         <div class="filter-modal-title-wrap">
                             <span class="filter-modal-title">{{ _("Filter") }}</span>
                         </div>
-                        <button id="products-list-filter-form-close"
-                                type="button"
-                                class="btn filter-modal-close"
-                                data-dismiss="modal"
-                                aria-label="{{ _('Close') }}">
+                        <button id="products-list-filter-form-close" type="button" class="btn filter-modal-close"
+                            data-dismiss="modal" aria-label="{{ _('Close') }}">
                             <span class="icon-times2"></span>
                         </button>
                     </div>
@@ -118,12 +195,12 @@
 </div>
 
 <script>
-    (function() {
+    (function () {
         function initProductsFilterFormPriceRange() {
             var forms = document.querySelectorAll('.form-products-filter');
             if (!forms.length) { return; }
 
-            forms.forEach(function(form) {
+            forms.forEach(function (form) {
                 var fromInput = form.querySelector('#price_min');
                 var toInput = form.querySelector('#price_max');
                 var host = form.querySelector('#slider-range');
@@ -214,8 +291,8 @@
                     toInput.value = String(maxNow);
                 }
 
-                sliderMin.addEventListener('input', function(e) { updateFromSliders(e); });
-                sliderMax.addEventListener('input', function(e) { updateFromSliders(e); });
+                sliderMin.addEventListener('input', function (e) { updateFromSliders(e); });
+                sliderMax.addEventListener('input', function (e) { updateFromSliders(e); });
                 fromInput.addEventListener('input', updateFromInputs);
                 toInput.addEventListener('input', updateFromInputs);
 

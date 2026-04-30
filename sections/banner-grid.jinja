@@ -1,5 +1,17 @@
 {% if settings.hide_section != true %}
 <section class="banner-grid-section s_block" id="{{ sectionId }}" section-id="{{ sectionId }}">
+    <style>
+        {% for banner in settings.banners %}
+        #{{ sectionId }} .banner-btn-{{ loop.index }} {
+            background-color: {{ banner.btn_bg_color | default('#fff') }} !important;
+            color: {{ banner.btn_text_color | default('#000') }} !important;
+        }
+        #{{ sectionId }} .banner-item:hover .banner-btn-{{ loop.index }} {
+            background-color: {{ banner.btn_bg_hover_color | default('#000') }} !important;
+            color: {{ banner.btn_text_hover_color | default('#fff') }} !important;
+        }
+        {% endfor %}
+    </style>
     <div class="container">
         <div class="banner-grid-wrapper">
             {# Banner 1 (Large - Left) #}
@@ -20,7 +32,7 @@
                         <h2 style="color: {{ banner1.title_color | default('#fff') }}">{{ banner1.title }}</h2>
                         <p style="color: {{ banner1.subtitle_color | default('#fff') }}">{{ banner1.subtitle }}</p>
                         {% if banner1.btn_text %}
-                        <span class="banner-btn">{{ banner1.btn_text }}</span>
+                        <span class="banner-btn banner-btn-1">{{ banner1.btn_text }}</span>
                         {% endif %}
                     </div>
                 </a>
@@ -49,7 +61,7 @@
                             <p style="color: {{ banner2.subtitle_color | default('#fff') }}">{{ banner2.subtitle }}</p>
                             
                             {% if banner2.btn_text %}
-                            <span class="banner-btn">{{ banner2.btn_text }}</span>
+                             <span class="banner-btn banner-btn-2">{{ banner2.btn_text }}</span>
                             {% endif %}
                         </div>
                     </a>
@@ -76,7 +88,7 @@
                             <p style="color: {{ banner3.subtitle_color | default('#fff') }}">{{ banner3.subtitle }}</p>
 
                             {% if banner3.btn_text %}
-                            <span class="banner-btn">{{ banner3.btn_text }}</span>
+                             <span class="banner-btn banner-btn-3">{{ banner3.btn_text }}</span>
                             {% endif %}
                         </div>
                     </a>

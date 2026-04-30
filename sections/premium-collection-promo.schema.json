@@ -81,8 +81,32 @@
     {
       "type": "color",
       "id": "accent_color",
-      "label": { "ar": "اللون التمييزي (الأزرار)", "en": "Accent Color" },
+      "label": { "ar": "اللون التمييزي", "en": "Accent Color" },
       "default": "#7c73e6"
+    },
+    {
+      "type": "color",
+      "id": "trigger_bg_color",
+      "label": { "ar": "خلفية زر السلة", "en": "Cart Trigger BG" },
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "trigger_icon_color",
+      "label": { "ar": "أيقونة زر السلة", "en": "Cart Trigger Icon" },
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "trigger_bg_hover_color",
+      "label": { "ar": "خلفية زر السلة (تمرير)", "en": "Cart Trigger BG (Hover)" },
+      "default": "#7c73e6"
+    },
+    {
+      "type": "color",
+      "id": "trigger_icon_hover_color",
+      "label": { "ar": "أيقونة زر السلة (تمرير)", "en": "Cart Trigger Icon (Hover)" },
+      "default": "#ffffff"
     }
   ]
 }

@@ -424,14 +424,6 @@
           }
         },
         {
-          "id": "product_Discount_percentage_color",
-          "type": "color",
-          "label": {
-            "ar": "لون نسبة الخصم",
-            "en": "Discount percentage color"
-          }
-        },
-        {
           "id": "product_card_add_to_cart_button_color",
           "type": "color",
           "label": {
@@ -522,6 +514,58 @@
       ]
     },
     {
+      "id": "side_cart",
+      "icon": "font_awesome",
+      "name": {
+        "ar": "السلة الجانبية",
+        "en": "Side Cart"
+      },
+      "settings": [
+        {
+          "id": "cart_name",
+          "type": "text",
+          "label": {
+            "ar": "عنوان المقترحات",
+            "en": "Recommended Title"
+          }
+        },
+        {
+          "id": "recommended_list",
+          "type": "list",
+          "label": {
+            "ar": "قائمة المقترحات",
+            "en": "Recommended List"
+          },
+          "settings": [
+            {
+              "id": "image",
+              "type": "image",
+              "label": {
+                "ar": "الصورة",
+                "en": "Image"
+              }
+            },
+            {
+              "id": "title",
+              "type": "text",
+              "label": {
+                "ar": "العنوان",
+                "en": "Title"
+              }
+            },
+            {
+              "id": "link",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "Link"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "loading_page",
       "name": {
         "ar": "صفحة التحميل",
@@ -570,6 +614,126 @@
             "ar": "اختر التصنيف",
             "en": "Select category"
           }
+        }
+      ]
+    },
+    {
+      "id": "collection_section_product_page",
+      "icon": "fa fa-bars",
+      "name": {
+        "ar": "سيكشن المجموعات في صفحة المنتج",
+        "en": "Collection Section in Product Details Page"
+      },
+      "settings": [
+        {
+          "id": "show_section",
+          "type": "checkbox",
+          "label": {
+            "ar": "اضهار السيكشن",
+            "en": "Show Section"
+          }
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "label": {
+            "ar": "العنوان",
+            "en": "Title"
+          }
+        },
+        {
+          "id": "items_list",
+          "type": "list",
+          "label": {
+            "ar": "قائمة العناصر",
+            "en": "Text List"
+          },
+          "settings": [
+            {
+              "id": "image",
+              "type": "image",
+              "label": {
+                "ar": "صورة",
+                "en": "Image"
+              }
+            },
+            {
+              "id": "link",
+              "type": "url",
+              "label": {
+                "ar": "الرابط",
+                "en": "Link"
+              }
+            },
+            {          
+              "id": "text",
+              "type": "text",
+              "label": {
+                "ar": "النص",
+                "en": "Text"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "additional_section_product_page",
+      "icon": "fa fa-bars",
+      "name": {
+        "ar": "سيكشن اضافي في صفحة المنتج",
+        "en": "Additional Section in Product Details Page"
+      },
+      "settings": [
+        {
+          "id": "show_section",
+          "type": "checkbox",
+          "label": {
+            "ar": "اضهار السيكشن",
+            "en": "Show Section"
+          }
+        },
+        {
+          "id": "image",
+          "type": "image",
+          "label": {
+            "ar": "صورة",
+            "en": "Image"
+          }
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "label": {
+            "ar": "العنوان",
+            "en": "Title"
+          }
+        },
+        {
+          "id": "section_bg",
+          "type": "color",
+          "label": {
+            "ar": "لون الخلفية",
+            "en": "Background Color"
+          }
+        },
+        {
+          "id": "items_list",
+          "type": "list",
+          "label": {
+            "ar": "قائمة نصوص",
+            "en": "Text List"
+          },
+          "settings": [
+            {          
+              "id": "text",
+              "type": "text",
+              "label": {
+                "ar": "النص",
+                "en": "Text"
+              }
+            }
+          ]
         }
       ]
     }
